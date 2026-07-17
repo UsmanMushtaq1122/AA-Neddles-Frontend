@@ -1,0 +1,1009 @@
+[
+    {
+        "id":  1,
+        "title":  "Ivory Embroidered Lawn Suit",
+        "slug":  "ivory-embroidered-lawn-suit",
+        "price":  12990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "ready-to-wear",
+        "subcategory":  "luxury-pret",
+        "images":  [
+                       "/images/AA1.jpeg",
+                       "/images/AA2.jpeg"
+                   ],
+        "description":  "Exquisite ivory embroidered lawn suit with delicate floral motifs. Features intricate threadwork on lightweight, breathable fabric.",
+        "fabric":  "Premium Lawn",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Ivory",
+                       "Blush",
+                       "Mint"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  2,
+        "title":  "Crimson Velvet Formal Ensemble",
+        "slug":  "crimson-velvet-formal-ensemble",
+        "price":  34990,
+        "salePrice":  27990,
+        "badge":  "20% OFF",
+        "category":  "formal",
+        "subcategory":  "luxury-formals",
+        "images":  [
+                       "/images/AA3.jpeg",
+                       "/images/AA4.jpeg"
+                   ],
+        "description":  "Stunning crimson velvet formal ensemble with intricate gold threadwork. Perfect for weddings and evening celebrations.",
+        "fabric":  "Velvet",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Crimson",
+                       "Emerald",
+                       "Navy"
+                   ],
+        "isNew":  false,
+        "isTrending":  true
+    },
+    {
+        "id":  3,
+        "title":  "Gold Embroidered Bridal Lehenga",
+        "slug":  "gold-embroidered-bridal-lehenga",
+        "price":  149990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "bridal",
+        "subcategory":  "couture",
+        "images":  [
+                       "/images/AA5.jpeg",
+                       "/images/AA6.jpeg"
+                   ],
+        "description":  "Opulent gold embroidered bridal lehenga with handcrafted zardozi work. A masterpiece of traditional craftsmanship.",
+        "fabric":  "Silk \u0026 Velvet",
+        "sizes":  [
+                      "Custom"
+                  ],
+        "colors":  [
+                       "Gold",
+                       "Red",
+                       "Ivory"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  4,
+        "title":  "Mint Green Organza Suit",
+        "slug":  "mint-green-organza-suit",
+        "price":  15990,
+        "salePrice":  11990,
+        "badge":  "25% OFF",
+        "category":  "ready-to-wear",
+        "subcategory":  "unstitched",
+        "images":  [
+                       "/images/AA7.jpeg",
+                       "/images/AA8.jpeg"
+                   ],
+        "description":  "Refreshing mint green organza suit with delicate floral embroidery. Light and airy for daytime elegance.",
+        "fabric":  "Organza",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "Mint",
+                       "Lavender",
+                       "Peach"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  5,
+        "title":  "Navy Blue Khaddar Collection",
+        "slug":  "navy-blue-khaddar-collection",
+        "price":  8990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "ready-to-wear",
+        "subcategory":  "luxury-pret",
+        "images":  [
+                       "/images/AA9.jpeg",
+                       "/images/AA10.jpeg"
+                   ],
+        "description":  "Classic navy blue khaddar suit with subtle threadwork. Comfortable everyday elegance with a traditional touch.",
+        "fabric":  "Khaddar",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Navy",
+                       "Charcoal",
+                       "Olive"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  6,
+        "title":  "Rose Pink Chiffon Luxury Suit",
+        "slug":  "rose-pink-chiffon-luxury-suit",
+        "price":  24990,
+        "salePrice":  19990,
+        "badge":  "20% OFF",
+        "category":  "formal",
+        "subcategory":  "luxury-formals",
+        "images":  [
+                       "/images/AA11.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.16 PM.jpeg"
+                   ],
+        "description":  "Elegant rose pink chiffon suit with heavy embellished neckline. Flowing fabric creates a graceful silhouette.",
+        "fabric":  "Chiffon",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Rose Pink",
+                       "Pearl",
+                       "Lilac"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  7,
+        "title":  "Cream \u0026 Gold Festive Ensemble",
+        "slug":  "cream-gold-festive-ensemble",
+        "price":  19990,
+        "salePrice":  null,
+        "badge":  "New",
+        "category":  "ready-to-wear",
+        "subcategory":  "new-arrivals",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.20 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.22 PM.jpeg"
+                   ],
+        "description":  "Cream and gold festive ensemble with intricate gota work. Perfect for mehndi and daytime celebrations.",
+        "fabric":  "Net \u0026 Silk",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Cream",
+                       "Gold",
+                       "Peach"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  8,
+        "title":  "Emerald Green Velvet Gown",
+        "slug":  "emerald-green-velvet-gown",
+        "price":  45990,
+        "salePrice":  null,
+        "badge":  "New",
+        "category":  "formal",
+        "subcategory":  "couture",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.24 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.26 PM.jpeg"
+                   ],
+        "description":  "Luxurious emerald green velvet gown with sweeping train. Regal and sophisticated for formal occasions.",
+        "fabric":  "Velvet",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L"
+                  ],
+        "colors":  [
+                       "Emerald",
+                       "Ruby",
+                       "Sapphire"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  9,
+        "title":  "White Lace Formal Trouser Suit",
+        "slug":  "white-lace-formal-trouser-suit",
+        "price":  27990,
+        "salePrice":  20990,
+        "badge":  "25% OFF",
+        "category":  "formal",
+        "subcategory":  "luxury-formals",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.30 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.31 PM.jpeg"
+                   ],
+        "description":  "Contemporary white lace formal trouser suit with modern straight-cut silhouette. Elegant minimalism meets tradition.",
+        "fabric":  "Lace \u0026 Net",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "White",
+                       "Black",
+                       "Champagne"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  10,
+        "title":  "Baby Pink Kids Festive Suit",
+        "slug":  "baby-pink-kids-festive-suit",
+        "price":  5990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "kids",
+        "subcategory":  "kidswear",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.32 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.33 PM.jpeg"
+                   ],
+        "description":  "Adorable baby pink festive suit for little ones. Comfortable fabric with charming embroidered details.",
+        "fabric":  "Cotton \u0026 Lawn",
+        "sizes":  [
+                      "2Y",
+                      "4Y",
+                      "6Y",
+                      "8Y",
+                      "10Y"
+                  ],
+        "colors":  [
+                       "Baby Pink",
+                       "Sky Blue",
+                       "Lavender"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  11,
+        "title":  "Peach Organza Luxury Pret",
+        "slug":  "peach-organza-luxury-pret",
+        "price":  18990,
+        "salePrice":  15990,
+        "badge":  "15% OFF",
+        "category":  "ready-to-wear",
+        "subcategory":  "luxury-pret",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.34 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.36 PM.jpeg"
+                   ],
+        "description":  "Peach organza luxury pret with modern digital print and classic hand embroidery fusion.",
+        "fabric":  "Organza",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Peach",
+                       "Mint",
+                       "Coral"
+                   ],
+        "isNew":  false,
+        "isTrending":  true
+    },
+    {
+        "id":  12,
+        "title":  "Maroon \u0026 Gold Bridal Ensemble",
+        "slug":  "maroon-gold-bridal-ensemble",
+        "price":  189990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "bridal",
+        "subcategory":  "couture",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.37 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.39 PM.jpeg"
+                   ],
+        "description":  "Regal maroon and gold bridal ensemble with heavy zardozi and resham work. A true heirloom piece.",
+        "fabric":  "Silk \u0026 Velvet",
+        "sizes":  [
+                      "Custom"
+                  ],
+        "colors":  [
+                       "Maroon",
+                       "Gold",
+                       "Red"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  13,
+        "title":  "Black Schiffli Embroidered Suit",
+        "slug":  "black-schiffli-embroidered-suit",
+        "price":  14990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "ready-to-wear",
+        "subcategory":  "unstitched",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.40 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.43 PM (1).jpeg"
+                   ],
+        "description":  "Timeless black suit with schiffli embroidery work. A versatile addition to any wardrobe.",
+        "fabric":  "Net \u0026 Lawn",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "Black",
+                       "White",
+                       "Navy"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  14,
+        "title":  "Pastel Striped Summer Collection",
+        "slug":  "pastel-striped-summer-collection",
+        "price":  7990,
+        "salePrice":  5990,
+        "badge":  "25% OFF",
+        "category":  "ready-to-wear",
+        "subcategory":  "new-arrivals",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.43 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.45 PM.jpeg"
+                   ],
+        "description":  "Light and breezy pastel striped summer collection. Perfect for casual daytime wear.",
+        "fabric":  "Cotton \u0026 Lawn",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Pastel Pink",
+                       "Pastel Blue",
+                       "Pastel Yellow"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  15,
+        "title":  "Royal Blue Mirror Work Suit",
+        "slug":  "royal-blue-mirror-work-suit",
+        "price":  22990,
+        "salePrice":  null,
+        "badge":  "New",
+        "category":  "formal",
+        "subcategory":  "luxury-formals",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.46 PM (1).jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.46 PM (2).jpeg"
+                   ],
+        "description":  "Royal blue suit with intricate mirror work and embroidered borders. A stunning choice for festive occasions.",
+        "fabric":  "Chiffon \u0026 Net",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Royal Blue",
+                       "Teal",
+                       "Purple"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  16,
+        "title":  "Kids Blue \u0026 Gold Mehndi Ensemble",
+        "slug":  "kids-blue-gold-mehndi-ensemble",
+        "price":  6990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "kids",
+        "subcategory":  "kidswear",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.46 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.47 PM.jpeg"
+                   ],
+        "description":  "Charming blue and gold ensemble for little ones. Perfect for mehndi and family celebrations.",
+        "fabric":  "Silk \u0026 Velvet",
+        "sizes":  [
+                      "2Y",
+                      "4Y",
+                      "6Y",
+                      "8Y"
+                  ],
+        "colors":  [
+                       "Blue",
+                       "Gold",
+                       "Red"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  17,
+        "title":  "Champagne Net Bridal Lehenga",
+        "slug":  "champagne-net-bridal-lehenga",
+        "price":  249990,
+        "salePrice":  199990,
+        "badge":  "20% OFF",
+        "category":  "bridal",
+        "subcategory":  "couture",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.49 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.50 PM (1).jpeg"
+                   ],
+        "description":  "Exquisite champagne net bridal lehenga with heavy embroidered motifs and a delicate trail.",
+        "fabric":  "Net \u0026 Silk",
+        "sizes":  [
+                      "Custom"
+                  ],
+        "colors":  [
+                       "Champagne",
+                       "Ivory",
+                       "Gold"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  18,
+        "title":  "Coral Printed Casual Suit",
+        "slug":  "coral-printed-casual-suit",
+        "price":  6990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "ready-to-wear",
+        "subcategory":  "unstitched",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.50 PM (2).jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.50 PM.jpeg"
+                   ],
+        "description":  "Vibrant coral printed casual suit for everyday comfort. Easy-to-wear style with a pop of color.",
+        "fabric":  "Cotton",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "Coral",
+                       "Turquoise",
+                       "Yellow"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  19,
+        "title":  "Wine Velvet Evening Gown",
+        "slug":  "wine-velvet-evening-gown",
+        "price":  39990,
+        "salePrice":  31990,
+        "badge":  "20% OFF",
+        "category":  "formal",
+        "subcategory":  "luxury-formals",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.51 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.53 PM.jpeg"
+                   ],
+        "description":  "Rich wine velvet evening gown with elegant draping and a fitted bodice. Sophisticated evening wear.",
+        "fabric":  "Velvet",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Wine",
+                       "Black",
+                       "Navy"
+                   ],
+        "isNew":  false,
+        "isTrending":  true
+    },
+    {
+        "id":  20,
+        "title":  "Kids Golden Festive Lehenga",
+        "slug":  "kids-golden-festive-lehenga",
+        "price":  8990,
+        "salePrice":  7490,
+        "badge":  "15% OFF",
+        "category":  "kids",
+        "subcategory":  "kidswear",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.54 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.55 PM.jpeg"
+                   ],
+        "description":  "Gorgeous golden festive lehenga for kids with lightweight embroidered details. Perfect for celebrations.",
+        "fabric":  "Net \u0026 Silk",
+        "sizes":  [
+                      "2Y",
+                      "4Y",
+                      "6Y",
+                      "8Y",
+                      "10Y"
+                  ],
+        "colors":  [
+                       "Gold",
+                       "Pink",
+                       "Blue"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  21,
+        "title":  "Lavender Organza Formal Suit",
+        "slug":  "lavender-organza-formal-suit",
+        "price":  26990,
+        "salePrice":  null,
+        "badge":  "New",
+        "category":  "formal",
+        "subcategory":  "luxury-formals",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.56 PM (1).jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.56 PM.jpeg"
+                   ],
+        "description":  "Dreamy lavender organza formal suit with delicate floral embroidery. Romantic and ethereal.",
+        "fabric":  "Organza",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Lavender",
+                       "Mauve",
+                       "Dusty Rose"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  22,
+        "title":  "Teal \u0026 Gold Embroidered Ensemble",
+        "slug":  "teal-gold-embroidered-ensemble",
+        "price":  31990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "formal",
+        "subcategory":  "couture",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.12.02 PM (1).jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.12.02 PM.jpeg"
+                   ],
+        "description":  "Stunning teal and gold embroidered ensemble with heavy resham and gota work. A showstopper for any event.",
+        "fabric":  "Silk \u0026 Net",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Teal",
+                       "Gold",
+                       "Coral"
+                   ],
+        "isNew":  false,
+        "isTrending":  true
+    },
+    {
+        "id":  23,
+        "title":  "Summer Lawn Printed Collection",
+        "slug":  "summer-lawn-printed-collection",
+        "price":  5490,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "ready-to-wear",
+        "subcategory":  "unstitched",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.12.03 PM.jpeg",
+                       "/images/AA1.jpeg"
+                   ],
+        "description":  "Breezy summer lawn printed collection with vibrant floral patterns. Your go-to for hot days.",
+        "fabric":  "Lawn",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "Multi",
+                       "Blue",
+                       "Pink"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  24,
+        "title":  "Dusty Rose Heavy Embroidered Suit",
+        "slug":  "dusty-rose-heavy-embroidered-suit",
+        "price":  18990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "ready-to-wear",
+        "subcategory":  "luxury-pret",
+        "images":  [
+                       "/images/AA2.jpeg",
+                       "/images/AA3.jpeg"
+                   ],
+        "description":  "Sophisticated dusty rose suit with heavy embroidered neckline and cuffs. Timeless elegance.",
+        "fabric":  "Lawn \u0026 Chiffon",
+        "sizes":  [
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Dusty Rose",
+                       "Mauve",
+                       "Beige"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  25,
+        "title":  "Men\u0027s Classic Kurta Shalwar",
+        "slug":  "mens-classic-kurta-shalwar",
+        "price":  7990,
+        "salePrice":  6490,
+        "badge":  "15% OFF",
+        "category":  "men",
+        "subcategory":  "menswear",
+        "images":  [
+                       "/images/AA4.jpeg",
+                       "/images/AA5.jpeg"
+                   ],
+        "description":  "Classic men\u0027s kurta shalwar set in premium fabric. Comfortable and elegant for any occasion.",
+        "fabric":  "Cotton \u0026 Khaddar",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "White",
+                       "Black",
+                       "Blue"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  26,
+        "title":  "Men\u0027s Embroidered Waistcoat \u0026 Kurta",
+        "slug":  "mens-embroidered-waistcoat-kurta",
+        "price":  14990,
+        "salePrice":  null,
+        "badge":  "New",
+        "category":  "men",
+        "subcategory":  "menswear",
+        "images":  [
+                       "/images/AA6.jpeg",
+                       "/images/AA7.jpeg"
+                   ],
+        "description":  "Sophisticated men\u0027s embroidered waistcoat with matching kurta. Perfect for weddings and formal events.",
+        "fabric":  "Silk \u0026 Khaddar",
+        "sizes":  [
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "Ivory",
+                       "Navy",
+                       "Black"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  27,
+        "title":  "Jeweled Statement Necklace Set",
+        "slug":  "jeweled-statement-necklace-set",
+        "price":  12990,
+        "salePrice":  9990,
+        "badge":  "20% OFF",
+        "category":  "accessories",
+        "subcategory":  "jewelry",
+        "images":  [
+                       "/images/AA8.jpeg",
+                       "/images/AA9.jpeg"
+                   ],
+        "description":  "Exquisite jeweled statement necklace set with matching earrings. Elevate any outfit with timeless luxury.",
+        "fabric":  "Gold-plated \u0026 CZ",
+        "sizes":  [
+                      "One Size"
+                  ],
+        "colors":  [
+                       "Gold",
+                       "Silver",
+                       "Rose Gold"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  28,
+        "title":  "Embroidered Clutch \u0026 Pouch Set",
+        "slug":  "embroidered-clutch-pouch-set",
+        "price":  4990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "accessories",
+        "subcategory":  "jewelry",
+        "images":  [
+                       "/images/AA10.jpeg",
+                       "/images/AA11.jpeg"
+                   ],
+        "description":  "Handcrafted embroidered clutch with matching pouch. Intricate threadwork on luxurious fabric.",
+        "fabric":  "Velvet \u0026 Silk",
+        "sizes":  [
+                      "One Size"
+                  ],
+        "colors":  [
+                       "Red",
+                       "Gold",
+                       "Black"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  29,
+        "title":  "Men\u0027s Cashmere Shawl",
+        "slug":  "mens-cashmere-shawl",
+        "price":  18990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "men",
+        "subcategory":  "menswear",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.16 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.20 PM.jpeg"
+                   ],
+        "description":  "Premium cashmere shawl in classic pashmina weave. A timeless addition to any gentleman\u0027s wardrobe.",
+        "fabric":  "Cashmere",
+        "sizes":  [
+                      "One Size"
+                  ],
+        "colors":  [
+                       "Charcoal",
+                       "Beige",
+                       "Black"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  30,
+        "title":  "Bridal Jewelry Set (Necklace, Earrings, Maang Tikka)",
+        "slug":  "bridal-jewelry-set",
+        "price":  45990,
+        "salePrice":  36990,
+        "badge":  "20% OFF",
+        "category":  "accessories",
+        "subcategory":  "jewelry",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.22 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.24 PM.jpeg"
+                   ],
+        "description":  "Complete bridal jewelry set with necklace, earrings, and maang tikka. Intricate kundan and polki work.",
+        "fabric":  "22K Gold-plated",
+        "sizes":  [
+                      "One Size"
+                  ],
+        "colors":  [
+                       "Gold",
+                       "Rose Gold"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  31,
+        "title":  "Men\u0027s Navy Blue Sherwani",
+        "slug":  "mens-navy-blue-sherwani",
+        "price":  29990,
+        "salePrice":  null,
+        "badge":  "New",
+        "category":  "men",
+        "subcategory":  "menswear",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.26 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.30 PM.jpeg"
+                   ],
+        "description":  "Elegant navy blue sherwani with subtle embroidery. Made-to-measure fit for the perfect groom look.",
+        "fabric":  "Silk \u0026 Velvet",
+        "sizes":  [
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "Navy",
+                       "Black",
+                       "Ivory"
+                   ],
+        "isNew":  true,
+        "isTrending":  true
+    },
+    {
+        "id":  32,
+        "title":  "Kids Embroidered Party Dress",
+        "slug":  "kids-embroidered-party-dress",
+        "price":  5490,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "kids",
+        "subcategory":  "kidswear",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.31 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.32 PM.jpeg"
+                   ],
+        "description":  "Adorable embroidered party dress for little girls. Light, comfortable, and party-ready.",
+        "fabric":  "Net \u0026 Cotton",
+        "sizes":  [
+                      "2Y",
+                      "4Y",
+                      "6Y",
+                      "8Y"
+                  ],
+        "colors":  [
+                       "Pink",
+                       "White",
+                       "Lavender"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  33,
+        "title":  "Beige Trousseau Luxury Suit",
+        "slug":  "beige-trousseau-luxury-suit",
+        "price":  35990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "bridal",
+        "subcategory":  "couture",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.33 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.34 PM.jpeg"
+                   ],
+        "description":  "Elegant beige trousseau luxury suit with delicate hand-embroidery. A beautiful choice for wedding festivities.",
+        "fabric":  "Chiffon \u0026 Net",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL"
+                  ],
+        "colors":  [
+                       "Beige",
+                       "Champagne",
+                       "White"
+                   ],
+        "isNew":  true,
+        "isTrending":  false
+    },
+    {
+        "id":  34,
+        "title":  "Men\u0027s Formal Waistcoat Set",
+        "slug":  "mens-formal-waistcoat-set",
+        "price":  11990,
+        "salePrice":  9590,
+        "badge":  "20% OFF",
+        "category":  "men",
+        "subcategory":  "menswear",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.36 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.37 PM.jpeg"
+                   ],
+        "description":  "Sharp formal waistcoat set for men. Perfect for corporate events and formal gatherings.",
+        "fabric":  "Wool \u0026 Polyester",
+        "sizes":  [
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL"
+                  ],
+        "colors":  [
+                       "Black",
+                       "Navy",
+                       "Grey"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    },
+    {
+        "id":  35,
+        "title":  "Hand-Embroidered Silk Dupatta",
+        "slug":  "hand-embroidered-silk-dupatta",
+        "price":  8990,
+        "salePrice":  null,
+        "badge":  null,
+        "category":  "accessories",
+        "subcategory":  "jewelry",
+        "images":  [
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.39 PM.jpeg",
+                       "/images/WhatsApp Image 2026-07-06 at 5.11.40 PM.jpeg"
+                   ],
+        "description":  "Luxurious hand-embroidered silk dupatta with intricate border work. A versatile accessory for any outfit.",
+        "fabric":  "Silk",
+        "sizes":  [
+                      "One Size"
+                  ],
+        "colors":  [
+                       "Red",
+                       "Gold",
+                       "Ivory",
+                       "Black"
+                   ],
+        "isNew":  false,
+        "isTrending":  false
+    }
+]
