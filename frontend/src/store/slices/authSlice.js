@@ -23,19 +23,26 @@ function saveAuth(user) {
   } catch {}
 }
 
-const savedAuth = typeof window !== 'undefined' ? loadAuth() : null;
-
 const initialState = {
-  user: savedAuth,
-  isAuthenticated: !!savedAuth,
+  user: null,
+  isAuthenticated: false,
+  hydrated: false,
   loading: false,
   error: null,
+  forgotPassword: { loading: false, success: false, error: null },
+  resetPassword: { loading: false, success: false, error: null, tokenValid: null },
+  emailVerification: { loading: false, success: false, error: null, status: 'idle' },
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    hydrateAuthAction: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = !!action.payload;
+      state.hydrated = true;
+    },
     loginStartAction: (state) => {
       state.loading = true;
       state.error = null;
@@ -76,10 +83,56 @@ const authSlice = createSlice({
     clearErrorAction: (state) => {
       state.error = null;
     },
+
+    forgotPasswordStartAction: (state) => {
+      state.forgotPassword = { loading: true, success: false, error: null };
+    },
+    forgotPasswordSuccessAction: (state) => {
+      state.forgotPassword = { loading: false, success: true, error: null };
+    },
+    forgotPasswordFailureAction: (state, action) => {
+      state.forgotPassword = { loading: false, success: false, error: action.payload };
+    },
+    forgotPasswordResetAction: (state) => {
+      state.forgotPassword = { loading: false, success: false, error: null };
+    },
+
+    resetPasswordStartAction: (state) => {
+      state.resetPassword = { ...state.resetPassword, loading: true, success: false, error: null };
+    },
+    resetPasswordSuccessAction: (state) => {
+      state.resetPassword = { loading: false, success: true, error: null, tokenValid: true };
+    },
+    resetPasswordFailureAction: (state, action) => {
+      state.resetPassword = { loading: false, success: false, error: action.payload, tokenValid: false };
+    },
+    resetPasswordTokenCheckAction: (state, action) => {
+      state.resetPassword = { ...state.resetPassword, tokenValid: action.payload };
+    },
+    resetPasswordResetAction: (state) => {
+      state.resetPassword = { loading: false, success: false, error: null, tokenValid: null };
+    },
+
+    verifyEmailStartAction: (state) => {
+      state.emailVerification = { loading: true, success: false, error: null, status: 'verifying' };
+    },
+    verifyEmailSuccessAction: (state) => {
+      state.emailVerification = { loading: false, success: true, error: null, status: 'success' };
+    },
+    verifyEmailFailureAction: (state, action) => {
+      state.emailVerification = { loading: false, success: false, error: action.payload, status: 'failed' };
+    },
+    verifyEmailExpiredAction: (state) => {
+      state.emailVerification = { loading: false, success: false, error: 'Verification link has expired', status: 'expired' };
+    },
+    verifyEmailResetAction: (state) => {
+      state.emailVerification = { loading: false, success: false, error: null, status: 'idle' };
+    },
   },
 });
 
 export const {
+  hydrateAuthAction,
   loginStartAction,
   loginSuccessAction,
   loginFailureAction,
@@ -88,12 +141,30 @@ export const {
   registerSuccessAction,
   registerFailureAction,
   clearErrorAction,
+  forgotPasswordStartAction,
+  forgotPasswordSuccessAction,
+  forgotPasswordFailureAction,
+  forgotPasswordResetAction,
+  resetPasswordStartAction,
+  resetPasswordSuccessAction,
+  resetPasswordFailureAction,
+  resetPasswordTokenCheckAction,
+  resetPasswordResetAction,
+  verifyEmailStartAction,
+  verifyEmailSuccessAction,
+  verifyEmailFailureAction,
+  verifyEmailExpiredAction,
+  verifyEmailResetAction,
 } = authSlice.actions;
 
 export const selectAuth = (state) => state.auth;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectUser = (state) => state.auth.user;
+export const selectHydrated = (state) => state.auth.hydrated;
 export const selectAuthLoading = (state) => state.auth.loading;
 export const selectAuthError = (state) => state.auth.error;
+export const selectForgotPassword = (state) => state.auth.forgotPassword;
+export const selectResetPassword = (state) => state.auth.resetPassword;
+export const selectEmailVerification = (state) => state.auth.emailVerification;
 
 export default authSlice.reducer;

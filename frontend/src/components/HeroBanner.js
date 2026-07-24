@@ -57,11 +57,11 @@ const SLIDES = [
 const AUTOPLAY_MS = 5000;
 
 export default function HeroBanner() {
-  const [index, setIndex]   = useState(0);
+  const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const timerRef            = useRef(null);
+  const timerRef = useRef(null);
   const progressRef = useRef(null);
-  const startTimeRef            = useRef(null);
+  const startTimeRef = useRef(null);
 
   // Advance to next slide
   const goTo = useCallback((i) => {

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ArrowRight, ScanSearch } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
@@ -14,22 +14,10 @@ export default function ProductCard({ product }) {
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToast } = useToast();
 
-  const handleAddToCart = (e) => {
+  const handleQuickView = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (product) {
-      addToCart({
-        id: product.id,
-        title: product.title,
-        price: product.salePrice || product.price,
-        image: product.images?.[0],
-        selectedSize: product.sizes?.[0] || null,
-        selectedColor: product.colors?.[0] || null,
-        slug: product.slug,
-        quantity: 1,
-      });
-      addToast('Added to bag', 'success');
-    }
+    // Quick view / scan functionality
   };
 
   const handleWishlistToggle = (e) => {
@@ -47,7 +35,7 @@ export default function ProductCard({ product }) {
   return (
     <Link href={`/product/${slug}`} className="group block rounded-3xl md:rounded-[20px] max-md:rounded-[16px] transition-all duration-300 ease hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
       <div className="relative aspect-[3/4] overflow-hidden bg-noor-cream rounded-3xl md:rounded-[20px] max-md:rounded-[16px]">
-          {product.images?.[0] && !imageError ? (
+        {product.images?.[0] && !imageError ? (
           <Image
             src={product.images[0]}
             alt={product.title || 'Product image'}
@@ -73,27 +61,33 @@ export default function ProductCard({ product }) {
           </span>
         ) : null}
 
-        <button
-          onClick={handleWishlistToggle}
-          className="absolute top-3 right-3 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity rounded-full w-8 h-8"
-        >
-          <Heart
-            size={18}
-            className={isWishlisted(product.id) ? 'fill-red-500 text-red-500' : 'text-noor-black'}
-          />
-        </button>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 z-10">
-          <button
-            onClick={handleAddToCart}
-            className="w-full py-3 bg-noor-black text-white ty-button hover:bg-noor-black/90 transition-colors flex items-center justify-center gap-2 rounded-2xl"
-          >
-            <ShoppingBag size={16} />
-            ADD TO CART
-          </button>
+        <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 z-10">
+          <div className="flex items-center bg-white/95 backdrop-blur-sm rounded-xl shadow-lg px-4 py-2.5">
+            <span className="flex items-center gap-2 text-sm font-medium text-zinc-800 flex-1">
+              View Details
+              <ArrowRight size={16} strokeWidth={2} />
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleQuickView}
+                className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-zinc-100 transition-colors"
+                aria-label="Quick view"
+              >
+                <ScanSearch size={20} className="text-zinc-500" />
+              </button>
+              <button
+                onClick={handleWishlistToggle}
+                className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-zinc-100 transition-colors"
+                aria-label="Add to wishlist"
+              >
+                <Heart
+                  size={20}
+                  className={isWishlisted(product.id) ? 'fill-red-500 text-red-500' : 'text-zinc-400 hover:text-red-400 transition-colors'}
+                />
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 pointer-events-none" />
       </div>
 
       <div className="mt-4 px-1">

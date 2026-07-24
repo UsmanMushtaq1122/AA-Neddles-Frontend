@@ -17,7 +17,6 @@ const customerCareLinks = [
 ];
 
 const socialLinks = [
-  { label: 'Youtube', href: 'https://youtube.com', icon: 'youtube' },
   { label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
   { label: 'Facebook', href: 'https://facebook.com', icon: 'facebook' },
   { label: 'TikTok', href: 'https://tiktok.com', icon: 'tiktok' },
@@ -28,12 +27,6 @@ function SocialIcon({ href, label, icon }) {
 
   const renderIcon = () => {
     switch (icon) {
-      case 'youtube':
-        return (
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={iconClass}>
-            <path d="M23.5 6.2c-.3-1.2-1.3-2.2-2.5-2.5C19 3.2 12 3.2 12 3.2s-7 0-9 .5c-1.2.3-2.2 1.3-2.5 2.5C0 8.2 0 12 0 12s0 3.8.5 5.8c.3 1.2 1.3 2.2 2.5 2.5 2 .5 9 .5 9 .5s7 0 9-.5c1.2-.3 2.2-1.3 2.5-2.5.5-2 .5-5.8.5-5.8s0-3.8-.5-5.8ZM9.6 15.2V8.8L15.8 12l-6.2 3.2Z" />
-          </svg>
-        );
       case 'instagram':
         return (
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={iconClass} stroke="currentColor" strokeWidth="1.5">
@@ -121,7 +114,7 @@ export default function Footer() {
         <div className="mt-12 border-t border-noor-lightgray pt-6 md:mt-16 md:pt-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <p className="font-body text-xs md:text-sm text-noor-muted">
-              &copy; {new Date().getFullYear()}, AA Neddles Designs (PK) Powered by Shopify
+              &copy; {new Date().getFullYear()}, AA Neddles Designs
             </p>
 
             <div className="flex items-center gap-6 md:gap-7">

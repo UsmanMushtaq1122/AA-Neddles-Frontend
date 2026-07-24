@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, ShoppingBag, Heart, User, Plus, Minus } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, Heart, User, Plus, Minus, LogOut, Package, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
+import LogoutModal from '@/components/LogoutModal';
 
 /* ── Desktop nav links ── */
 const NAV_LINKS = [];
@@ -52,14 +54,31 @@ const DRAWER_CATEGORIES = {
   ],
 };
 
+function UserAvatar({ name, size = 32 }) {
+  const initial = name ? name.charAt(0).toUpperCase() : '?';
+  return (
+    <div
+      className="bg-noor-maroon text-white rounded-full flex items-center justify-center font-medium"
+      style={{ width: size, height: size, fontSize: size * 0.4 }}
+    >
+      {initial}
+    </div>
+  );
+}
+
 export default function Header() {
   const [drawerOpen, setDrawerOpen]     = useState(false);
   const [activeTab, setActiveTab]       = useState('women');
   const [expandedRow, setExpandedRow]   = useState(null);
   const [isScrolled, setIsScrolled]     = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const { items, openCart } = useCart();
+  const { isAuthenticated, user, logout, hydrated } = useAuth();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -78,19 +97,37 @@ export default function Header() {
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen]);
 
+  useEffect(() => {
+    setUserDropdownOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const toggleRow = (label) =>
     setExpandedRow((prev) => (prev === label ? null : label));
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    await new Promise((r) => setTimeout(r, 600));
+    setLoggingOut(false);
+    setLogoutModalOpen(false);
+    setUserDropdownOpen(false);
+    logout();
+  };
 
   const categories = DRAWER_CATEGORIES[activeTab] || [];
 
   return (
     <>
-      {/* ══════════════════════════════════════════
-          FIXED HEADER SHELL
-      ══════════════════════════════════════════ */}
       <div className={`site-header-wrap ${isScrolled ? 'is-scrolled' : ''} ${!isHomePage ? 'is-solid' : ''}`}>
-
-
 
         {/* Top bar */}
         <div className="site-header-topbar topbar">
@@ -155,9 +192,83 @@ export default function Header() {
               <Link href="/wishlist" className="hdr-icon-btn" aria-label="Wishlist">
                 <Heart size={20} strokeWidth={1.5} />
               </Link>
-              <Link href="/profile" className="hdr-icon-btn" aria-label="Account">
-                <User size={20} strokeWidth={1.5} />
-              </Link>
+
+              {/* User area */}
+              {hydrated && isAuthenticated ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="hdr-icon-btn flex items-center gap-1.5"
+                    aria-label="Account menu"
+                    aria-expanded={userDropdownOpen}
+                    aria-haspopup="true"
+                  >
+                    <UserAvatar name={user?.name} size={26} />
+                    <ChevronDown
+                      size={14}
+                      strokeWidth={1.5}
+                      className={`hidden md:block text-noor-gray transition-transform duration-200 ${userDropdownOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {userDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full mt-2 w-60 bg-white border border-zinc-100 shadow-lg z-50"
+                      >
+                        <div className="px-4 py-3 border-b border-zinc-100">
+                          <p className="ty-body-sm font-medium text-noor-black truncate">{user?.name}</p>
+                          <p className="ty-micro text-noor-gray truncate">{user?.email}</p>
+                        </div>
+                        <div className="py-1">
+                          <Link
+                            href="/profile"
+                            className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors"
+                          >
+                            <User size={16} strokeWidth={1.5} />
+                            My Profile
+                          </Link>
+                          <Link
+                            href="/orders"
+                            className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors"
+                          >
+                            <Package size={16} strokeWidth={1.5} />
+                            My Orders
+                          </Link>
+                          <Link
+                            href="/wishlist"
+                            className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors"
+                          >
+                            <Heart size={16} strokeWidth={1.5} />
+                            Wishlist
+                          </Link>
+                        </div>
+                        <div className="border-t border-zinc-100 py-1">
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              setLogoutModalOpen(true);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-gray hover:bg-zinc-50 hover:text-noor-black transition-colors"
+                          >
+                            <LogOut size={16} strokeWidth={1.5} />
+                            Sign out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link href="/login" className="hdr-icon-btn" aria-label="Sign in">
+                  <User size={20} strokeWidth={1.5} />
+                </Link>
+              )}
+
               <button onClick={openCart} className="hdr-icon-btn relative" aria-label="Cart">
                 <ShoppingBag size={20} strokeWidth={1.5} />
                 {items?.length > 0 && (
@@ -175,7 +286,6 @@ export default function Header() {
       <AnimatePresence>
         {drawerOpen && (
           <>
-            {/* Backdrop — blurred, darkened right side */}
             <motion.div
               key="drawer-backdrop"
               initial={{ opacity: 0 }}
@@ -187,7 +297,6 @@ export default function Header() {
               aria-hidden="true"
             />
 
-            {/* Drawer panel */}
             <motion.div
               key="drawer-panel"
               initial={{ x: '-100%' }}
@@ -199,7 +308,7 @@ export default function Header() {
               aria-modal="true"
               aria-label="Navigation menu"
             >
-              {/* ── Drawer header: logo + close ── */}
+              {/* Drawer header */}
               <div className="drawer-head">
                 <Link href="/" className="drawer-logo" onClick={closeDrawer}>
                   AA Neddles.
@@ -213,7 +322,7 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* ── Category tabs ── */}
+              {/* Category tabs */}
               <div className="drawer-tabs" role="tablist">
                 {DRAWER_TABS.map((tab, i) => (
                   <span key={tab.id} style={{ display: 'contents' }}>
@@ -235,10 +344,10 @@ export default function Header() {
                 ))}
               </div>
 
-              {/* ── Section label ── */}
+              {/* Section label */}
               <div className="drawer-section-label">BEST SELLERS</div>
 
-              {/* ── Category rows ── */}
+              {/* Category rows */}
               <nav className="drawer-nav" aria-label="Category navigation">
                 {categories.map((cat) => (
                   <div key={cat.label} className="drawer-row-wrap">
@@ -282,17 +391,44 @@ export default function Header() {
                 ))}
               </nav>
 
-              {/* ── Bottom links ── */}
+              {/* Bottom links */}
               <div className="drawer-footer">
                 <Link href="/order-tracking" className="drawer-footer-link" onClick={closeDrawer}>Order Tracking</Link>
                 <Link href="/store-locations" className="drawer-footer-link" onClick={closeDrawer}>Store Locations</Link>
-                <Link href="/profile"         className="drawer-footer-link" onClick={closeDrawer}>My Account</Link>
+
+                {isAuthenticated ? (
+                  <>
+                    <Link href="/profile" className="drawer-footer-link" onClick={closeDrawer}>My Account</Link>
+                    <Link href="/orders" className="drawer-footer-link" onClick={closeDrawer}>My Orders</Link>
+                    <Link href="/wishlist" className="drawer-footer-link" onClick={closeDrawer}>Wishlist</Link>
+                    <button
+                      className="drawer-footer-link text-left w-full"
+                      onClick={() => {
+                        closeDrawer();
+                        setLogoutModalOpen(true);
+                      }}
+                    >
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login" className="drawer-footer-link" onClick={closeDrawer}>Sign in</Link>
+                    <Link href="/register" className="drawer-footer-link" onClick={closeDrawer}>Create account</Link>
+                  </>
+                )}
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
+      <LogoutModal
+        isOpen={logoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+        loading={loggingOut}
+      />
     </>
   );
 }

@@ -40,6 +40,8 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const similarProductsRef = useRef(null);
   const topTrendingRef = useRef(null);
   const [customersAlsoBought, setCustomersAlsoBought] = useState([]);
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [topTrendingProducts, setTopTrendingProducts] = useState([]);
 
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -65,6 +67,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
       );
       setCustomersAlsoBought(
         shuffleArray(productsData.filter((p) => p.id !== found.id)).slice(0, 10)
+      );
+      setSimilarProducts(
+        shuffleArray(
+          productsData.filter((p) => p.id !== found.id && p.category === found.category)
+        ).slice(0, 10)
+      );
+      setTopTrendingProducts(
+        shuffleArray(productsData.filter((p) => p.isTrending && p.id !== found.id)).slice(0, 10)
       );
 
       try {
@@ -94,7 +104,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
     return (
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         <div className="animate-skeleton">
-            <div className="h-4 bg-zinc-200 rounded w-48 mb-8" />
+          <div className="h-4 bg-zinc-200 rounded w-48 mb-8" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="aspect-[3/4] bg-zinc-200" />
             <div className="space-y-4">
@@ -168,9 +178,9 @@ export default function ProductPageContent({ slug: initialSlug }) {
 
   const subcategoryLabel = product.subcategory
     ? product.subcategory
-        .split('-')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ')
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ')
     : null;
 
   // Build a SKU-like article number from slug + selected size
@@ -257,9 +267,8 @@ export default function ProductPageContent({ slug: initialSlug }) {
                         }
                       }}
                       aria-label={`Go to image ${idx + 1}`}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        isActive ? 'bg-noor-black w-4' : 'bg-zinc-300'
-                      }`}
+                      className={`w-2 h-2 rounded-full transition-all ${isActive ? 'bg-noor-black w-4' : 'bg-zinc-300'
+                        }`}
                     />
                   );
                 })}
@@ -284,9 +293,8 @@ export default function ProductPageContent({ slug: initialSlug }) {
                         }
                       }}
                       aria-label={`View image ${idx + 1}`}
-                      className={`flex-shrink-0 w-16 h-20 overflow-hidden transition-all border-2 ${
-                        isActive ? 'border-noor-black opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
-                      }`}
+                      className={`flex-shrink-0 w-16 h-20 overflow-hidden transition-all border-2 ${isActive ? 'border-noor-black opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
+                        }`}
                     >
                       <Image
                         src={img}
@@ -367,16 +375,16 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     className="text-[12px] text-zinc-500 flex items-center gap-1.5 hover:text-noor-black transition-colors uppercase tracking-[0.06em]"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M22 7L2 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M22 17L2 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M6 7V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M10 7V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M14 7V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M18 7V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M6 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M10 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M14 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M18 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M22 7L2 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M22 17L2 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M6 7V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M10 7V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M14 7V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M18 7V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M6 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M10 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M14 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M18 17V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                     <span className="font-semibold">SIZE CHART</span>
                   </button>
@@ -387,9 +395,8 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       key={size}
                       type="button"
                       onClick={() => setSelectedSize(size)}
-                       className={`min-w-[52px] px-4 py-2.5 text-[13px] font-medium border transition-all ${
-                        selectedSize === size ? 'bg-noor-black text-white border-noor-black' : 'border-zinc-300 text-zinc-700 hover:border-noor-black hover:text-noor-black'
-                      }`}
+                      className={`min-w-[52px] px-4 py-2.5 text-[13px] font-medium border transition-all ${selectedSize === size ? 'bg-noor-black text-white border-noor-black' : 'border-zinc-300 text-zinc-700 hover:border-noor-black hover:text-noor-black'
+                        }`}
                       aria-pressed={selectedSize === size}
                     >
                       {size}
@@ -408,7 +415,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
-                   className="w-11 h-11 grid place-items-center bg-zinc-200 text-zinc-600 disabled:opacity-40 transition-colors hover:bg-zinc-300"
+                  className="w-11 h-11 grid place-items-center bg-zinc-200 text-zinc-600 disabled:opacity-40 transition-colors hover:bg-zinc-300"
                   aria-label="Decrease quantity"
                 >
                   <Minus size={16} />
@@ -417,7 +424,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 <button
                   onClick={() => setQuantity(Math.min(MAX_QUANTITY, quantity + 1))}
                   disabled={quantity >= MAX_QUANTITY}
-                   className="w-11 h-11 grid place-items-center bg-noor-black text-white disabled:opacity-40 transition-colors hover:bg-zinc-800"
+                  className="w-11 h-11 grid place-items-center bg-noor-black text-white disabled:opacity-40 transition-colors hover:bg-zinc-800"
                   aria-label="Increase quantity"
                 >
                   <Plus size={16} />
@@ -434,7 +441,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     toggleWishlist(product.id);
                     addToast(wasWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
                   }}
-                   className="flex-1 py-4 border-2 border-noor-black text-noor-black text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-3 hover:bg-zinc-50 transition-all"
+                  className="flex-1 py-4 border-2 border-noor-black text-noor-black text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-3 hover:bg-zinc-50 transition-all"
                   aria-label={isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
                   <Heart size={18} />
@@ -443,7 +450,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
 
                 <button
                   onClick={handleAddToBag}
-                   className="flex-1 py-4 bg-noor-black text-white text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-3 hover:bg-noor-maroon transition-all"
+                  className="flex-1 py-4 bg-noor-black text-white text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-3 hover:bg-noor-maroon transition-all"
                   aria-label="Add to cart"
                 >
                   <ShoppingBag size={18} />
@@ -452,7 +459,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
               </div>
               <button
                 onClick={handleBuyNow}
-                 className="w-full py-4 bg-noor-maroon text-white text-[11px] font-semibold uppercase tracking-[0.06em] hover:bg-noor-maroon/90 transition-all"
+                className="w-full py-4 bg-noor-maroon text-white text-[11px] font-semibold uppercase tracking-[0.06em] hover:bg-noor-maroon/90 transition-all"
                 aria-label="Buy now"
               >
                 BUY IT NOW
@@ -510,7 +517,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 aria-label="Scroll next"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>
@@ -528,107 +535,101 @@ export default function ProductPageContent({ slug: initialSlug }) {
           </section>
         )}
 
-        {/* ── Similar Products ── */}
-        <section className="mt-10 md:mt-12 border-t border-zinc-100 pt-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="ty-h3 text-noor-black">Similar Products</h2>
-            <button
-              onClick={() => {
-                if (similarProductsRef.current) {
-                  const itemWidth = similarProductsRef.current.firstElementChild?.clientWidth || 300;
-                  similarProductsRef.current.scrollBy({ left: itemWidth + 16, behavior: 'smooth' });
-                }
-              }}
-              className="hidden md:flex items-center justify-center w-10 h-10 hover:bg-zinc-100 rounded-full transition-colors"
-              aria-label="Scroll next"
+        {similarProducts.length > 0 && (
+          <section className="mt-10 md:mt-12 border-t border-zinc-100 pt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="ty-h3 text-noor-black">Similar Products</h2>
+              <button
+                onClick={() => {
+                  if (similarProductsRef.current) {
+                    const itemWidth = similarProductsRef.current.firstElementChild?.clientWidth || 300;
+                    similarProductsRef.current.scrollBy({ left: itemWidth + 16, behavior: 'smooth' });
+                  }
+                }}
+                className="hidden md:flex items-center justify-center w-10 h-10 hover:bg-zinc-100 rounded-full transition-colors"
+                aria-label="Scroll next"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+
+            <div
+              ref={similarProductsRef}
+              className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </div>
+              {similarProducts.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/product/${item.slug}`}
+                  className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer block"
+                >
+                  <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
+                    <Image
+                      src={item.images[0]}
+                      alt={item.title}
+                      width={400}
+                      height={533}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                  <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
+                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{item.price.toLocaleString()}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
-          <div
-            ref={similarProductsRef}
-            className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4"
-          >
-            {[
-              { id: 'sp1', image: '/images/AA1.jpeg',   title: '2 Piece Blended Suit',          price: 12990 },
-              { id: 'sp2', image: '/images/AA2.jpeg',   title: 'Embroidered Blended Kurta',     price: 8790  },
-              { id: 'sp3', image: '/images/AA3.jpeg',   title: '2 Piece Cotton Karandi Suit',   price: 17990 },
-              { id: 'sp4', image: '/images/AA4.jpeg',   title: 'Embroidered Abalone Kurta',     price: 9990  },
-              { id: 'sp5', image: '/images/AA5.jpeg',   title: '3 Piece Markhor (Polo) Wool Suit', price: 27990 },
-              { id: 'sp6', image: '/images/AA6.jpeg',   title: 'Classic Khaddar Suit',          price: 11990 },
-              { id: 'sp7', image: '/images/AA7.jpeg',   title: 'Luxury Pret Unstitched',        price: 6990  },
-            ].map((item) => (
-              <div key={item.id} className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer">
-                <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    width={400}
-                    height={533}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                </div>
-                <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
-                <p className="ty-body-sm text-zinc-500 mt-1">Rs.{item.price.toLocaleString()}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {topTrendingProducts.length > 0 && (
+          <section className="mt-10 md:mt-12 border-t border-zinc-100 pt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="ty-h3 text-noor-black">Top Trending Products</h2>
+              <button
+                onClick={() => {
+                  if (topTrendingRef.current) {
+                    const itemWidth = topTrendingRef.current.firstElementChild?.clientWidth || 300;
+                    topTrendingRef.current.scrollBy({ left: itemWidth + 16, behavior: 'smooth' });
+                  }
+                }}
+                className="hidden md:flex items-center justify-center w-10 h-10 hover:bg-zinc-100 rounded-full transition-colors"
+                aria-label="Scroll next"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
 
-        {/* ── Top Trending Products ── */}
-        <section className="mt-10 md:mt-12 border-t border-zinc-100 pt-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="ty-h3 text-noor-black">Top Trending Products</h2>
-            <button
-              onClick={() => {
-                if (topTrendingRef.current) {
-                  const itemWidth = topTrendingRef.current.firstElementChild?.clientWidth || 300;
-                  topTrendingRef.current.scrollBy({ left: itemWidth + 16, behavior: 'smooth' });
-                }
-              }}
-              className="hidden md:flex items-center justify-center w-10 h-10 hover:bg-zinc-100 rounded-full transition-colors"
-              aria-label="Scroll next"
+            <div
+              ref={topTrendingRef}
+              className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </div>
-
-          <div
-            ref={topTrendingRef}
-            className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4"
-          >
-            {[
-              { id: 'tt1', image: '/images/AA8.jpeg',          title: 'Rezan',                          price: 150000 },
-              { id: 'tt2', image: '/images/AA9.jpeg',          title: '3 Piece Embroidered Lawn Suit',  price: 13590 },
-              { id: 'tt3', image: '/images/AA10.jpeg',         title: 'Clutch | MBG-W24-09',            price: 11990 },
-              { id: 'tt4', image: '/images/AA11.jpeg',         title: 'Alora',                          price: 330000 },
-              { id: 'tt5', image: '/images/Hero2.jpeg',        title: 'Ring',                           price: 5490  },
-              { id: 'tt6', image: '/images/Hero3.jpeg',        title: 'Luxury Lawn 3 Piece',            price: 8990  },
-              { id: 'tt7', image: '/images/Summer1.jpeg',      title: 'Summer Breeze Suit',             price: 7490  },
-            ].map((item) => (
-              <div key={item.id} className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer">
-                <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    width={400}
-                    height={533}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                </div>
-                <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
-                <p className="ty-body-sm text-zinc-500 mt-1">Rs.{item.price.toLocaleString()}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+              {topTrendingProducts.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/product/${item.slug}`}
+                  className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer block"
+                >
+                  <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
+                    <Image
+                      src={item.images[0]}
+                      alt={item.title}
+                      width={400}
+                      height={533}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                  <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
+                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{item.price.toLocaleString()}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {related.length > 0 && (
           <section className="mt-10 md:mt-12 border-t border-zinc-100 pt-8">
@@ -647,7 +648,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 aria-label="Scroll next"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>
@@ -682,7 +683,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 aria-label="Scroll next"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>

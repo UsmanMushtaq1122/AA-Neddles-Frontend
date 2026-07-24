@@ -1,21 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { SlidersHorizontal, ChevronRight, ArrowUpDown } from "lucide-react";
 import productsData from "@/features/products/products.json";
 import ProductGrid from "@/components/ProductGrid";
 import FilterSidebar from "@/components/FilterSidebar";
-
-const sortOptions = [
-  { label: "Featured", value: "featured" },
-  { label: "Best Selling", value: "best-selling" },
-  { label: "New Arrivals", value: "new-arrivals" },
-  { label: "Price: Low to High", value: "price-asc" },
-  { label: "Price: High to Low", value: "price-desc" },
-  { label: "A-Z", value: "name-asc" },
-  { label: "Z-A", value: "name-desc" },
-];
 
 const subCategoryMap = {
   unstitched: [
@@ -78,15 +68,24 @@ const matchesFilters = (product, filters) => {
   return true;
 };
 
+const sortOptions = [
+  { label: "Default", value: "default" },
+  { label: "Price: Low to High", value: "price-asc" },
+  { label: "Price: High to Low", value: "price-desc" },
+  { label: "Newest First", value: "newest" },
+  { label: "Name: A to Z", value: "name-asc" },
+];
+
 export default function CategoryPageContent({ slug }) {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState("featured");
-  const [showSort, setShowSort] = useState(false);
   const [columns, setColumns] = useState(3);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useState({});
   const [activeTab, setActiveTab] = useState(null);
+  const [sortBy, setSortBy] = useState("default");
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef(null);
 
   const categoryName =
     slug === "all"
@@ -100,7 +99,19 @@ export default function CategoryPageContent({ slug }) {
 
   useEffect(() => {
     setActiveTab(null);
+    setSortBy("default");
   }, [slug]);
+
+  // Close sort dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (sortRef.current && !sortRef.current.contains(e.target)) {
+        setSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -114,17 +125,6 @@ export default function CategoryPageContent({ slug }) {
     setLoading(false);
   }, [slug]);
 
-  useEffect(() => {
-    if (!showSort) return;
-    const handleClick = (e) => {
-      if (!e.target.closest('.sort-dropdown')) {
-        setShowSort(false);
-      }
-    };
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, [showSort]);
-
   const products = useMemo(() => {
     let result = [...allProducts];
     if (activeTab) {
@@ -137,30 +137,19 @@ export default function CategoryPageContent({ slug }) {
     }
     result = result.filter((p) => matchesFilters(p, filters));
 
-    switch (sort) {
-      case "price-asc":
-        result.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
-        break;
-      case "price-desc":
-        result.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
-        break;
-      case "new-arrivals": {
-        const productIds = productsData.map((p) => p.id);
-        result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || productIds.indexOf(a.id) - productIds.indexOf(b.id));
-        break;
-      }
-      case "name-asc":
-        result.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-        break;
-      case "name-desc":
-        result.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
-        break;
-      default:
-        break;
+    // Apply sorting
+    if (sortBy === "price-asc") {
+      result.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
+    } else if (sortBy === "price-desc") {
+      result.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
+    } else if (sortBy === "newest") {
+      result.sort((a, b) => (b.id || 0) - (a.id || 0));
+    } else if (sortBy === "name-asc") {
+      result.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     return result;
-  }, [allProducts, sort, filters, activeTab]);
+  }, [allProducts, filters, activeTab, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12 pt-[115px]">
@@ -245,28 +234,37 @@ export default function CategoryPageContent({ slug }) {
               </button>
             </div>
 
-            <div className="relative sort-dropdown">
+            {/* Sort Button */}
+            <div className="relative" ref={sortRef}>
               <button
-                onClick={(e) => { e.stopPropagation(); setShowSort(!showSort); }}
-                className="flex items-center gap-[10px] bg-[#F5F5F5] rounded-[12px] h-[52px] px-[24px] cursor-pointer transition-all duration-300 ease-in-out hover:bg-[#e5e5e5] hover:shadow-sm font-body text-sm font-medium text-noor-black"
+                onClick={() => setSortOpen((prev) => !prev)}
+                className={`inline-flex items-center gap-2 border px-4 py-2 font-body text-sm font-medium transition-colors ${
+                  sortOpen
+                    ? 'border-noor-black bg-zinc-50 text-noor-black'
+                    : 'border-zinc-200 bg-white text-noor-black hover:border-zinc-400 hover:bg-zinc-50'
+                }`}
                 aria-label="Sort products"
               >
-                <ArrowUpDown size={16} strokeWidth={2} />
+                <ArrowUpDown size={16} />
                 <span>Sort</span>
               </button>
-              {showSort && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-zinc-200 rounded-[12px] shadow-lg z-50 overflow-hidden py-2">
-                  {sortOptions.map((opt) => (
+
+              {sortOpen && (
+                <div className="absolute right-0 top-full mt-1 z-50 min-w-[200px] bg-white border border-zinc-200 shadow-lg py-1">
+                  {sortOptions.map((option) => (
                     <button
-                      key={opt.value}
-                      onClick={() => { setSort(opt.value); setShowSort(false); }}
-                      className={`block w-full text-left px-4 py-2.5 font-body text-sm transition-colors ${
-                        sort === opt.value
-                          ? 'bg-zinc-50 text-noor-black font-medium'
+                      key={option.value}
+                      onClick={() => {
+                        setSortBy(option.value);
+                        setSortOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 font-body text-sm transition-colors ${
+                        sortBy === option.value
+                          ? 'bg-zinc-100 text-noor-black font-medium'
                           : 'text-zinc-600 hover:bg-zinc-50 hover:text-noor-black'
                       }`}
                     >
-                      {opt.label}
+                      {option.label}
                     </button>
                   ))}
                 </div>
