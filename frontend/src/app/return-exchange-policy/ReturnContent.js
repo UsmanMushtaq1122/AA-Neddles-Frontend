@@ -52,12 +52,12 @@ export default function ReturnContent() {
 
       {/* Main Policy Intro */}
       <section>
-        <div className="bg-red-50 border border-red-200 p-6 md:p-8 mb-12">
+        <div className="bg-noor-gold/10 border border-noor-gold/25 p-6 md:p-8 mb-12">
           <div className="flex gap-4 items-start">
-            <div className="w-10 h-10 bg-red-100 flex items-center justify-center shrink-0">
-              <Ban size={20} className="text-red-600" />
+            <div className="w-10 h-10 bg-noor-gold/20 flex items-center justify-center shrink-0">
+              <Ban size={20} className="text-noor-gold" />
             </div>
-            <p className="ty-body-sm font-medium text-red-800">
+            <p className="ty-body-sm font-medium text-noor-black">
               AA Neddles does not offer any &lsquo;Exchange&rsquo; or &lsquo;Return&rsquo; for any of products.
             </p>
           </div>
@@ -112,11 +112,11 @@ export default function ReturnContent() {
         </h2>
         <div className="space-y-3">
           {nonReturnableItems.map((item, i) => (
-            <div key={i} className="flex gap-4 bg-red-50 border border-red-200 p-5 items-start">
-              <div className="w-10 h-10 bg-red-100 flex items-center justify-center shrink-0">
-                <item.icon size={20} className="text-red-600" />
+            <div key={i} className="flex gap-4 bg-noor-gold/10 border border-noor-gold/25 p-5 items-start">
+              <div className="w-10 h-10 bg-noor-gold/20 flex items-center justify-center shrink-0">
+                <item.icon size={20} className="text-noor-gold" />
               </div>
-              <p className="ty-body-sm text-red-800 pt-1.5">{item.text}</p>
+              <p className="ty-body-sm text-noor-black pt-1.5">{item.text}</p>
             </div>
           ))}
         </div>
@@ -156,25 +156,25 @@ export default function ReturnContent() {
 
       {/* Contact Support */}
       <section id="contact" className="mt-14 md:mt-20">
-        <div className="bg-gradient-to-br from-noor-maroon to-noor-maroon/90 p-8 md:p-12 text-white text-center">
-          <Mail size={40} className="mx-auto mb-4 opacity-80" />
+        <div className="bg-gradient-to-br from-noor-gold via-noor-gold/90 to-noor-gold/75 p-8 md:p-12 text-noor-black text-center">
+          <Mail size={40} className="mx-auto mb-4 opacity-80 text-noor-black/80" />
           <h2 className="ty-h2 mb-3">
             Need Help With a Return?
           </h2>
-          <p className="text-white/80 ty-body-sm max-w-lg mx-auto mb-8">
+          <p className="text-noor-black/75 ty-body-sm max-w-lg mx-auto mb-8">
             Our customer support team is ready to assist you with returns, exchanges, and refunds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="mailto:help@aaneddles.com"
-              className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-noor-maroon ty-button hover:bg-zinc-100 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-noor-black ty-button hover:bg-zinc-100 transition-colors"
             >
               <Mail size={14} />
               Email Returns
             </a>
             <a
               href="https://wa.me/923154001914"
-              className="inline-flex items-center justify-center gap-2 px-8 py-3 border border-white/30 text-white ty-button hover:bg-white/10 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3 border border-noor-black/20 text-noor-black ty-button hover:bg-noor-black/5 transition-colors"
             >
               <MessageSquare size={14} />
               WhatsApp Support

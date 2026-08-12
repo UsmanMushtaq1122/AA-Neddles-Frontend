@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect, useMemo } from 'react';
 import { Truck, Clock, Search, MapPin, AlertTriangle, Info, PackageCheck, ShieldCheck } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
+import { settingsApi, DEFAULT_SHIPPING } from '@/services/settings';
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
@@ -38,31 +40,9 @@ const processingSteps = [
   },
 ];
 
-const shippingMethods = [
-  { method: 'Standard Domestic', delivery: '3–5 business days', cost: 'Free (orders > Rs.5,000)\nRs. 150 (below Rs.5,000)' },
-  { method: 'Express Domestic', delivery: '1–2 business days', cost: 'Rs. 350' },
+const internationalMethods = [
   { method: 'Standard International', delivery: '7–14 business days', cost: '$15 USD' },
   { method: 'Express International', delivery: '3–5 business days', cost: '$30 USD' },
-];
-
-const deliveryAreas = [
-  {
-    title: 'Domestic Shipping',
-    items: [
-      'We ship to all cities across Pakistan including Lahore, Karachi, Islamabad, and more.',
-      'Free shipping on all orders above Rs. 5,000 within Pakistan.',
-      'Standard delivery: 3–5 business days to major cities; 5–7 days to remote areas.',
-    ],
-  },
-  {
-    title: 'International Shipping',
-    items: [
-      'We offer worldwide shipping to over 50 countries.',
-      'International orders are shipped via DHL, FedEx, or local postal partners.',
-      'Customs duties and taxes are the responsibility of the customer.',
-      'Delivery times vary by destination and shipping method selected.',
-    ],
-  },
 ];
 
 const trackingSteps = [
@@ -99,6 +79,50 @@ const importantNotes = [
 ];
 
 export default function ShippingContent() {
+  const [shipping, setShipping] = useState(DEFAULT_SHIPPING);
+
+  useEffect(() => {
+    settingsApi.getShipping().then(setShipping);
+  }, []);
+
+  const freeThreshold = Number(shipping.freeShippingThreshold);
+
+  const shippingMethods = useMemo(
+    () => [
+      {
+        method: 'Standard Domestic',
+        delivery: '3–5 business days',
+        cost: freeThreshold > 0 ? `Free (orders over Rs.${freeThreshold.toLocaleString()})\nRs. ${shipping.shippingCost} (below Rs.${freeThreshold.toLocaleString()})` : `Rs. ${shipping.shippingCost}`,
+      },
+      { method: 'Express Domestic', delivery: '1–2 business days', cost: `Rs. ${shipping.expressShippingCost}` },
+      ...internationalMethods,
+    ],
+    [freeThreshold, shipping.shippingCost, shipping.expressShippingCost]
+  );
+
+  const deliveryAreas = useMemo(
+    () => [
+      {
+        title: 'Domestic Shipping',
+        items: [
+          'We ship to all cities across Pakistan including Lahore, Karachi, Islamabad, and more.',
+          freeThreshold > 0 ? `Free shipping on all orders above Rs. ${freeThreshold.toLocaleString()} within Pakistan.` : 'Free standard shipping within Pakistan.',
+          'Standard delivery: 3–5 business days to major cities; 5–7 days to remote areas.',
+        ],
+      },
+      {
+        title: 'International Shipping',
+        items: [
+          'We offer worldwide shipping to over 50 countries.',
+          'International orders are shipped via DHL, FedEx, or local postal partners.',
+          'Customs duties and taxes are the responsibility of the customer.',
+          'Delivery times vary by destination and shipping method selected.',
+        ],
+      },
+    ],
+    [freeThreshold]
+  );
+
   return (
     <PageLayout title="Shipping Information" breadcrumbs={breadcrumbs}>
       {/* Order Processing */}
@@ -262,7 +286,7 @@ export default function ShippingContent() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="mailto:hello@aaneddles.com"
-            className="inline-flex items-center justify-center px-8 py-3 bg-noor-maroon text-white ty-button hover:bg-noor-maroon/90 transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 bg-noor-black text-white ty-button hover:bg-noor-gold transition-colors"
           >
             Email Support
           </a>

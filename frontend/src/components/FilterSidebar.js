@@ -1,240 +1,172 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useMemo } from 'react';
 import { X, ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-const PRICE_RANGES = [
-  'Under Rs. 5,000',
-  'Rs. 5,000 - Rs. 15,000',
-  'Rs. 15,000 - Rs. 30,000',
-  'Rs. 30,000 - Rs. 50,000',
-  'Above Rs. 50,000',
+export const FALLBACK_PRICE_RANGES = [
+  { label: 'Under 5,000', min: null, max: 5000 },
+  { label: '5,000 - 10,000', min: 5000, max: 10000 },
+  { label: '10,000 - 20,000', min: 10000, max: 20000 },
+  { label: '20,000+', min: 20000, max: null },
 ];
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Custom', 'One Size'];
+const fallbackSizes = ['XS', 'S', 'M', 'L', 'XL'];
+const fallbackFabrics = ['Cotton', 'Lawn', 'Chiffon', 'Silk', 'Velvet', 'Cambric'];
 
-const FABRICS = [
-  'Lawn',
-  'Cotton',
-  'Silk',
-  'Velvet',
-  'Chiffon',
-  'Organza',
-  'Georgette',
-  'Linen',
-  'Premium Lawn',
-];
+function normalizeOptions(values, key = 'label') {
+  if (!Array.isArray(values)) return [];
+  return values
+    .map((value) => {
+      if (typeof value === 'string') return { label: value, value };
+      if (value && typeof value === 'object') {
+        const label = value.label || value.name || value[key];
+        const normalizedValue = value.value || value.slug || value.id || label;
+        if (!label || !normalizedValue) return null;
+        return { label, value: normalizedValue };
+      }
+      return null;
+    })
+    .filter(Boolean);
+}
 
-const COLLECTIONS = [
-  'New Arrivals',
-  'Luxury Pret',
-  'Luxury Formals',
-  'Couture',
-  'Unstitched',
-  'Kidswear',
-  'Menswear',
-];
+function CheckboxList({ title, options, selected, onToggle }) {
+  if (!options.length) return null;
 
-function FilterSection({ title, children, defaultOpen = true }) {
-  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-zinc-100">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center justify-between w-full py-3.5 text-left"
-      >
-        <span className="ty-body-sm font-semibold text-noor-black">{title}</span>
-        <ChevronDown
-          size={16}
-          className={`text-noor-gray transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="pb-4 space-y-2.5">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="border-t border-zinc-100 pt-4">
+      <h3 className="mb-3 text-sm font-semibold text-noor-black">{title}</h3>
+      <div className="space-y-2">
+        {options.map((option) => {
+          const isChecked = selected.includes(option.value);
+          return (
+            <label key={option.value} className="flex cursor-pointer items-center gap-3 text-sm text-zinc-600">
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={() => onToggle(option.value)}
+                className="h-4 w-4 rounded border-zinc-300 text-noor-maroon focus:ring-noor-maroon"
+              />
+              <span>{option.label}</span>
+            </label>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function Checkbox({ label, checked, onChange }) {
-  return (
-    <label className="flex items-center gap-2.5 cursor-pointer group">
-      <span
-        className={`flex items-center justify-center w-4 h-4 border transition-colors ${
-          checked ? 'bg-noor-black border-noor-black' : 'border-zinc-300 group-hover:border-zinc-500'
-        }`}
-      >
-        {checked && (
-          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
-      </span>
-      <span className="ty-body-sm text-zinc-600 group-hover:text-noor-black transition-colors">{label}</span>
-    </label>
+export default function FilterSidebar({
+  isOpen,
+  onClose,
+  filters,
+  setFilters,
+  facets,
+}) {
+  const priceRanges = facets?.priceRanges?.length ? facets.priceRanges : FALLBACK_PRICE_RANGES;
+  const sizeOptions = useMemo(
+    () => normalizeOptions(facets?.sizes?.length ? facets.sizes : fallbackSizes),
+    [facets]
   );
-}
+  const fabricOptions = useMemo(
+    () => normalizeOptions(facets?.fabrics?.length ? facets.fabrics : fallbackFabrics),
+    [facets]
+  );
+  const collectionOptions = useMemo(
+    () => normalizeOptions(facets?.collections || []),
+    [facets]
+  );
 
-export default function FilterSidebar({ isOpen, onClose, filters, setFilters }) {
-  const [localFilters, setLocalFilters] = useState(filters || {});
+  const selectedPrice = filters.price || [];
+  const selectedSizes = filters.size || [];
+  const selectedFabrics = filters.fabric || [];
+  const selectedCollections = filters.collection || [];
 
-  useEffect(() => {
-    setLocalFilters(filters || {});
-  }, [filters]);
-
-  const handleEscape = useCallback((e) => {
-    if (e.key === 'Escape') onClose?.();
-  }, [onClose]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, handleEscape]);
-
-  const toggleFilter = (key, value) => {
-    setLocalFilters((prev) => {
-      const current = prev[key] || [];
+  const toggleFilterValue = (key, value) => {
+    setFilters((prev) => {
+      const current = Array.isArray(prev[key]) ? prev[key] : [];
       const next = current.includes(value)
-        ? current.filter((v) => v !== value)
+        ? current.filter((item) => item !== value)
         : [...current, value];
-      return next.length > 0 ? { ...prev, [key]: next } : (({ [key]: _, ...rest }) => rest)(prev);
+      const nextFilters = { ...prev, [key]: next };
+      if (next.length === 0) delete nextFilters[key];
+      return nextFilters;
     });
   };
 
-  const clearFilters = () => {
-    const cleared = {};
-    setLocalFilters(cleared);
-    setFilters?.(cleared);
-  };
-
-  const applyFilters = () => {
-    setFilters?.(localFilters);
-    onClose?.();
-  };
-
-  const activeCount = Object.values(localFilters).reduce(
-    (sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0),
-    0
-  );
+  const clearAll = () => setFilters({});
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-40"
+        <button
+          type="button"
+          aria-label="Close filters"
+          onClick={onClose}
+          className="fixed inset-0 z-40 bg-black/40 transition-opacity"
+        />
+      )}
+
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-50 w-[320px] max-w-[85vw] overflow-y-auto border-r border-zinc-200 bg-white p-5 shadow-2xl transition-transform duration-300',
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-noor-black">Filters</h2>
+          <button
+            type="button"
             onClick={onClose}
-          />
-          <motion.aside
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed left-0 top-0 h-full w-80 max-w-[85vw] bg-white z-50 shadow-2xl flex flex-col"
+            className="rounded-full p-2 text-zinc-500 hover:bg-zinc-100 transition-colors"
+            aria-label="Close filter panel"
           >
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center gap-2">
-                <h2 className="ty-h4">Filters</h2>
-                {activeCount > 0 && (
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-noor-black text-white text-[10px] font-semibold">
-                    {activeCount}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={onClose}
-                className="flex items-center justify-center hover:bg-zinc-100 transition-colors"
-                aria-label="Close filters"
-              >
-                <X size={20} />
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="space-y-5">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-noor-black">Price</h3>
+              <button type="button" className="text-xs text-noor-maroon hover:underline" onClick={clearAll}>
+                Clear all
               </button>
             </div>
-
-            <div className="flex-1 overflow-y-auto p-4">
-              <FilterSection title="Price">
-                {PRICE_RANGES.map((range) => (
-                  <Checkbox
-                    key={range}
-                    label={range}
-                    checked={(localFilters.price || []).includes(range)}
-                    onChange={() => toggleFilter('price', range)}
-                  />
-                ))}
-              </FilterSection>
-
-              <FilterSection title="Size">
-                {SIZES.map((size) => (
-                  <Checkbox
-                    key={size}
-                    label={size}
-                    checked={(localFilters.size || []).includes(size)}
-                    onChange={() => toggleFilter('size', size)}
-                  />
-                ))}
-              </FilterSection>
-
-              <FilterSection title="Fabric">
-                {FABRICS.map((fabric) => (
-                  <Checkbox
-                    key={fabric}
-                    label={fabric}
-                    checked={(localFilters.fabric || []).includes(fabric)}
-                    onChange={() => toggleFilter('fabric', fabric)}
-                  />
-                ))}
-              </FilterSection>
-
-              <FilterSection title="Collection" defaultOpen={false}>
-                {COLLECTIONS.map((col) => (
-                  <Checkbox
-                    key={col}
-                    label={col}
-                    checked={(localFilters.collection || []).includes(col)}
-                    onChange={() => toggleFilter('collection', col)}
-                  />
-                ))}
-              </FilterSection>
+            <div className="space-y-2">
+              {priceRanges.map((range) => {
+                const isChecked = selectedPrice.includes(range.label);
+                return (
+                  <label key={range.label} className="flex cursor-pointer items-center gap-3 text-sm text-zinc-600">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => toggleFilterValue('price', range.label)}
+                      className="h-4 w-4 rounded border-zinc-300 text-noor-maroon focus:ring-noor-maroon"
+                    />
+                    <span>{range.label}</span>
+                  </label>
+                );
+              })}
             </div>
+          </div>
 
-            <div className="p-4 border-t">
-              <div className="flex gap-2">
-                <button
-                  onClick={clearFilters}
-                  className="flex-1 py-3 border text-sm hover:bg-noor-cream transition-colors"
-                >
-                  CLEAR ALL
-                </button>
-                <button
-                  onClick={applyFilters}
-                  className="flex-1 py-3 bg-noor-black text-white text-sm hover:bg-noor-black/90 transition-colors"
-                >
-                  APPLY{activeCount > 0 ? ` (${activeCount})` : ''}
-                </button>
-              </div>
-            </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+          <CheckboxList title="Size" options={sizeOptions} selected={selectedSizes} onToggle={(value) => toggleFilterValue('size', value)} />
+          <CheckboxList title="Fabric" options={fabricOptions} selected={selectedFabrics} onToggle={(value) => toggleFilterValue('fabric', value)} />
+          <CheckboxList title="Collection" options={collectionOptions} selected={selectedCollections} onToggle={(value) => toggleFilterValue('collection', value)} />
+        </div>
+
+        <div className="mt-6 border-t border-zinc-100 pt-4 lg:hidden">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-noor-black px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-noor-black/90"
+          >
+            <ChevronDown size={16} className="rotate-90" />
+            Apply Filters
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

@@ -1,13 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { PackageSearch } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 
-export default function ProductGrid({ products = [], loading = false, columns = 3 }) {
+export default function ProductGrid({ products = [], loading = false, columns = 3, onClearFilters }) {
   const gridCols = {
     2: 'grid-cols-2',
-    3: 'grid-cols-2 md:grid-cols-3',
-    4: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+    3: 'grid-cols-2 lg:grid-cols-3',
+    4: 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
   };
 
   if (loading) {
@@ -28,8 +29,25 @@ export default function ProductGrid({ products = [], loading = false, columns = 
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-16">
-        <p className="text-zinc-400 ty-body-sm">No products found.</p>
+      <div className="text-center py-24">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-zinc-200">
+          <PackageSearch size={28} className="text-zinc-300" />
+        </div>
+        <h3 className="font-body text-xl font-semibold text-noor-black">
+          No products found
+        </h3>
+        <p className="mx-auto mt-2 max-w-sm font-body text-sm text-zinc-400">
+          We couldn&apos;t find any products matching your selection. Try
+          adjusting your filters, or check back soon as new pieces arrive.
+        </p>
+        {onClearFilters && (
+          <button
+            onClick={onClearFilters}
+            className="mt-6 inline-flex items-center gap-2 border border-noor-black px-6 py-2.5 font-body text-sm font-medium text-noor-black transition-colors hover:bg-noor-black hover:text-white"
+          >
+            Clear all filters
+          </button>
+        )}
       </div>
     );
   }

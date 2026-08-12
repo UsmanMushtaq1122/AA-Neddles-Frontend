@@ -40,10 +40,14 @@ const wishlistSlice = createSlice({
       }
       saveWishlist(state.items);
     },
+    setWishlistFromApiAction: (state, action) => {
+      state.items = action.payload;
+      saveWishlist(state.items);
+    },
   },
 });
 
-export const { hydrateWishlistAction, toggleWishlistAction } = wishlistSlice.actions;
+export const { hydrateWishlistAction, toggleWishlistAction, setWishlistFromApiAction } = wishlistSlice.actions;
 export const selectWishlistItems = (state) => state.wishlist.items;
 
 export { loadWishlist };

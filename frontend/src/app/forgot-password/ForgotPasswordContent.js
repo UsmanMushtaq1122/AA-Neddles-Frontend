@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -8,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import GuestGuard from '@/components/GuestGuard';
 
 export default function ForgotPasswordContent() {
+  const router = useRouter();
   const { forgotPasswordRequest, forgotPassword, resetForgotPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState({});
@@ -45,7 +47,10 @@ export default function ForgotPasswordContent() {
       setErrors({ email: err });
       return;
     }
-    await forgotPasswordRequest(email);
+    const res = await forgotPasswordRequest(email);
+    if (res?.success) {
+      router.push(`/verify-otp?type=reset&email=${encodeURIComponent(email)}`);
+    }
   };
 
   return (
@@ -153,7 +158,7 @@ export default function ForgotPasswordContent() {
                   <button
                     type="submit"
                     disabled={forgotPassword.loading}
-                    className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {forgotPassword.loading ? (
                       <>

@@ -34,7 +34,10 @@ function VerifyEmailForm() {
   }, [resetEmailVerification]);
 
   useEffect(() => {
-    if (user?.email) setResendEmail(user.email);
+    if (user?.email) {
+      const timer = setTimeout(() => setResendEmail(user.email), 0);
+      return () => clearTimeout(timer);
+    }
   }, [user]);
 
   const handleResend = async () => {
@@ -79,7 +82,7 @@ function VerifyEmailForm() {
                   <button
                     onClick={handleResend}
                     disabled={resendLoading || !resendEmail}
-                    className="px-4 py-3 bg-noor-black text-white ty-button hover:bg-noor-maroon transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-3 bg-noor-black text-white ty-button hover:bg-noor-gold transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {resendLoading ? (
                       <Loader2 size={16} className="animate-spin" />
@@ -156,7 +159,7 @@ function VerifyEmailForm() {
                 </p>
                 <Link
                   href="/login"
-                  className="inline-block w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300"
+                  className="inline-block w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300"
                 >
                   Sign in
                 </Link>
@@ -200,7 +203,7 @@ function VerifyEmailForm() {
                       <button
                         onClick={handleResend}
                         disabled={resendLoading || !resendEmail}
-                        className="px-4 py-3 bg-noor-black text-white ty-button hover:bg-noor-maroon transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-4 py-3 bg-noor-black text-white ty-button hover:bg-noor-gold transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                       >
                         {resendLoading ? (
                           <Loader2 size={16} className="animate-spin" />

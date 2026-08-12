@@ -120,13 +120,16 @@ function BrandStory() {
           </h2>
           <div className="space-y-4 text-[15px] leading-[1.75] text-noor-muted">
             <p>
-              Graduating from the Pakistan Institute of Fashion &amp; Design (PIFD) in 1998, AA Neddles set out to redefine Pakistan&apos;s retail fashion scene. What began in 1999 with a single outlet and small stitching unit has transformed into a prestigious brand recognized for impeccable craftsmanship and timeless design.
+              AA NEEDLES is a family-owned fashion brand built on over 15 years of experience in the clothing industry. Founded on the values of quality, trust, and customer satisfaction, our journey began with a successful physical retail business.
             </p>
             <p>
-              Our collections celebrate heritage and modernity, bringing together embroidered luxury, premium pret, and curated formalwear for women who appreciate sophistication and detail. Every piece is thoughtfully designed to blend tradition with contemporary elegance.
+              As the next generation of this legacy, I, Malik Azyan, recognized the growing shift from traditional shopping to online fashion. With a vision to bring our family&apos;s expertise to a wider audience, I transformed AA NEEDLES into an online brand, making premium fashion more accessible to women across Pakistan.
             </p>
             <p>
-              We believe fashion is more than clothing — it&apos;s a statement of identity, a celebration of culture, and an expression of the modern woman&apos;s confidence.
+              At AA NEEDLES, we combine years of craftsmanship with modern trends to create elegant, high-quality clothing designed for today&apos;s woman. Our mission is simple: to deliver style, comfort, and confidence while continuing the tradition of excellence that has defined our family business for over a decade and a half.
+            </p>
+            <p>
+              Welcome to AA NEEDLES&mdash;where tradition meets modern fashion.
             </p>
           </div>
         </motion.div>
@@ -141,8 +144,8 @@ function BrandStory() {
             />
           </div>
           <div className="absolute -bottom-6 -left-6 rounded-2xl bg-[#C9A27E] px-6 py-4 text-white shadow-lg max-md:hidden">
-            <p className="text-[22px] font-semibold" style={{ fontFamily: 'var(--font-heading)' }}>Since 1999</p>
-            <p className="text-[12px] uppercase tracking-wider text-white/80">25+ Years of Legacy</p>
+            <p className="text-[22px] font-semibold" style={{ fontFamily: 'var(--font-heading)' }}>Since 2010</p>
+            <p className="text-[12px] uppercase tracking-wider text-white/80">15+ Years of Legacy</p>
           </div>
         </motion.div>
       </div>
@@ -295,11 +298,11 @@ function OurValues() {
    ══════════════════════════════════════════════ */
 function JourneyTimeline() {
   const milestones = [
-    { year: '1999', title: 'Brand Founded', desc: 'Started with a single outlet and a vision for premium fashion.' },
-    { year: '2005', title: 'First Collection Launch', desc: 'Launched our signature embroidered luxury collection.' },
-    { year: '2012', title: '10,000 Customers', desc: 'Reached the milestone of serving 10,000 satisfied customers.' },
-    { year: '2019', title: 'National Expansion', desc: 'Expanded across Pakistan with multiple flagship stores.' },
-    { year: '2024', title: 'Premium Fashion Brand', desc: 'Recognized as one of Pakistan\'s leading luxury fashion houses.' },
+    { year: '2010', title: 'Brand Founded', desc: 'Started with a small startup and a vision for premium fashion.' },
+    { year: '2015', title: 'First Collection Launch', desc: 'Launched our signature luxury Pret collection.' },
+    { year: '2020', title: '10,000 Customers', desc: 'Reached the milestone of serving 10,000 satisfied customers.' },
+    { year: '2025', title: 'National Expansion', desc: 'Expanded across Pakistan with multiple wholesale dealers.' },
+    { year: '2026', title: 'Premium Fashion Brand', desc: 'We are excited to take the next step in our journey by bringing AA NEEDLES online.' },
   ];
 
   return (
@@ -527,7 +530,7 @@ function CallToAction() {
    ══════════════════════════════════════════════ */
 export default function AboutContent() {
   return (
-    <div className="pt-[62px]">
+    <div className="pt-[88px]">
       <HeroBanner />
       <BrandStory />
       <ImageStoryGrid />

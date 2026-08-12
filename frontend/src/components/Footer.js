@@ -1,25 +1,44 @@
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
+import MobileFooterAccordion from '@/components/MobileFooterAccordion';
 
-const informationLinks = [
-  { label: 'Returns and Exchange', href: '/return-exchange-policy' },
-  { label: 'Privacy Policy', href: '/privacy-policy' },
-  { label: 'FAQs', href: '/faqs' },
-  { label: 'Store Locator', href: '/store-locations' },
-  { label: 'Track Your Order', href: '/order-tracking' },
-  { label: 'Blogs', href: '/about' },
-];
-
-const customerCareLinks = [
-  { label: 'About AA Neddles', href: '/about' },
-  { label: 'Contact Us', href: '/contact' },
-  { label: 'Careers', href: '/careers' },
-  { label: 'Terms and Conditions', href: '/terms' },
+const footerSections = [
+  {
+    title: 'Contact',
+    links: [
+      { label: 'Email', href: 'mailto:info@aeneddles.com' },
+      { label: 'Phone Number', href: 'tel:+923111162742' },
+      { label: 'WhatsApp', href: 'https://wa.me/923154001914' },
+      { label: 'Store Location', href: '/store-locations' },
+    ],
+  },
+  {
+    title: 'Information',
+    links: [
+      { label: 'About Us', href: '/about' },
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'Terms & Conditions', href: '/terms' },
+      { label: 'FAQs', href: '/faqs' },
+    ],
+  },
+  {
+    title: 'Customer Care',
+    links: [
+      { label: 'Track Order', href: '/order-tracking' },
+      { label: 'Return Policy', href: '/return-exchange-policy' },
+      { label: 'Shipping Policy', href: '/shipping-information' },
+      { label: 'Contact Support', href: '/contact' },
+    ],
+  },
 ];
 
 const socialLinks = [
-  { label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
-  { label: 'Facebook', href: 'https://facebook.com', icon: 'facebook' },
-  { label: 'TikTok', href: 'https://tiktok.com', icon: 'tiktok' },
+  { label: 'Instagram', href: 'https://instagram.com/aaneddles', icon: 'instagram' },
+  { label: 'Facebook', href: 'https://facebook.com/aaneddles', icon: 'facebook' },
+  { label: 'TikTok', href: 'https://tiktok.com/@aaneddles', icon: 'tiktok' },
 ];
 
 function SocialIcon({ href, label, icon }) {
@@ -66,62 +85,90 @@ function SocialIcon({ href, label, icon }) {
 }
 
 export default function Footer() {
-  return (
-    <footer className="border-t border-noor-lightgray bg-white text-noor-black pt-12 md:pt-16 pb-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.3fr_1fr_1fr] md:gap-12 lg:gap-16">
-          <div>
-            <h3 className="font-body text-3xl md:text-[32px] font-medium tracking-[0.14em] uppercase text-noor-black">
-              AA NEDDLES.
-            </h3>
+  const [openSection, setOpenSection] = useState(null);
 
-            <div className="mt-6 space-y-1.5" style={{ lineHeight: '1.8' }}>
-              <p className="font-body text-sm text-noor-muted">5.5 KM, Raiwind Road (Near Fatehbad Village)</p>
-              <p className="font-body text-sm text-noor-muted">Lahore, Pakistan.</p>
-              <p className="font-body text-sm text-noor-muted">Call: <a href="tel:+923111162742" className="hover:text-noor-black transition-colors">+923111162742</a></p>
-              <p className="font-body text-sm text-noor-muted">WhatsApp: <a href="https://wa.me/923154001914" target="_blank" rel="noreferrer" className="hover:text-noor-black transition-colors">+923154001914</a></p>
-              <p className="font-body text-sm text-noor-muted">Email: info@aeneddles.com</p>
+  return (
+    <footer className="mobile-footer">
+      <div className="mobile-footer-inner">
+        <div className="desktop-footer-content">
+          <div className="desktop-footer-main">
+            <div className="desktop-footer-contact">
+              <Link href="/" aria-label="AA Neddles home" className="desktop-footer-logo-link">
+                <Image
+                  src="/logo.png"
+                  alt="AA Neddles"
+                  width={220}
+                  height={220}
+                  className="desktop-footer-logo"
+                />
+              </Link>
+              <address className="desktop-footer-address">
+                <span>5.5 KM, Raiwind Road (Near Fatehbad Village)</span>
+                <span>Lahore, Pakistan.</span>
+                <a href="tel:+923111162742">Call: +923111162742</a>
+                <a href="https://wa.me/923154001914" target="_blank" rel="noreferrer">WhatsApp: +923154001914</a>
+                <a href="mailto:info@aeneddles.com">Email: info@aeneddles.com</a>
+              </address>
+            </div>
+
+            <div className="desktop-footer-column">
+              <h2>Information</h2>
+              <Link href="/return-exchange-policy">Returns and Exchange</Link>
+              <Link href="/privacy-policy">Privacy Policy</Link>
+              <Link href="/faqs">FAQs</Link>
+              <Link href="/store-locations">Store Locator</Link>
+              <Link href="/order-tracking">Track Your Order</Link>
+            </div>
+
+            <div className="desktop-footer-column">
+              <h2>Customer Care</h2>
+              <Link href="/about">About AA Neddles</Link>
+              <Link href="/contact">Contact Us</Link>
+              <Link href="/careers">Careers</Link>
+              <Link href="/terms">Terms and Conditions</Link>
             </div>
           </div>
 
-          <div>
-            <h4 className="font-body text-[17px] font-semibold text-noor-black mb-4 md:mb-5">Information</h4>
-            <ul className="space-y-3">
-              {informationLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="font-body text-sm text-noor-muted transition-colors hover:text-noor-black">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-body text-[17px] font-semibold text-noor-black mb-4 md:mb-5">Customer Care</h4>
-            <ul className="space-y-3">
-              {customerCareLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="font-body text-sm text-noor-muted transition-colors hover:text-noor-black">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-12 border-t border-noor-lightgray pt-6 md:mt-16 md:pt-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <p className="font-body text-xs md:text-sm text-noor-muted">
-              &copy; {new Date().getFullYear()}, AA Neddles Designs
-            </p>
-
-            <div className="flex items-center gap-6 md:gap-7">
+          <div className="desktop-footer-bottom">
+            <p>&copy; {new Date().getFullYear()}, AA Neddles Designs</p>
+            <div className="desktop-footer-socials">
               {socialLinks.map((social) => (
                 <SocialIcon key={social.label} {...social} />
               ))}
             </div>
+          </div>
+        </div>
+
+        <Link href="/" aria-label="AA Neddles home" className="mobile-footer-logo-link">
+          <Image
+            src="/logo.png"
+            alt="AA Neddles"
+            width={220}
+            height={220}
+            priority={false}
+            className="mobile-footer-logo"
+          />
+        </Link>
+
+        <div className="mobile-footer-sections">
+          {footerSections.map((section, index) => (
+            <MobileFooterAccordion
+              key={section.title}
+              title={section.title}
+              links={section.links}
+              isOpen={openSection === index}
+              onToggle={() => setOpenSection(openSection === index ? null : index)}
+            />
+          ))}
+        </div>
+
+        <div className="mobile-footer-bottom">
+          <p>&copy; {new Date().getFullYear()}, AA Neddles Designs</p>
+
+          <div className="mobile-footer-socials">
+            {socialLinks.map((social) => (
+              <SocialIcon key={social.label} {...social} />
+            ))}
           </div>
         </div>
       </div>

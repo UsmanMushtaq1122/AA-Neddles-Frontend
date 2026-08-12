@@ -4,24 +4,35 @@ import { useState } from 'react';
 import Image from 'next/image';
 import PageLayout from '@/components/PageLayout';
 import { useToast } from '@/hooks/useToast';
+import { api } from '@/services/index';
 
 export default function ContactPageContent() {
   const { addToast } = useToast();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.email.trim()) {
       addToast('Please enter your email address.', 'error');
       return;
     }
     setSubmitting(true);
-    setTimeout(() => {
-      addToast('Thank you! Your message has been sent. We\'ll get back to you soon.', 'success');
-      setForm({ name: '', email: '', phone: '', message: '' });
+    try {
+      await api.post('/contact', {
+        name: form.name || 'Anonymous',
+        email: form.email,
+        phone: form.phone || '',
+        subject: form.subject || 'Contact Form',
+        message: form.message || '',
+      });
+      addToast("Thank you! Your message has been sent. We'll get back to you soon.", 'success');
+      setForm({ name: '', email: '', phone: '', subject: '', message: '' });
+    } catch {
+      addToast('Failed to send message. Please try again later.', 'error');
+    } finally {
       setSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -87,6 +98,18 @@ export default function ContactPageContent() {
                   />
                 </div>
                 <div>
+                  <label htmlFor="contact-subject" className="block ty-body-sm font-medium text-zinc-700">Subject</label>
+                  <input
+                    id="contact-subject"
+                    name="subject"
+                    type="text"
+                    value={form.subject}
+                    onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                    placeholder="Subject"
+                    className="mt-3 w-full border border-zinc-200 bg-zinc-50 px-5 py-4 ty-body text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                  />
+                </div>
+                <div>
                   <label htmlFor="contact-message" className="block ty-body-sm font-medium text-zinc-700">Message</label>
                   <textarea
                     id="contact-message"
@@ -101,7 +124,7 @@ export default function ContactPageContent() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center justify-center bg-noor-maroon px-8 py-4 ty-button text-white transition hover:bg-noor-maroon/90 disabled:opacity-60"
+                  className="inline-flex items-center justify-center bg-noor-black px-8 py-4 ty-button text-white transition hover:bg-noor-gold disabled:opacity-60"
                 >
                   {submitting ? 'Sending...' : 'Send Message'}
                 </button>

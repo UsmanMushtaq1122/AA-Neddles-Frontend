@@ -234,18 +234,18 @@ export default function PrivacyContent() {
 
       {/* Contact */}
       <section id="contact" className="mt-14 md:mt-20">
-        <div className="bg-noor-black p-8 md:p-12 text-white text-center">
-          <Mail size={36} className="mx-auto mb-4 opacity-80" />
+        <div className="bg-gradient-to-br from-noor-gold via-noor-gold/90 to-noor-gold/75 p-8 md:p-12 text-noor-black text-center">
+          <Mail size={36} className="mx-auto mb-4 opacity-80 text-noor-black/80" />
           <h2 className="ty-h2 mb-3">
             Privacy Questions?
           </h2>
-          <p className="text-zinc-400 text-sm max-w-lg mx-auto mb-6">
+          <p className="text-noor-black/75 text-sm max-w-lg mx-auto mb-6">
             If you have any questions about our privacy practices or would like to exercise your data rights,
             please contact our Data Protection Officer.
           </p>
           <a
             href="mailto:privacy@aaneddles.com"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-noor-maroon text-white ty-button hover:bg-noor-maroon/90 transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-white text-noor-black ty-button hover:bg-zinc-100 transition-colors"
           >
             <Mail size={14} />
             privacy@aaneddles.com

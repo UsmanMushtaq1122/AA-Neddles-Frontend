@@ -3,66 +3,41 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { SlidersHorizontal, ChevronRight, ArrowUpDown } from "lucide-react";
-import productsData from "@/features/products/products.json";
+import { productsApi } from "@/services/products";
+import { categoriesApi } from "@/services/categories";
 import ProductGrid from "@/components/ProductGrid";
-import FilterSidebar from "@/components/FilterSidebar";
+import FilterSidebar, { FALLBACK_PRICE_RANGES } from "@/components/FilterSidebar";
 
 const subCategoryMap = {
-  unstitched: [
-    { label: "Lawn", value: "lawn" },
-    { label: "M.Prints", value: "mprints" },
-    { label: "Chiffon", value: "chiffon" },
-    { label: "Winter Luxe", value: "winter-luxe" },
-    { label: "Soiree", value: "soiree" },
-  ],
-  "ready-to-wear": [
-    { label: "Casual", value: "casual" },
-    { label: "Semi-Formal", value: "semi-formal" },
-    { label: "Formal", value: "formal" },
-  ],
-  formal: [
-    { label: "Luxury Formals", value: "luxury-formals" },
-    { label: "Couture", value: "couture" },
-  ],
+  
 };
 
-const matchesFilters = (product, filters) => {
+const matchesFilters = (product, filters, priceRanges) => {
   if (!filters || Object.keys(filters).length === 0) return true;
   if (filters.price) {
     const price = product.salePrice || product.price;
-    const match = filters.price.some((range) => {
-      if (range === "Under Rs. 5,000") return price < 5000;
-      if (range === "Rs. 5,000 - Rs. 15,000") return price >= 5000 && price <= 15000;
-      if (range === "Rs. 15,000 - Rs. 30,000") return price >= 15000 && price <= 30000;
-      if (range === "Rs. 30,000 - Rs. 50,000") return price >= 30000 && price <= 50000;
-      if (range === "Above Rs. 50,000") return price > 50000;
-      return false;
+    const match = filters.price.some((label) => {
+      const range = priceRanges.find((r) => r.label === label);
+      if (!range) return false;
+      if (range.min != null && price < range.min) return false;
+      if (range.max != null && price > range.max) return false;
+      return true;
     });
     if (!match) return false;
   }
   if (filters.size) {
-    const hasSize = product.sizes.some((s) => filters.size.includes(s));
+    const hasSize = (product.sizes || []).some((s) => filters.size.includes(s));
     if (!hasSize) return false;
   }
   if (filters.fabric) {
-    const productFabrics = product.fabric.split(/\s*&\s*|\s*,\s*/);
+    const productFabrics = (product.fabric || "").split(/\s*&\s*|\s*,\s*/);
     const hasFabric = filters.fabric.some(f => productFabrics.includes(f));
     if (!hasFabric) return false;
   }
   if (filters.collection) {
-    const collectionSlugs = {
-      "New Arrivals": "new-arrivals",
-      "Luxury Pret": "luxury-pret",
-      "Luxury Formals": "luxury-formals",
-      Couture: "couture",
-      Unstitched: "unstitched",
-      Kidswear: "kidswear",
-      Menswear: "menswear",
-    };
-    const match = filters.collection.some((col) => {
-      const slug = collectionSlugs[col];
-      return slug && (product.subcategory === slug || product.category === slug);
-    });
+    const match = filters.collection.some(
+      (slug) => slug === product.category || slug === product.subcategory
+    );
     if (!match) return false;
   }
   return true;
@@ -85,22 +60,19 @@ export default function CategoryPageContent({ slug }) {
   const [activeTab, setActiveTab] = useState(null);
   const [sortBy, setSortBy] = useState("default");
   const [sortOpen, setSortOpen] = useState(false);
+  const [facets, setFacets] = useState(null);
   const sortRef = useRef(null);
+
 
   const categoryName =
     slug === "all"
       ? "All Products"
       : slug
-          .split("-")
-          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-          .join(" ");
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
 
   const subCategories = subCategoryMap[slug] || [];
-
-  useEffect(() => {
-    setActiveTab(null);
-    setSortBy("default");
-  }, [slug]);
 
   // Close sort dropdown when clicking outside
   useEffect(() => {
@@ -114,28 +86,55 @@ export default function CategoryPageContent({ slug }) {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    let list = productsData;
-    if (slug && slug !== "all") {
-      list = productsData.filter(
-        (p) => p.category === slug || p.subcategory === slug
-      );
-    }
-    setAllProducts(list);
-    setLoading(false);
+    const timer = setTimeout(() => {
+      setActiveTab(null);
+      setSortBy("default");
+      setFilters({});
+      setLoading(true);
+    }, 0);
+    const fetchProducts = async () => {
+      try {
+        let result;
+        if (slug && slug !== "all") {
+          const catRes = await categoriesApi.getAll();
+          const categories = catRes.data?.categories || [];
+          const matched = categories.find(
+            (c) => c.slug === slug
+          );
+          if (matched) {
+            result = await productsApi.getAll({ categoryId: matched.id, limit: 100 });
+          } else {
+            result = await productsApi.getAll({ limit: 100 });
+          }
+        } else {
+          result = await productsApi.getAll({ limit: 100 });
+        }
+        setAllProducts(result.data?.products || []);
+      } catch {
+        setAllProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+    productsApi
+      .getFacets()
+      .then((res) => { if (res?.data) setFacets(res.data); })
+      .catch(() => {});
+    return () => clearTimeout(timer);
   }, [slug]);
 
   const products = useMemo(() => {
     let result = [...allProducts];
     if (activeTab) {
       result = result.filter((p) => {
-        const fabricMatch = p.fabric.toLowerCase().includes(activeTab.replace('-', ' '));
+        const fabricMatch = (p.fabric || '').toLowerCase().includes(activeTab.replace('-', ' '));
         const subcategoryMatch = p.subcategory === activeTab;
         const categoryMatch = p.category === activeTab;
         return fabricMatch || subcategoryMatch || categoryMatch;
       });
     }
-    result = result.filter((p) => matchesFilters(p, filters));
+    result = result.filter((p) => matchesFilters(p, filters, facets?.priceRanges || FALLBACK_PRICE_RANGES));
 
     // Apply sorting
     if (sortBy === "price-asc") {
@@ -145,11 +144,11 @@ export default function CategoryPageContent({ slug }) {
     } else if (sortBy === "newest") {
       result.sort((a, b) => (b.id || 0) - (a.id || 0));
     } else if (sortBy === "name-asc") {
-      result.sort((a, b) => a.name.localeCompare(b.name));
+      result.sort((a, b) => (a.title || a.name || '').localeCompare(b.title || b.name || ''));
     }
 
     return result;
-  }, [allProducts, filters, activeTab, sortBy]);
+  }, [allProducts, filters, activeTab, sortBy, facets]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12 pt-[115px]">
@@ -171,11 +170,10 @@ export default function CategoryPageContent({ slug }) {
                 <button
                   key={tab.value}
                   onClick={() => setActiveTab(isActive ? null : tab.value)}
-                  className={`min-w-28 border px-4 py-2 font-body text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'border-noor-black bg-zinc-50 text-noor-black'
-                      : 'border-zinc-200 bg-white text-noor-black hover:border-zinc-400 hover:bg-zinc-50'
-                  }`}
+                  className={`min-w-28 border px-4 py-2 font-body text-sm font-medium transition-colors ${isActive
+                    ? 'border-noor-black bg-zinc-50 text-noor-black'
+                    : 'border-zinc-200 bg-white text-noor-black hover:border-zinc-400 hover:bg-zinc-50'
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -195,42 +193,30 @@ export default function CategoryPageContent({ slug }) {
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={() => setColumns(2)}
-                className={`p-2.5 rounded-md transition-colors ${columns === 2 ? 'bg-zinc-100 text-noor-black' : 'text-zinc-400 hover:text-zinc-600'}`}
+                className={`p-2 rounded-md transition-colors ${columns === 2 ? 'bg-zinc-100 text-noor-black' : 'text-zinc-400 hover:text-zinc-600'}`}
                 aria-label="Two column view"
               >
-                <div className="flex gap-[3px] items-center justify-center w-5 h-5">
-                  <div className="w-[7px] h-[14px] border border-current rounded-[1px]"></div>
-                  <div className="w-[7px] h-[14px] border border-current rounded-[1px]"></div>
-                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/></svg>
               </button>
               <button
-                onClick={() => setColumns(4)}
-                className={`p-2.5 rounded-md transition-colors ${columns === 4 ? 'bg-zinc-100 text-noor-black' : 'text-zinc-400 hover:text-zinc-600'}`}
-                aria-label="Four column view"
-              >
-                <div className="grid grid-cols-2 gap-[3px] items-center justify-center w-5 h-5">
-                  <div className="w-[7px] h-[7px] border border-current rounded-[1px]"></div>
-                  <div className="w-[7px] h-[7px] border border-current rounded-[1px]"></div>
-                  <div className="w-[7px] h-[7px] border border-current rounded-[1px]"></div>
-                  <div className="w-[7px] h-[7px] border border-current rounded-[1px]"></div>
-                </div>
-              </button>
-              <button
+                type="button"
                 onClick={() => setColumns(3)}
-                className={`p-2.5 rounded-md transition-colors ${columns === 3 ? 'bg-zinc-100 text-noor-black' : 'text-zinc-400 hover:text-zinc-600'}`}
+                className={`p-2 rounded-md transition-colors ${columns === 3 ? 'bg-zinc-100 text-noor-black' : 'text-zinc-400 hover:text-zinc-600'}`}
                 aria-label="Three column view"
               >
-                <div className="grid grid-cols-3 gap-[2px] items-center justify-center w-5 h-5">
-                  <div className="w-[5px] h-[5px] border border-current rounded-[1px]"></div>
-                  <div className="w-[5px] h-[5px] border border-current rounded-[1px]"></div>
-                  <div className="w-[5px] h-[5px] border border-current rounded-[1px]"></div>
-                  <div className="w-[5px] h-[5px] border border-current rounded-[1px]"></div>
-                  <div className="w-[5px] h-[5px] border border-current rounded-[1px]"></div>
-                  <div className="w-[5px] h-[5px] border border-current rounded-[1px]"></div>
-                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="5" height="18" rx="1"/><rect x="9.5" y="3" width="5" height="18" rx="1"/><rect x="17" y="3" width="5" height="18" rx="1"/></svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => setColumns(4)}
+                className={`hidden md:block p-2 rounded-md transition-colors ${columns === 4 ? 'bg-zinc-100 text-noor-black' : 'text-zinc-400 hover:text-zinc-600'}`}
+                aria-label="Four column view"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
               </button>
             </div>
 
@@ -238,11 +224,10 @@ export default function CategoryPageContent({ slug }) {
             <div className="relative" ref={sortRef}>
               <button
                 onClick={() => setSortOpen((prev) => !prev)}
-                className={`inline-flex items-center gap-2 border px-4 py-2 font-body text-sm font-medium transition-colors ${
-                  sortOpen
-                    ? 'border-noor-black bg-zinc-50 text-noor-black'
-                    : 'border-zinc-200 bg-white text-noor-black hover:border-zinc-400 hover:bg-zinc-50'
-                }`}
+                className={`inline-flex items-center gap-2 border px-4 py-2 font-body text-sm font-medium transition-colors ${sortOpen
+                  ? 'border-noor-black bg-zinc-50 text-noor-black'
+                  : 'border-zinc-200 bg-white text-noor-black hover:border-zinc-400 hover:bg-zinc-50'
+                  }`}
                 aria-label="Sort products"
               >
                 <ArrowUpDown size={16} />
@@ -258,11 +243,10 @@ export default function CategoryPageContent({ slug }) {
                         setSortBy(option.value);
                         setSortOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-2.5 font-body text-sm transition-colors ${
-                        sortBy === option.value
-                          ? 'bg-zinc-100 text-noor-black font-medium'
-                          : 'text-zinc-600 hover:bg-zinc-50 hover:text-noor-black'
-                      }`}
+                      className={`w-full text-left px-4 py-2.5 font-body text-sm transition-colors ${sortBy === option.value
+                        ? 'bg-zinc-100 text-noor-black font-medium'
+                        : 'text-zinc-600 hover:bg-zinc-50 hover:text-noor-black'
+                        }`}
                     >
                       {option.label}
                     </button>
@@ -280,9 +264,19 @@ export default function CategoryPageContent({ slug }) {
           onClose={() => setFilterOpen(false)}
           filters={filters}
           setFilters={setFilters}
+          facets={facets}
         />
         <div className="flex-1">
-          <ProductGrid products={products} loading={loading} columns={columns} />
+          <ProductGrid
+            products={products}
+            loading={loading}
+            columns={columns}
+            onClearFilters={() => {
+              setFilters({});
+              setActiveTab(null);
+              setSortBy("default");
+            }}
+          />
         </div>
       </div>
     </div>

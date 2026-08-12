@@ -1,0 +1,44 @@
+/* ========================================================
+   KEYFRAME ANIMATIONS
+   ======================================================== */
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tst-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee { animation: marquee 25s linear infinite; }
+.animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+.animate-slideInRight { animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-slideOutRight { animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-skeleton { animation: skeletonPulse 1.5s ease-in-out infinite; }

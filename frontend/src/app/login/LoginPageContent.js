@@ -1,19 +1,17 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Loader2, Mail, Lock, CheckCircle2 } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '@/hooks/useAuth';
-import SocialLoginButton from '@/components/SocialLoginButton';
 import GuestGuard from '@/components/GuestGuard';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawRedirect = searchParams.get('redirect') || '/';
-  const redirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/';
   const verified = searchParams.get('verified');
   const { login, loading, error, isAuthenticated, clearError, socialLogin } = useAuth();
 
@@ -27,11 +25,10 @@ function LoginForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      setShowSuccess(true);
-      const timer = setTimeout(() => router.replace(redirect), 600);
+      const timer = setTimeout(() => setShowSuccess(true), 0);
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, redirect, router]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     return () => clearError();
@@ -41,8 +38,11 @@ function LoginForm() {
     if (typeof window !== 'undefined') {
       const savedEmail = localStorage.getItem('aa-remembered-email');
       if (savedEmail) {
-        setForm((prev) => ({ ...prev, email: savedEmail }));
-        setRememberMe(true);
+        const timer = setTimeout(() => {
+          setForm((prev) => ({ ...prev, email: savedEmail }));
+          setRememberMe(true);
+        }, 0);
+        return () => clearTimeout(timer);
       }
     }
   }, []);
@@ -92,12 +92,26 @@ function LoginForm() {
       localStorage.removeItem('aa-remembered-email');
     }
 
-    await login(form.email, form.password);
+    const result = await login(form.email, form.password);
+    if (result?.requiresOtp) {
+      const targetEmail = result.email || form.email;
+      router.push(`/verify-otp?type=login&email=${encodeURIComponent(targetEmail)}`);
+    }
   };
 
   const handleSocialLogin = async (provider) => {
     setSocialLoading(provider);
     await socialLogin(provider);
+    setSocialLoading(null);
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setSocialLoading('google');
+    await socialLogin('google', credentialResponse.credential);
+    setSocialLoading(null);
+  };
+
+  const handleGoogleError = () => {
     setSocialLoading(null);
   };
 
@@ -239,7 +253,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -271,18 +285,26 @@ function LoginForm() {
           </div>
 
           <div className="space-y-3">
-            <SocialLoginButton
-              provider="google"
-              onClick={() => handleSocialLogin('Google')}
-              loading={socialLoading === 'Google'}
-              disabled={loading}
-            />
-            <SocialLoginButton
-              provider="facebook"
-              onClick={() => handleSocialLogin('Facebook')}
-              loading={socialLoading === 'Facebook'}
-              disabled={loading}
-            />
+            <div className="w-full">
+              {socialLoading === 'google' ? (
+                <button
+                  disabled
+                  className="w-full flex items-center justify-center gap-3 py-3 ty-body font-medium bg-white border border-zinc-200 text-noor-black opacity-60 cursor-not-allowed"
+                >
+                  <Loader2 size={18} className="animate-spin" />
+                  Connecting...
+                </button>
+              ) : (
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  width="100%"
+                  theme="outline"
+                  text="continue_with"
+                  shape="rectangular"
+                />
+              )}
+            </div>
           </div>
         </GuestGuard>
       </div>

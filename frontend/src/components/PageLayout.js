@@ -9,8 +9,8 @@ export default function PageLayout({
 }) {
   return (
     <div>
-      {/* Spacer for fixed header — main bar is always 62 px on inner pages */}
-      <div style={{ height: '62px' }} aria-hidden="true" />
+      {/* Spacer for the fixed storefront header. */}
+      <div className="site-header-spacer" aria-hidden="true" />
       {heroBackground && (
         <div className="bg-noor-cream py-16 md:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

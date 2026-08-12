@@ -50,6 +50,7 @@ export function PasswordRequirements({ password }) {
     { label: 'Contains uppercase letter', met: /[A-Z]/.test(password) },
     { label: 'Contains lowercase letter', met: /[a-z]/.test(password) },
     { label: 'Contains a number', met: /\d/.test(password) },
+    { label: 'Contains a special character', met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) },
   ];
 
   if (!password) return null;

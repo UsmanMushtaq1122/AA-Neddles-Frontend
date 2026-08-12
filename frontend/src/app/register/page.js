@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Loader2, Mail, Lock, User, Phone, CheckCircle2, ArrowLeft, MailCheck } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '@/hooks/useAuth';
 import PasswordStrength, { PasswordRequirements } from '@/components/PasswordStrength';
-import SocialLoginButton from '@/components/SocialLoginButton';
 import GuestGuard from '@/components/GuestGuard';
 
 export default function RegisterPage() {
@@ -27,13 +27,11 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [socialLoading, setSocialLoading] = useState(null);
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
-
   useEffect(() => {
-    if (isAuthenticated && !registrationSuccess) {
+    if (isAuthenticated) {
       router.replace('/');
     }
-  }, [isAuthenticated, router, registrationSuccess]);
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     return () => clearError();
@@ -46,7 +44,10 @@ export default function RegisterPage() {
     if (!form.email.trim()) errs.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Please enter a valid email';
     if (!form.password) errs.password = 'Password is required';
-    else if (form.password.length < 6) errs.password = 'Password must be at least 6 characters';
+    else if (form.password.length < 8) errs.password = 'Password must be at least 8 characters';
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(form.password)) {
+      if (!errs.password) errs.password = 'Password must contain uppercase, lowercase, number, and special character';
+    }
     if (!form.confirmPassword) errs.confirmPassword = 'Please confirm your password';
     else if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match';
     return errs;
@@ -81,14 +82,16 @@ export default function RegisterPage() {
     if (Object.keys(errs).length > 0) return;
 
     const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`.trim();
-    const success = await register({
+    const result = await register({
       name: fullName,
       email: form.email,
       password: form.password,
       phone: form.phone,
     });
-    if (success) {
-      setRegistrationSuccess(true);
+    if (result?.requiresOtp) {
+      router.push(`/verify-otp?type=register&email=${encodeURIComponent(form.email)}`);
+    } else if (result?.success) {
+      router.replace('/');
     }
   };
 
@@ -98,46 +101,17 @@ export default function RegisterPage() {
     setSocialLoading(null);
   };
 
-  if (registrationSuccess) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-full max-w-md px-4 sm:px-6 lg:px-8 py-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
-              <MailCheck size={32} className="text-green-600" />
-            </div>
-            <h1 className="ty-h2 text-noor-black mb-3">Check your email</h1>
-            <p className="ty-body-sm text-noor-gray mb-2">
-              We&apos;ve sent a verification link to
-            </p>
-            <p className="ty-body font-medium text-noor-black mb-6">{form.email}</p>
-            <p className="ty-body-sm text-noor-gray mb-8">
-              Click the link in the email to verify your account. You can close this window.
-            </p>
-            <div className="space-y-3">
-              <Link
-                href="/login"
-                className="block w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300 text-center"
-              >
-                Go to Sign in
-              </Link>
-              <Link
-                href="/verify-email"
-                className="block w-full border border-zinc-200 py-4 ty-button text-noor-black hover:bg-zinc-50 transition-all text-center"
-              >
-                Enter verification code
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setSocialLoading('google');
+    await socialLogin('google', credentialResponse.credential);
+    setSocialLoading(null);
+  };
+
+  const handleGoogleError = () => {
+    setSocialLoading(null);
+  };
+
+
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -306,7 +280,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -338,18 +312,26 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-3">
-            <SocialLoginButton
-              provider="google"
-              onClick={() => handleSocialSignup('Google')}
-              loading={socialLoading === 'Google'}
-              disabled={loading}
-            />
-            <SocialLoginButton
-              provider="facebook"
-              onClick={() => handleSocialSignup('Facebook')}
-              loading={socialLoading === 'Facebook'}
-              disabled={loading}
-            />
+            <div className="w-full">
+              {socialLoading === 'google' ? (
+                <button
+                  disabled
+                  className="w-full flex items-center justify-center gap-3 py-3 ty-body font-medium bg-white border border-zinc-200 text-noor-black opacity-60 cursor-not-allowed"
+                >
+                  <Loader2 size={18} className="animate-spin" />
+                  Connecting...
+                </button>
+              ) : (
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  width="100%"
+                  theme="outline"
+                  text="continue_with"
+                  shape="rectangular"
+                />
+              )}
+            </div>
           </div>
         </GuestGuard>
       </div>

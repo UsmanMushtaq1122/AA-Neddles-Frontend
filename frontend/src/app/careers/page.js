@@ -1,47 +1,91 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Search, Briefcase, MapPin } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Search, Briefcase, MapPin, Loader2, X, CheckCircle2 } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
+import { careersApi } from '@/services/careers';
 
-const jobList = [
-  { title: 'Assistant Manager Product Development', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Fashion Designer', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Performance Marketing Manager', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Inventory Assistant', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Tracer', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Customer Experience Executive', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Graphic Designer', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Quality Assurance Specialist', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Merchandiser', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Tailoring Supervisor', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Retail Sales Manager', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Production Planner', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Social Media Executive', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Logistics Coordinator', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Customer Support Representative', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Visual Merchandiser', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Procurement Executive', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Finance Officer', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Inventory Coordinator', branch: 'Head Office & Factory', type: 'Full Time' },
-  { title: 'Brand Partnerships Lead', branch: 'Head Office & Factory', type: 'Full Time' },
-];
+const EMPTY_FORM = { name: '', email: '', phone: '', portfolio: '', message: '' };
 
 export default function CareersPage() {
+  const [apiJobs, setApiJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [branch, setBranch] = useState('');
   const [jobType, setJobType] = useState('');
+
+  const [applyJob, setApplyJob] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    careersApi.getAll()
+      .then((res) => {
+        const data = res.data || [];
+        setApiJobs(Array.isArray(data) ? data.filter((j) => j.isActive !== false) : []);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const jobList = useMemo(() => {
+    return apiJobs.map((j) => ({
+      id: j.id,
+      title: j.title,
+      branch: j.location || j.branch || '',
+      type: j.type || 'Full Time',
+    }));
+  }, [apiJobs]);
+
+  const branches = useMemo(() => ['All', ...new Set(jobList.map((j) => j.branch).filter(Boolean))], [jobList]);
+  const types = useMemo(() => ['All', ...new Set(jobList.map((j) => j.type).filter(Boolean))], [jobList]);
 
   const filteredJobs = useMemo(() => {
     return jobList.filter((job) => {
       const matchesQuery = query
         ? job.title.toLowerCase().includes(query.toLowerCase())
         : true;
-      const matchesBranch = branch ? job.branch === branch : true;
-      const matchesType = jobType ? job.type === jobType : true;
+      const matchesBranch = branch && branch !== 'All' ? job.branch === branch : true;
+      const matchesType = jobType && jobType !== 'All' ? job.type === jobType : true;
       return matchesQuery && matchesBranch && matchesType;
     });
-  }, [query, branch, jobType]);
+  }, [query, branch, jobType, jobList]);
+
+  const openApply = (job) => {
+    setApplyJob(job);
+    setForm(EMPTY_FORM);
+    setSubmitError('');
+    setSubmitted(false);
+  };
+
+  const closeApply = () => {
+    setApplyJob(null);
+    setForm(EMPTY_FORM);
+    setSubmitError('');
+    setSubmitted(false);
+  };
+
+  const handleApply = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      const portfolio = form.portfolio.trim();
+      await careersApi.apply(applyJob.id, {
+        ...form,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        portfolio: portfolio && !/^https?:\/\//i.test(portfolio) ? `https://${portfolio}` : portfolio,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError(err?.message || 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <PageLayout
@@ -54,7 +98,7 @@ export default function CareersPage() {
     >
       <div className="space-y-16">
         <section className="relative overflow-hidden bg-noor-black text-white">
-          <div className="absolute inset-0 bg-[url('/images/career-hero.jpg')] bg-cover bg-center opacity-40" />
+          <div className="absolute inset-0 bg-[url('/images/hero1.jpeg')] bg-cover bg-center opacity-40" />
           <div className="relative px-6 py-24 sm:px-10 md:px-16 lg:px-20">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight">WEAVE YOUR CAREER WITH US</h1>
@@ -75,77 +119,190 @@ export default function CareersPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Job Title ..."
-                    className="w-full border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                  className="w-full border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
                 />
               </label>
               <label className="block">
-                <span className="sr-only">Select Branch</span>
+                <span className="sr-only">Branch</span>
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
-                    className="w-full border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                  className="w-full border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10 appearance-none"
                 >
-                  <option value="">Select Branch</option>
-                  <option value="Head Office & Factory">Head Office & Factory</option>
+                  {branches.map((b) => (
+                    <option key={b} value={b === 'All' ? '' : b}>{b}</option>
+                  ))}
                 </select>
               </label>
               <label className="block">
-                <span className="sr-only">Select Job Type</span>
+                <span className="sr-only">Job Type</span>
                 <select
                   value={jobType}
                   onChange={(e) => setJobType(e.target.value)}
-                    className="w-full border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                  className="w-full border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10 appearance-none"
                 >
-                  <option value="">Select Job Type</option>
-                  <option value="Full Time">Full Time</option>
+                  {types.map((t) => (
+                    <option key={t} value={t === 'All' ? '' : t}>{t}</option>
+                  ))}
                 </select>
               </label>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center bg-[#00A65A] px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#00894f]"
-              >
-                <Search size={18} className="mr-2" />
-                Search Job
-              </button>
             </div>
           </div>
 
-          <div className="border border-zinc-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <h3 className="text-2xl font-semibold text-noor-black">{filteredJobs.length} Jobs Listed</h3>
-              <p className="text-sm text-zinc-500">Find the latest openings and apply for the role that matches your talent.</p>
+          {loading ? (
+            <div className="flex justify-center py-16">
+              <Loader2 size={24} className="animate-spin text-noor-maroon" />
             </div>
-
-            <div className="mt-6 overflow-hidden border border-zinc-200">
-              <div className="grid grid-cols-12 gap-4 border-b border-zinc-200 bg-zinc-50 px-6 py-4 text-xs uppercase tracking-[0.2em] text-zinc-500">
-                <span className="col-span-6">Job Title</span>
-                <span className="col-span-4">Location</span>
-                <span className="col-span-2 text-right">Apply</span>
-              </div>
-              {filteredJobs.map((job) => (
-                <div key={job.title} className="grid grid-cols-12 gap-4 border-b border-zinc-200 px-6 py-5 text-sm text-noor-black last:border-0">
-                  <div className="col-span-6 flex items-center gap-3">
-                    <Briefcase size={18} className="text-noor-maroon" />
-                    <span>{job.title}</span>
-                  </div>
-                  <div className="col-span-4 flex items-center gap-2 text-zinc-500">
-                    <MapPin size={16} />
-                    <span>{job.branch}</span>
-                  </div>
-                  <div className="col-span-2 flex items-center justify-end">
-                    <a
-                      href={`mailto:careers@aaneddles.com?subject=${encodeURIComponent('Application: ' + job.title)}`}
-                      className="border border-zinc-200 bg-white px-5 py-3 text-sm font-medium text-noor-black shadow-sm transition hover:bg-zinc-50"
+          ) : (
+            <>
+              <p className="text-sm text-zinc-500">
+                {filteredJobs.length} open position{filteredJobs.length !== 1 ? 's' : ''}
+              </p>
+              <div className="space-y-4">
+                {filteredJobs.map((job, idx) => (
+                  <div key={idx} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border border-zinc-200 bg-white p-5">
+                    <div className="flex items-start gap-4">
+                      <div className="hidden sm:flex w-12 h-12 bg-zinc-50 rounded-full items-center justify-center shrink-0">
+                        <Briefcase size={20} className="text-noor-maroon" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-semibold text-noor-black">{job.title}</h3>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-zinc-500">
+                          <span className="flex items-center gap-1">
+                            <MapPin size={14} strokeWidth={1.5} />
+                            {job.branch}
+                          </span>
+                          <span>{job.type}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => openApply(job)}
+                      className="whitespace-nowrap px-6 py-3 bg-noor-black text-white text-sm font-semibold hover:bg-noor-gold transition-colors text-center cursor-pointer"
                     >
                       Apply Now
-                    </a>
+                    </button>
                   </div>
+                ))}
+              </div>
+              {filteredJobs.length === 0 && (
+                <div className="text-center py-12">
+                  <Search size={40} className="mx-auto text-zinc-200 mb-4" />
+                  <h3 className="text-lg font-medium text-noor-black mb-1">No positions match your criteria</h3>
+                  <p className="text-sm text-zinc-400">Try adjusting your search filters.</p>
                 </div>
-              ))}
-            </div>
-          </div>
+              )}
+            </>
+          )}
         </section>
       </div>
+
+      {applyJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" role="dialog" aria-modal="true">
+          <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white p-6 sm:p-8 relative">
+            <button
+              type="button"
+              onClick={closeApply}
+              aria-label="Close"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-700 cursor-pointer"
+            >
+              <X size={22} />
+            </button>
+
+            {submitted ? (
+              <div className="py-10 text-center">
+                <CheckCircle2 size={48} className="mx-auto text-emerald-500 mb-4" />
+                <h3 className="text-xl font-semibold text-noor-black">Application Sent</h3>
+                <p className="mt-3 text-sm text-zinc-500 leading-relaxed">
+                  Thank you, {form.name}. Your application for <span className="text-noor-black font-medium">{applyJob.title}</span> has been received. Our team will get back to you soon.
+                </p>
+                <button
+                  type="button"
+                  onClick={closeApply}
+                  className="mt-6 px-6 py-3 bg-noor-black text-white text-sm font-semibold hover:bg-noor-gold transition-colors cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-2xl font-semibold text-noor-black">Apply for {applyJob.title}</h3>
+                <p className="mt-2 text-sm text-zinc-500">{applyJob.branch} · {applyJob.type}</p>
+
+                <form onSubmit={handleApply} className="mt-6 space-y-4">
+                  <div>
+                    <label htmlFor="apply-name" className="block text-sm font-medium text-zinc-700">Full Name *</label>
+                    <input
+                      id="apply-name"
+                      type="text"
+                      required
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="mt-1.5 w-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="apply-email" className="block text-sm font-medium text-zinc-700">Email *</label>
+                    <input
+                      id="apply-email"
+                      type="email"
+                      required
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="mt-1.5 w-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="apply-phone" className="block text-sm font-medium text-zinc-700">Phone Number</label>
+                    <input
+                      id="apply-phone"
+                      type="tel"
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      className="mt-1.5 w-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="apply-portfolio" className="block text-sm font-medium text-zinc-700">Portfolio / LinkedIn URL</label>
+                    <input
+                      id="apply-portfolio"
+                      type="text"
+                      value={form.portfolio}
+                      onChange={(e) => setForm({ ...form, portfolio: e.target.value })}
+                      placeholder="e.g. linkedin.com/in/your-profile"
+                      className="mt-1.5 w-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="apply-message" className="block text-sm font-medium text-zinc-700">Why are you a good fit?</label>
+                    <textarea
+                      id="apply-message"
+                      rows={4}
+                      value={form.message}
+                      onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      className="mt-1.5 w-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 outline-none focus:border-noor-maroon focus:ring-2 focus:ring-noor-maroon/10"
+                    />
+                  </div>
+
+                  {submitError && (
+                    <p className="text-sm text-red-600 bg-red-50 border border-red-100 px-4 py-3">{submitError}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full px-6 py-3.5 bg-noor-black text-white text-sm font-semibold hover:bg-noor-gold transition-colors disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    {submitting ? <Loader2 size={16} className="animate-spin" /> : null}
+                    {submitting ? 'Submitting...' : 'Submit Application'}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </PageLayout>
   );
 }

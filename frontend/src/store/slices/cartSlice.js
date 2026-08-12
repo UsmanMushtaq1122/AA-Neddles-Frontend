@@ -22,6 +22,7 @@ function saveCart(items) {
 const initialState = {
   items: [],
   isOpen: false,
+  syncing: false,
 };
 
 const cartSlice = createSlice({
@@ -69,6 +70,41 @@ const cartSlice = createSlice({
     closeCartAction: (state) => {
       state.isOpen = false;
     },
+    setCartFromApiAction: (state, action) => {
+      state.items = action.payload;
+      saveCart(state.items);
+    },
+    mergeCartFromApiAction: (state, action) => {
+      const serverItems = action.payload;
+      const localItems = state.items;
+      const merged = [];
+      const serverIds = new Set();
+
+      for (const serverItem of serverItems) {
+        serverIds.add(serverItem.id);
+        const localMatches = localItems.filter((l) => l.id === serverItem.id);
+
+        if (localMatches.length > 0) {
+          const totalLocalQty = localMatches.reduce((sum, l) => sum + l.quantity, 0);
+          const mergedQty = Math.max(serverItem.quantity, totalLocalQty);
+          merged.push({ ...localMatches[0], quantity: mergedQty });
+        } else {
+          merged.push(serverItem);
+        }
+      }
+
+      for (const localItem of localItems) {
+        if (!serverIds.has(localItem.id)) {
+          merged.push(localItem);
+        }
+      }
+
+      state.items = merged;
+      saveCart(state.items);
+    },
+    setSyncingAction: (state, action) => {
+      state.syncing = action.payload;
+    },
   },
 });
 
@@ -81,10 +117,14 @@ export const {
   toggleCartAction,
   openCartAction,
   closeCartAction,
+  setCartFromApiAction,
+  mergeCartFromApiAction,
+  setSyncingAction,
 } = cartSlice.actions;
 
 export const selectCartItems = (state) => state.cart.items;
 export const selectCartIsOpen = (state) => state.cart.isOpen;
+export const selectCartSyncing = (state) => state.cart.syncing;
 export const selectItemCount = (state) =>
   state.cart.items.reduce((sum, item) => sum + item.quantity, 0);
 export const selectSubtotal = (state) =>

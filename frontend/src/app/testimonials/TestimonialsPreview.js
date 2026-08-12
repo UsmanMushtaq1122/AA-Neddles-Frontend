@@ -1,16 +1,13 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star, BadgeCheck, Heart, ShoppingBag, Truck, RefreshCw, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { testimonialsApi } from '@/services/testimonials';
 
-/* ═══════════════════════════════════════════════
-   DATA — only what the preview needs
-   ═══════════════════════════════════════════════ */
-
-const galleryCustomers = [
+const DEFAULT_GALLERY = [
   { id: 1, name: 'Ayesha Khan', city: 'Lahore', product: 'Luxury Lawn Collection', rating: 5, text: 'Beautiful fabric and exactly like the website photos.', image: '/images/AA1.jpeg', height: 'tall' },
   { id: 2, name: 'Fatima Riaz', city: 'Karachi', product: 'Luxury Pret — Noor Series', rating: 5, text: 'The embroidery and stitching were flawless.', image: '/images/AA4.jpeg', height: 'medium' },
   { id: 3, name: 'Sana Tariq', city: 'Islamabad', product: 'Formal Wear — Guldasta', rating: 5, text: 'Simply stunning formal wear. Exquisite details.', image: '/images/AA6.jpeg', height: 'short' },
@@ -43,6 +40,27 @@ function AnimatedNumber({ value, duration = 2000 }) {
    ═══════════════════════════════════════════════ */
 
 export default function TestimonialsPreview() {
+  const [galleryCustomers, setGalleryCustomers] = useState(DEFAULT_GALLERY);
+
+  useEffect(() => {
+    testimonialsApi.getAll()
+      .then((res) => {
+        if (res.success && res.data?.length) {
+          setGalleryCustomers(res.data.map((t, i) => ({
+            id: t.id,
+            name: t.name || t.customerName || `Customer ${i + 1}`,
+            city: t.city || '',
+            product: t.product || '',
+            rating: t.rating || 5,
+            text: t.comment || t.content || '',
+            image: t.image || '/images/AA1.jpeg',
+            height: ['tall', 'medium', 'short'][i % 3],
+          })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <>
       {/* ── Section Title ── */}
@@ -176,7 +194,7 @@ export default function TestimonialsPreview() {
           >
             <Link
               href="/testimonials"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-noor-black text-white ty-button hover:bg-noor-maroon transition-colors duration-300"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-noor-black text-white ty-button hover:bg-noor-gold transition-colors duration-300"
             >
               View All Testimonials
               <ArrowRight size={16} />

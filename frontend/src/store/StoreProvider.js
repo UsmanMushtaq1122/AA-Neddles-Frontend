@@ -31,7 +31,12 @@ function makeStore() {
 
 function HydrateStore({ store }) {
   useEffect(() => {
-    store.dispatch(hydrateAuthAction(loadAuth()));
+    const authData = loadAuth();
+    if (authData) {
+      store.dispatch(hydrateAuthAction(authData));
+    } else {
+      store.dispatch(hydrateAuthAction(null));
+    }
     store.dispatch(hydrateCartAction(loadCart()));
     store.dispatch(hydrateWishlistAction(loadWishlist()));
   }, [store]);

@@ -15,16 +15,6 @@ const PROVIDERS = {
       </svg>
     ),
   },
-  facebook: {
-    label: 'Continue with Facebook',
-    bgClass: 'text-white hover:opacity-90',
-    style: { backgroundColor: '#3b5998' },
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M22 12.07C22 6.48 17.52 2 11.93 2S1.86 6.48 1.86 12.07C1.86 17.08 5.86 21.08 10.63 21.93v-6.99H8.08v-2.88h2.55V10c0-2.52 1.5-3.9 3.78-3.9 1.1 0 2.25.2 2.25.2v2.47h-1.27c-1.25 0-1.64.78-1.64 1.58v1.87h2.79l-.45 2.88h-2.34v6.99C18.14 21.08 22 17.08 22 12.07z" fill="#fff"/>
-      </svg>
-    ),
-  },
 };
 
 export default function SocialLoginButton({ provider, onClick, loading = false, disabled = false }) {

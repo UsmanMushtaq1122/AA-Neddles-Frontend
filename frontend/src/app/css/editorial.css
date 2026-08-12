@@ -1,0 +1,107 @@
+/* ========================================================
+   PREMIUM CARD DESIGN SYSTEM
+   ======================================================== */
+
+.editorial-banners__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.editorial-banners__card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.editorial-banners__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.editorial-banners__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  transition: transform 0.4s ease;
+}
+
+.editorial-banners__card:hover .editorial-banners__img { transform: scale(1.03); }
+
+.editorial-banners__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, transparent 60%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.editorial-banners__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px;
+  z-index: 2;
+}
+
+.editorial-banners__title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+  line-height: 1.15;
+}
+
+.editorial-banners__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 20px;
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+.editorial-banners__cta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  padding-bottom: 2px;
+  transition: border-color 0.25s;
+  width: fit-content;
+}
+
+.editorial-banners__card:hover .editorial-banners__cta { border-color: #fff; }
+
+@media (max-width: 768px) {
+  .editorial-banners__grid { grid-template-columns: 1fr; gap: 16px; }
+  .editorial-banners__card { border-radius: 20px; }
+}
+
+@media (max-width: 640px) {
+  .editorial-banners__card { border-radius: 16px; }
+}
+
+.hover-lift-premium {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { motion, useInView } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import {
@@ -25,133 +25,11 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCarouselKeyboard } from '@/hooks/useCarouselKeyboard';
+import { testimonialsApi } from '@/services/testimonials';
 
 /* ═══════════════════════════════════════════════
    DATA
    ═══════════════════════════════════════════════ */
-
-const galleryCustomers = [
-  {
-    id: 1,
-    name: 'Ayesha Khan',
-    city: 'Lahore',
-    product: 'Luxury Lawn Collection',
-    rating: 5,
-    text: 'Beautiful fabric and exactly like the website photos.',
-    image: '/images/AA1.jpeg',
-    verified: true,
-    date: 'March 2026',
-    height: 'tall',
-  },
-  {
-    id: 2,
-    name: 'Fatima Riaz',
-    city: 'Karachi',
-    product: 'Luxury Pret — Noor Series',
-    rating: 5,
-    text: 'The embroidery and stitching were flawless. Received countless compliments!',
-    image: '/images/AA4.jpeg',
-    verified: true,
-    date: 'February 2026',
-    height: 'medium',
-  },
-  {
-    id: 3,
-    name: 'Sana Tariq',
-    city: 'Islamabad',
-    product: 'Formal Wear — Guldasta',
-    rating: 5,
-    text: 'Simply stunning formal wear. The details are exquisite and the fit is perfect.',
-    image: '/images/AA6.jpeg',
-    verified: true,
-    date: 'January 2026',
-    height: 'short',
-  },
-  {
-    id: 4,
-    name: 'Hira Qureshi',
-    city: 'Rawalpindi',
-    product: 'Ready to Wear — Spring Edit',
-    rating: 5,
-    text: 'Loyal customer for years. New arrivals never disappoint. Top-notch customer service.',
-    image: '/images/AA2.jpeg',
-    verified: true,
-    date: 'March 2026',
-    height: 'tall',
-  },
-  {
-    id: 5,
-    name: 'Maham Sheikh',
-    city: 'Faisalabad',
-    product: 'Bridal — Mehendi Collection',
-    rating: 5,
-    text: 'Museum-quality craftsmanship. Every detail from thread work to hemline was impeccable.',
-    image: '/images/AA7.jpeg',
-    verified: true,
-    date: 'December 2025',
-    height: 'medium',
-  },
-  {
-    id: 6,
-    name: 'Zainab Ali',
-    city: 'Multan',
-    product: 'Unstitched — Premium Lawn',
-    rating: 5,
-    text: 'Beautiful designs and excellent fabric. The unstitched collection gives perfect freedom.',
-    image: '/images/AA8.jpeg',
-    verified: true,
-    date: 'February 2026',
-    height: 'short',
-  },
-  {
-    id: 7,
-    name: 'Mehreen Aslam',
-    city: 'Peshawar',
-    product: 'Luxury Formals — Zara',
-    rating: 5,
-    text: 'The colour palette is so rich and elegant. Worth every penny spent.',
-    image: '/images/AA3.jpeg',
-    verified: true,
-    date: 'January 2026',
-    height: 'tall',
-  },
-  {
-    id: 8,
-    name: 'Amina Malik',
-    city: 'Quetta',
-    product: 'Eid Collection — Spring Edit',
-    rating: 5,
-    text: 'Perfect Eid outfit every year. The premium packaging felt like receiving a gift.',
-    image: '/images/AA10.jpeg',
-    verified: true,
-    date: 'March 2026',
-    height: 'medium',
-  },
-  {
-    id: 9,
-    name: 'Nadia Hussain',
-    city: 'Sialkot',
-    product: 'Luxury Pret — Gilded Series',
-    rating: 4,
-    text: 'Fast delivery nationwide. The outfit fit perfectly and fabric quality exceeded expectations.',
-    image: '/images/AA11.jpeg',
-    verified: true,
-    date: 'February 2026',
-    height: 'short',
-  },
-  {
-    id: 10,
-    name: 'Rabia Farooq',
-    city: 'Gujranwala',
-    product: 'Unstitched — Premium',
-    rating: 5,
-    text: 'My entire family orders from here now. It has become our tradition.',
-    image: '/images/AA5.jpeg',
-    verified: true,
-    date: 'January 2026',
-    height: 'tall',
-  },
-];
 
 const customerStories = [
   {
@@ -448,7 +326,7 @@ function SectionTitle() {
    SECTION 1 — CUSTOMER PHOTO GALLERY (MASONRY)
    ═══════════════════════════════════════════════ */
 
-function CustomerPhotoGallery() {
+function CustomerPhotoGallery({ customers = [] }) {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   return (
@@ -462,7 +340,7 @@ function CustomerPhotoGallery() {
 
         {/* Masonry Grid */}
         <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
-          {galleryCustomers.map((customer, i) => (
+          {customers.map((customer, i) => (
             <motion.div
               key={customer.id}
               initial={{ opacity: 0, y: 28 }}
@@ -1231,10 +1109,40 @@ function CTASection() {
    ═══════════════════════════════════════════════ */
 
 export default function TestimonialsContent() {
+  const [apiTestimonials, setApiTestimonials] = useState([]);
+  const [testimonialsLoaded, setTestimonialsLoaded] = useState(false);
+
+  useEffect(() => {
+    testimonialsApi.getAll()
+      .then((res) => {
+        const data = res.data || [];
+        setApiTestimonials(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {})
+      .finally(() => setTestimonialsLoaded(true));
+  }, []);
+
+  const galleryData = useMemo(() => {
+    if (!testimonialsLoaded) return [];
+    const gallery = apiTestimonials.filter((t) => !t.type || t.type === 'gallery' || t.type === 'photo');
+    return gallery.map((t, i) => ({
+      id: t.id || i,
+      name: t.customerName || 'Customer',
+      city: t.city || '',
+      product: t.product || '',
+      rating: t.rating || 5,
+      text: t.content || t.comment || '',
+      image: t.image || t.customerImage || '',
+      verified: true,
+      date: t.date || '',
+      height: (['tall', 'medium', 'short'])[i % 3],
+    }));
+  }, [apiTestimonials, testimonialsLoaded]);
+
   return (
     <>
       <SectionTitle />
-      <CustomerPhotoGallery />
+      <CustomerPhotoGallery customers={galleryData} />
       <CustomerStories />
       <TrustBar />
       <VideoShowcase />

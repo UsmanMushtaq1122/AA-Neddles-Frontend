@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Minus, Plus, Heart, ShoppingBag } from 'lucide-react';
-import productsData from '@/features/products/products.json';
+import { productsApi } from '@/services/products';
 import ProductCard from '@/components/ProductCard';
 import Accordion from '@/components/Accordion';
 import { useCart } from '@/hooks/useCart';
@@ -30,6 +30,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const [related, setRelated] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -58,46 +59,62 @@ export default function ProductPageContent({ slug: initialSlug }) {
   };
 
   useEffect(() => {
-    setLoading(true);
-    const found = productsData.find((p) => p.slug === slug);
-    setProduct(found || null);
-    if (found) {
-      setRelated(
-        shuffleArray(productsData.filter((p) => p.id !== found.id)).slice(0, 10)
-      );
-      setCustomersAlsoBought(
-        shuffleArray(productsData.filter((p) => p.id !== found.id)).slice(0, 10)
-      );
-      setSimilarProducts(
-        shuffleArray(
-          productsData.filter((p) => p.id !== found.id && p.category === found.category)
-        ).slice(0, 10)
-      );
-      setTopTrendingProducts(
-        shuffleArray(productsData.filter((p) => p.isTrending && p.id !== found.id)).slice(0, 10)
-      );
-
+    const loadingTimer = setTimeout(() => setLoading(true), 0);
+    const fetchProduct = async () => {
       try {
-        const viewedStr = localStorage.getItem('recentlyViewed');
-        let viewed = viewedStr ? JSON.parse(viewedStr) : [];
-        const viewedProducts = viewed.map(id => productsData.find(p => p.id === id)).filter(Boolean);
-        setRecentlyViewed(viewedProducts);
+        setFetchError(false);
+        const res = await productsApi.getBySlug(slug);
+        const found = res.data;
+        setProduct(found || null);
+        if (found) {
+          const relatedRes = await productsApi.getAll({ limit: 10 });
+          const allProducts = relatedRes.data?.products || [];
+          setRelated(allProducts.filter((p) => p.id !== found.id).slice(0, 10));
+          setCustomersAlsoBought(allProducts.filter((p) => p.id !== found.id).slice(0, 10));
+          setSimilarProducts(
+            allProducts.filter(
+              (p) => p.id !== found.id && p.categoryId === found.categoryId
+            ).slice(0, 10)
+          );
+          setTopTrendingProducts(
+            allProducts.filter((p) => p.isFeatured && p.id !== found.id).slice(0, 10)
+          );
 
-        viewed = viewed.filter(id => id !== found.id);
-        viewed.unshift(found.id);
-        if (viewed.length > 10) viewed.pop();
-        localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
-      } catch (e) {
-        console.error("Could not parse recently viewed", e);
+          try {
+            const viewedStr = localStorage.getItem('recentlyViewed');
+            let viewed = viewedStr ? JSON.parse(viewedStr) : [];
+            const viewedProducts = [];
+            setRecentlyViewed(viewedProducts);
+
+            viewed = viewed.filter(id => id !== found.id);
+            viewed.unshift(found.id);
+            if (viewed.length > 10) viewed.pop();
+            localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
+          } catch (e) {
+            console.error("Could not parse recently viewed", e);
+          }
+
+          const sizes = found.sizes || (found.images || []).length > 0 ? ['One Size'] : ['One Size'];
+          const isCustomSize = sizes.length === 1 && (sizes[0] === 'Custom' || sizes[0] === 'One Size');
+          setSelectedSize(isCustomSize ? sizes[0] : sizes[0]);
+          setQuantity(1);
+          setScrollProgress(0);
+          setGalleryScrollEl(null);
+        }
+      } catch (err) {
+        setProduct(null);
+        if (err?.status === 404) {
+          setFetchError(false);
+        } else {
+          setFetchError(true);
+        }
+      } finally {
+        setLoading(false);
+        clearTimeout(loadingTimer);
       }
-
-      const isCustomSize = found.sizes.length === 1 && (found.sizes[0] === 'Custom' || found.sizes[0] === 'One Size');
-      setSelectedSize(isCustomSize ? found.sizes[0] : found.sizes[0]);
-      setQuantity(1);
-      setScrollProgress(0);
-      setGalleryScrollEl(null);
-    }
-    setLoading(false);
+    };
+    fetchProduct();
+    return () => clearTimeout(loadingTimer);
   }, [slug]);
 
   if (loading) {
@@ -122,11 +139,26 @@ export default function ProductPageContent({ slug: initialSlug }) {
   if (!product) {
     return (
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-20 text-center">
-        <h1 className="ty-h3 font-semibold">Product Not Found</h1>
-        <p className="text-zinc-400 mt-2">The product you&apos;re looking for doesn&apos;t exist.</p>
-        <Link href="/" className="inline-block mt-6 px-8 py-3 bg-noor-black text-white ty-button hover:bg-noor-maroon transition-colors">
-          Back to Home
-        </Link>
+        {fetchError ? (
+          <>
+            <h1 className="ty-h3 font-semibold">Something went wrong</h1>
+            <p className="text-zinc-400 mt-2">We couldn&apos;t load this product. Please try again.</p>
+            <button
+              onClick={() => { setLoading(true); setFetchError(false); window.location.reload(); }}
+              className="inline-block mt-6 px-8 py-3 bg-noor-black text-white ty-button hover:bg-noor-gold transition-colors"
+            >
+              Retry
+            </button>
+          </>
+        ) : (
+          <>
+            <h1 className="ty-h3 font-semibold">Product Not Found</h1>
+            <p className="text-zinc-400 mt-2">The product you&apos;re looking for doesn&apos;t exist.</p>
+            <Link href="/" className="inline-block mt-6 px-8 py-3 bg-noor-black text-white ty-button hover:bg-noor-gold transition-colors">
+              Back to Home
+            </Link>
+          </>
+        )}
       </div>
     );
   }
@@ -144,7 +176,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
       id: product.id,
       title: product.title,
       price: product.salePrice || product.price,
-      image: product.images[0],
+      image: product.images?.[0] || '',
       selectedSize,
       selectedColor: null,
       quantity,
@@ -162,7 +194,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
       id: product.id,
       title: product.title,
       price: product.salePrice || product.price,
-      image: product.images[0],
+      image: product.images?.[0] || '',
       selectedSize,
       selectedColor: null,
       quantity,
@@ -171,7 +203,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
     router.push(isAuthenticated ? '/checkout' : '/login?redirect=/checkout');
   };
 
-  const categoryLabel = product.category
+  const categoryLabel = (product.category || '')
     .split('-')
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
@@ -334,15 +366,15 @@ export default function ProductPageContent({ slug: initialSlug }) {
                   {isSale ? (
                     <div className="flex items-center gap-3">
                       <span className="text-[22px] font-semibold text-noor-black tracking-tight">
-                        Rs.{product.salePrice.toLocaleString()}
+                        Rs.{(product.salePrice ?? 0).toLocaleString()}
                       </span>
                       <span className="text-[16px] text-zinc-400 line-through">
-                        Rs.{product.price.toLocaleString()}
+                        Rs.{(product.price ?? 0).toLocaleString()}
                       </span>
                     </div>
                   ) : (
                     <span className="text-[22px] font-semibold text-noor-black tracking-tight">
-                      Rs.{product.price.toLocaleString()}
+                      Rs.{(product.price ?? 0).toLocaleString()}
                     </span>
                   )}
                 </div>
@@ -390,18 +422,32 @@ export default function ProductPageContent({ slug: initialSlug }) {
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => setSelectedSize(size)}
-                      className={`min-w-[52px] px-4 py-2.5 text-[13px] font-medium border transition-all ${selectedSize === size ? 'bg-noor-black text-white border-noor-black' : 'border-zinc-300 text-zinc-700 hover:border-noor-black hover:text-noor-black'
+                  {product.sizes.map((size) => {
+                    const outOfStock = (
+                      (product.outOfStockSizes && product.outOfStockSizes.includes(size)) ||
+                      (product.stockByOption && product.stockByOption[size] === 0) ||
+                      (product.variants && product.variants.find(v => (v.size === size || v.name === size) && v.stock === 0))
+                    );
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        disabled={outOfStock}
+                        onClick={() => !outOfStock && setSelectedSize(size)}
+                        className={`min-w-[52px] px-4 py-2.5 text-[13px] font-medium border transition-all ${
+                          selectedSize === size
+                            ? 'bg-noor-black text-white border-noor-black'
+                            : outOfStock
+                              ? 'border-zinc-200 text-zinc-300 line-through cursor-not-allowed opacity-50'
+                              : 'border-zinc-300 text-zinc-700 hover:border-noor-black hover:text-noor-black'
                         }`}
-                      aria-pressed={selectedSize === size}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                        aria-pressed={selectedSize === size}
+                        aria-disabled={outOfStock}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -450,7 +496,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
 
                 <button
                   onClick={handleAddToBag}
-                  className="flex-1 py-4 bg-noor-black text-white text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-3 hover:bg-noor-maroon transition-all"
+                  className="flex-1 py-4 bg-noor-black text-white text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-3 hover:bg-noor-gold transition-all"
                   aria-label="Add to cart"
                 >
                   <ShoppingBag size={18} />
@@ -459,7 +505,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
               </div>
               <button
                 onClick={handleBuyNow}
-                className="w-full py-4 bg-noor-maroon text-white text-[11px] font-semibold uppercase tracking-[0.06em] hover:bg-noor-maroon/90 transition-all"
+                className="w-full py-4 bg-noor-gold text-white text-[11px] font-semibold uppercase tracking-[0.06em] hover:bg-noor-gold/90 transition-all"
                 aria-label="Buy now"
               >
                 BUY IT NOW
@@ -567,7 +613,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 >
                   <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
                     <Image
-                      src={item.images[0]}
+                      src={item.images?.[0] || '/placeholder.png'}
                       alt={item.title}
                       width={400}
                       height={533}
@@ -576,7 +622,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     />
                   </div>
                   <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
-                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{item.price.toLocaleString()}</p>
+                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{(item.price ?? 0).toLocaleString()}</p>
                 </Link>
               ))}
             </div>
@@ -615,7 +661,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 >
                   <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
                     <Image
-                      src={item.images[0]}
+                      src={item.images?.[0] || '/placeholder.png'}
                       alt={item.title}
                       width={400}
                       height={533}
@@ -624,7 +670,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     />
                   </div>
                   <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
-                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{item.price.toLocaleString()}</p>
+                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{(item.price ?? 0).toLocaleString()}</p>
                 </Link>
               ))}
             </div>

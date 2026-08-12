@@ -7,15 +7,13 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { useTrendingProducts } from '@/hooks/useProducts';
 import ProductCard from './ProductCard';
 
-const TABS = ['NEW ARRIVALS', 'LUXURY PRET', 'LUXURY FORMALS', 'KIDSWEAR', 'UNSTITCHED', 'M.LUXE FABRICS', 'ACCESSORIES'];
+const TABS = ['NEW ARRIVALS', 'LUXURY PRET', 'LUXURY FORMALS', 'KIDSWEAR'];
 
 const TAB_TO_CATEGORY = {
   'LUXURY PRET': 'luxury-pret',
   'LUXURY FORMALS': 'luxury-formals',
   'KIDSWEAR': 'kids',
-  'UNSTITCHED': 'unstitched',
-  'M.LUXE FABRICS': 'mluxe-fabrics',
-  'ACCESSORIES': 'accessories',
+  
 };
 
 export default function TrendingCarousel() {
@@ -53,12 +51,13 @@ export default function TrendingCarousel() {
 
   useEffect(() => {
     if (!emblaApi) return;
-    
-    onScroll(emblaApi);
+
+    const timer = setTimeout(() => onScroll(emblaApi), 0);
     emblaApi.on('scroll', onScroll);
     emblaApi.on('reInit', onScroll);
-    
+
     return () => {
+      clearTimeout(timer);
       emblaApi.destroy();
     };
   }, [emblaApi, onScroll]);

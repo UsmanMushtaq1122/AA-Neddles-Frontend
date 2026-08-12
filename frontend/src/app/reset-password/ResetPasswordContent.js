@@ -31,8 +31,12 @@ function ResetPasswordForm() {
       await checkResetToken(token);
       setTokenChecking(false);
     };
-    if (token) verify();
-    else setTokenChecking(false);
+    if (token) {
+      verify();
+    } else {
+      const timer = setTimeout(() => setTokenChecking(false), 0);
+      return () => clearTimeout(timer);
+    }
   }, [token, checkResetToken]);
 
   useEffect(() => {
@@ -77,7 +81,7 @@ function ResetPasswordForm() {
     setErrors(errs);
     setTouched({ password: true, confirmPassword: true });
     if (Object.keys(errs).length > 0) return;
-    await resetPasswordRequest(token || 'mock', form.password);
+    await resetPasswordRequest(token, form.password);
   };
 
   if (tokenChecking) {
@@ -109,7 +113,7 @@ function ResetPasswordForm() {
             </p>
             <Link
               href="/forgot-password"
-              className="inline-block w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300"
+              className="inline-block w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300"
             >
               Request new reset link
             </Link>
@@ -164,7 +168,7 @@ function ResetPasswordForm() {
               </p>
               <Link
                 href="/login"
-                className="inline-block w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300"
+                className="inline-block w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300"
               >
                 Sign in
               </Link>
@@ -271,7 +275,7 @@ function ResetPasswordForm() {
                 <button
                   type="submit"
                   disabled={resetPassword.loading}
-                  className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-maroon transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {resetPassword.loading ? (
                     <>

@@ -2,21 +2,42 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/useToast';
+import { api } from '@/services/index';
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [subscribing, setSubscribing] = useState(false);
   const { addToast } = useToast();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
+      setError('Please enter your email address.');
       addToast('Please enter your email address.', 'error');
       return;
     }
-    setSubmitted(true);
-    setEmail('');
-    addToast('Thank you for subscribing!', 'success');
+    if (!emailRegex.test(email.trim())) {
+      setError('Please enter a valid email address.');
+      addToast('Please enter a valid email address.', 'error');
+      return;
+    }
+    setSubscribing(true);
+    try {
+      await api.post('/newsletter', { email: email.trim() });
+      setSubmitted(true);
+      setEmail('');
+      setError('');
+      addToast('Thank you for subscribing!', 'success');
+    } catch {
+      setError('Failed to subscribe. Please try again later.');
+      addToast('Failed to subscribe. Please try again later.', 'error');
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   return (
@@ -37,30 +58,35 @@ export default function NewsletterSection() {
               Thank you for subscribing!
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex w-full max-w-xl gap-3 flex-row items-center">
-              <label className="sr-only" htmlFor="newsletter-email">
-                Enter your email
-              </label>
-              <input
-                id="newsletter-email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="h-11 flex-1 border border-zinc-200 bg-white px-4 text-[13px] rounded-lg text-noor-black placeholder:text-zinc-400 outline-none focus:border-zinc-400 transition-colors font-light"
-              />
-              <button
-                type="submit"
-                className="inline-flex h-11 items-center justify-center bg-black px-6 text-[11px] font-bold tracking-widest text-white rounded-lg hover:bg-zinc-800 transition-colors uppercase"
-              >
-                SUBSCRIBE
-              </button>
-            </form>
+            <div className="flex flex-col w-full max-w-xl gap-1.5">
+              <form onSubmit={handleSubmit} className="flex w-full gap-3 flex-row items-center">
+                <label className="sr-only" htmlFor="newsletter-email">
+                  Enter your email
+                </label>
+                <input
+                  id="newsletter-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error) setError('');
+                  }}
+                  placeholder="Enter your email"
+                  className={`h-11 flex-1 border ${error ? 'border-red-500 focus:border-red-500' : 'border-zinc-200 focus:border-zinc-400'} bg-white px-4 text-[13px] rounded-lg text-noor-black placeholder:text-zinc-400 outline-none transition-colors font-light`}
+                />
+                <button
+                  type="submit"
+                  disabled={subscribing}
+                  className="inline-flex h-11 items-center justify-center bg-black px-6 text-[11px] font-bold tracking-widest text-white rounded-lg hover:bg-zinc-800 transition-colors uppercase disabled:opacity-60"
+                >
+                  {subscribing ? '...' : 'SUBSCRIBE'}
+                </button>
+              </form>
+              {error && <p className="text-xs text-red-500 font-medium px-1">{error}</p>}
+            </div>
           )}
         </div>
       </div>
     </section>
   );
 }
-

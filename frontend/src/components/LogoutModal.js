@@ -53,7 +53,7 @@ export default function LogoutModal({ isOpen, onClose, onConfirm, loading = fals
                   <button
                     onClick={onConfirm}
                     disabled={loading}
-                    className="flex-1 py-3 bg-noor-black text-white ty-button hover:bg-noor-maroon transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                    className="flex-1 py-3 bg-noor-black text-white ty-button hover:bg-noor-gold transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>

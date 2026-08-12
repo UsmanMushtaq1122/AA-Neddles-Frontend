@@ -6,12 +6,18 @@ import { useRouter } from 'next/navigation';
 import {
   loginStartAction,
   loginSuccessAction,
+  loginRequireOtpAction,
   loginFailureAction,
   logoutAction,
   registerStartAction,
+  registerRequireOtpAction,
   registerSuccessAction,
   registerFailureAction,
   clearErrorAction,
+  otpStartAction,
+  otpSuccessAction,
+  otpFailureAction,
+  otpResetAction,
   forgotPasswordStartAction,
   forgotPasswordSuccessAction,
   forgotPasswordFailureAction,
@@ -26,32 +32,24 @@ import {
   verifyEmailFailureAction,
   verifyEmailExpiredAction,
   verifyEmailResetAction,
+  changePasswordStartAction,
+  changePasswordSuccessAction,
+  changePasswordFailureAction,
+  changePasswordResetAction,
   selectAuth,
   selectIsAuthenticated,
   selectUser,
   selectAuthLoading,
   selectAuthError,
   selectHydrated,
+  selectOtpVerification,
   selectForgotPassword,
   selectResetPassword,
   selectEmailVerification,
+  selectChangePassword,
 } from '@/store/slices/authSlice';
-
-export const MOCK_USER = {
-  id: '1',
-  name: 'Ayesha Khan',
-  email: 'ayesha@example.com',
-  phone: '+92 300 1234567',
-  avatar: null,
-};
-
-const VALID_CREDENTIALS = {
-  email: 'ayesha@example.com',
-  password: 'password123',
-};
-
-const MOCK_RESET_TOKEN = 'mock-reset-token-abc123';
-const MOCK_VERIFY_TOKEN = 'mock-verify-token-xyz789';
+import { authApi } from '@/services/auth';
+import { api } from '@/services/index';
 
 export function useAuth() {
   const dispatch = useDispatch();
@@ -61,28 +59,35 @@ export function useAuth() {
   const user = useSelector(selectUser);
   const loading = useSelector(selectAuthLoading);
   const error = useSelector(selectAuthError);
+  const otpVerification = useSelector(selectOtpVerification);
   const forgotPassword = useSelector(selectForgotPassword);
   const resetPassword = useSelector(selectResetPassword);
   const emailVerification = useSelector(selectEmailVerification);
+  const changePassword = useSelector(selectChangePassword);
   const hydrated = useSelector(selectHydrated);
 
   const login = useCallback(
     async (email, password) => {
       dispatch(loginStartAction());
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        if (
-          email.toLowerCase() === VALID_CREDENTIALS.email.toLowerCase() &&
-          password === VALID_CREDENTIALS.password
-        ) {
-          dispatch(loginSuccessAction(MOCK_USER));
-          return true;
+        const response = await authApi.login(email, password);
+        if (response.success && response.data) {
+          if (response.data.requiresOtpVerification) {
+            dispatch(loginRequireOtpAction({ email: response.data.email }));
+            return { requiresOtp: true, email: response.data.email };
+          }
+          dispatch(loginSuccessAction({
+            user: response.data.user,
+            accessToken: response.data.token,
+            refreshToken: response.data.refreshToken,
+          }));
+          return { success: true };
         }
-        dispatch(loginFailureAction('Invalid email or password. Please try again.'));
-        return false;
-      } catch {
-        dispatch(loginFailureAction('Something went wrong. Please try again.'));
-        return false;
+        dispatch(loginFailureAction(response.message || 'Login failed'));
+        return { success: false };
+      } catch (err) {
+        dispatch(loginFailureAction(err.message || 'Something went wrong. Please try again.'));
+        return { success: false };
       }
     },
     [dispatch]
@@ -92,26 +97,102 @@ export function useAuth() {
     async (userData) => {
       dispatch(registerStartAction());
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        const newUser = {
-          id: Date.now().toString(),
-          name: userData.name,
-          email: userData.email,
-          phone: userData.phone || '',
-          avatar: null,
-          emailVerified: false,
-        };
-        dispatch(registerSuccessAction(newUser));
-        return true;
-      } catch {
-        dispatch(registerFailureAction('Registration failed. Please try again.'));
-        return false;
+        const response = await authApi.register(userData);
+        if (response.success && response.data) {
+          if (response.data.requiresOtpVerification) {
+            dispatch(registerRequireOtpAction({ email: response.data.email }));
+            return { requiresOtp: true, email: response.data.email };
+          }
+          dispatch(registerSuccessAction({
+            user: response.data.user,
+            accessToken: response.data.token,
+            refreshToken: response.data.refreshToken,
+          }));
+          return { success: true };
+        }
+        const backendErrors = response.errors ? response.errors.join('. ') : response.message || 'Registration failed';
+        dispatch(registerFailureAction(backendErrors));
+        return { success: false };
+      } catch (err) {
+        const backendErrors = err.data?.errors
+          ? (Array.isArray(err.data.errors) ? err.data.errors.join('. ') : err.data.errors)
+          : (err.data?.message || err.message || 'Registration failed. Please try again.');
+        dispatch(registerFailureAction(backendErrors));
+        return { success: false };
       }
     },
     [dispatch]
   );
 
-  const logout = useCallback(() => {
+  const verifyOtpRequest = useCallback(
+    async (email, otp) => {
+      dispatch(otpStartAction());
+      try {
+        const response = await authApi.verifyOtp(email, otp);
+        if (response.success && response.data) {
+          dispatch(otpSuccessAction({ message: response.data.message }));
+          dispatch(loginSuccessAction({
+            user: response.data.user,
+            accessToken: response.data.token,
+            refreshToken: response.data.refreshToken,
+          }));
+          return { success: true, message: response.data.message };
+        }
+        dispatch(otpFailureAction(response.message || 'OTP verification failed'));
+        return { success: false, error: response.message || 'OTP verification failed' };
+      } catch (err) {
+        const msg = err.data?.message || err.message || 'Verification failed. Please try again.';
+        dispatch(otpFailureAction(msg));
+        return { success: false, error: msg };
+      }
+    },
+    [dispatch]
+  );
+
+  const resendOtpRequest = useCallback(
+    async (email) => {
+      try {
+        const response = await authApi.resendOtp(email);
+        return {
+          success: response.success,
+          message: response.data?.message || response.message,
+          cooldownSeconds: response.data?.cooldownSeconds,
+        };
+      } catch (err) {
+        return {
+          success: false,
+          error: err.data?.message || err.message || 'Failed to resend code.',
+        };
+      }
+    },
+    []
+  );
+
+  const verifyPasswordResetOtpRequest = useCallback(
+    async (email, otp, newPassword) => {
+      dispatch(otpStartAction());
+      try {
+        const response = await authApi.verifyPasswordResetOtp(email, otp, newPassword);
+        if (response.success) {
+          dispatch(otpSuccessAction({ message: response.data?.message || 'Password reset successfully' }));
+          return { success: true, message: response.data?.message };
+        }
+        dispatch(otpFailureAction(response.message || 'Password reset failed'));
+        return { success: false, error: response.message };
+      } catch (err) {
+        const msg = err.data?.message || err.message || 'Password reset failed.';
+        dispatch(otpFailureAction(msg));
+        return { success: false, error: msg };
+      }
+    },
+    [dispatch]
+  );
+
+  const logout = useCallback(async () => {
+    try {
+      await authApi.logout();
+    } catch {}
+    api.clearAuth();
     dispatch(logoutAction());
     router.push('/');
   }, [dispatch, router]);
@@ -122,16 +203,19 @@ export function useAuth() {
     async (email) => {
       dispatch(forgotPasswordStartAction());
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        if (email.toLowerCase() !== 'nonexistent@example.com') {
-          dispatch(forgotPasswordSuccessAction());
-          return true;
-        }
-        dispatch(forgotPasswordFailureAction('No account found with this email address.'));
-        return false;
-      } catch {
-        dispatch(forgotPasswordFailureAction('Something went wrong. Please try again.'));
-        return false;
+        const response = await authApi.forgotPassword(email);
+        dispatch(forgotPasswordSuccessAction({
+          requiresOtp: response.data?.requiresOtp || true,
+          email: response.data?.email || email,
+        }));
+        return {
+          success: true,
+          requiresOtp: response.data?.requiresOtp || true,
+          email: response.data?.email || email,
+        };
+      } catch (err) {
+        dispatch(forgotPasswordFailureAction(err.message || 'Something went wrong.'));
+        return { success: false, error: err.message };
       }
     },
     [dispatch]
@@ -141,15 +225,11 @@ export function useAuth() {
     async (token, newPassword) => {
       dispatch(resetPasswordStartAction());
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        if (token === MOCK_RESET_TOKEN || token === 'mock') {
-          dispatch(resetPasswordSuccessAction());
-          return true;
-        }
-        dispatch(resetPasswordFailureAction('Invalid or expired reset link.'));
-        return false;
-      } catch {
-        dispatch(resetPasswordFailureAction('Something went wrong. Please try again.'));
+        const response = await authApi.resetPassword(token, newPassword);
+        dispatch(resetPasswordSuccessAction());
+        return true;
+      } catch (err) {
+        dispatch(resetPasswordFailureAction(err.message || 'Invalid or expired reset link.'));
         return false;
       }
     },
@@ -159,13 +239,9 @@ export function useAuth() {
   const checkResetToken = useCallback(
     async (token) => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        if (token === MOCK_RESET_TOKEN || token === 'mock') {
-          dispatch(resetPasswordTokenCheckAction(true));
-          return true;
-        }
-        dispatch(resetPasswordTokenCheckAction(false));
-        return false;
+        const response = await api.get(`/auth/check-reset-token?token=${encodeURIComponent(token)}`);
+        dispatch(resetPasswordTokenCheckAction(response.success === true));
+        return response.success === true;
       } catch {
         dispatch(resetPasswordTokenCheckAction(false));
         return false;
@@ -178,53 +254,66 @@ export function useAuth() {
     async (token) => {
       dispatch(verifyEmailStartAction());
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        if (token === 'expired') {
-          dispatch(verifyEmailExpiredAction());
-          return false;
-        }
-        if (token === MOCK_VERIFY_TOKEN || token === 'mock') {
+        const response = await authApi.verifyEmail(token);
+        if (response.success) {
           dispatch(verifyEmailSuccessAction());
           return true;
         }
-        dispatch(verifyEmailFailureAction('Invalid verification link.'));
+        dispatch(verifyEmailExpiredAction());
         return false;
-      } catch {
-        dispatch(verifyEmailFailureAction('Verification failed. Please try again.'));
+      } catch (err) {
+        dispatch(verifyEmailFailureAction(err.message || 'Verification failed.'));
         return false;
       }
     },
     [dispatch]
   );
 
-  const resendVerificationEmail = useCallback(
-    async (email) => {
+  const resendVerificationEmail = useCallback(async (email) => {
+    try {
+      const res = await authApi.resendOtp(email);
+      return res.success;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const socialLogin = useCallback(
+    async (provider, credential) => {
+      dispatch(loginStartAction());
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return true;
-      } catch {
+        const response = await authApi.socialLogin(provider.toLowerCase(), credential || '');
+        if (response.success && response.data) {
+          dispatch(loginSuccessAction({
+            user: response.data.user,
+            accessToken: response.data.token,
+            refreshToken: response.data.refreshToken,
+          }));
+          return true;
+        }
+        dispatch(loginFailureAction(`${provider} login failed.`));
+        return false;
+      } catch (err) {
+        dispatch(loginFailureAction(err.message || `${provider} login failed.`));
         return false;
       }
     },
-    []
+    [dispatch]
   );
 
-  const socialLogin = useCallback(
-    async (provider) => {
-      dispatch(loginStartAction());
+  const changePasswordRequest = useCallback(
+    async (currentPassword, newPassword) => {
+      dispatch(changePasswordStartAction());
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        const socialUser = {
-          id: Date.now().toString(),
-          name: `${provider} User`,
-          email: `user@${provider.toLowerCase()}.com`,
-          phone: '',
-          avatar: null,
-        };
-        dispatch(loginSuccessAction(socialUser));
-        return true;
-      } catch {
-        dispatch(loginFailureAction(`${provider} login failed. Please try again.`));
+        const response = await authApi.changePassword(currentPassword, newPassword);
+        if (response.success) {
+          dispatch(changePasswordSuccessAction());
+          return true;
+        }
+        dispatch(changePasswordFailureAction(response.message || 'Failed to change password'));
+        return false;
+      } catch (err) {
+        dispatch(changePasswordFailureAction(err.message || 'Something went wrong.'));
         return false;
       }
     },
@@ -234,6 +323,8 @@ export function useAuth() {
   const resetForgotPassword = useCallback(() => dispatch(forgotPasswordResetAction()), [dispatch]);
   const resetResetPassword = useCallback(() => dispatch(resetPasswordResetAction()), [dispatch]);
   const resetEmailVerification = useCallback(() => dispatch(verifyEmailResetAction()), [dispatch]);
+  const resetChangePassword = useCallback(() => dispatch(changePasswordResetAction()), [dispatch]);
+  const resetOtpVerification = useCallback(() => dispatch(otpResetAction()), [dispatch]);
 
   return {
     ...auth,
@@ -241,22 +332,30 @@ export function useAuth() {
     user,
     loading,
     error,
+    otpVerification,
     forgotPassword,
     resetPassword,
     emailVerification,
+    changePassword,
     hydrated,
     login,
     register,
     logout,
     clearError,
+    verifyOtpRequest,
+    resendOtpRequest,
+    verifyPasswordResetOtpRequest,
     forgotPasswordRequest,
     resetPasswordRequest,
     checkResetToken,
     verifyEmailRequest,
     resendVerificationEmail,
     socialLogin,
+    changePasswordRequest,
     resetForgotPassword,
     resetResetPassword,
     resetEmailVerification,
+    resetChangePassword,
+    resetOtpVerification,
   };
 }

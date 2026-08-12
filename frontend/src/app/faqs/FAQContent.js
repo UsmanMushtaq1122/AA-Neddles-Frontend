@@ -1,135 +1,43 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, Minus, Plus } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
+import { faqsApi } from '@/services/faqs';
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
   { label: 'FAQs' },
 ];
 
-const categories = ['All', 'Orders', 'Shipping', 'Returns', 'Payments', 'Account', 'Products'];
-
-const faqData = [
-  {
-    category: 'Orders',
-    q: 'How do I place an order?',
-    a: 'Browse our collections, select your preferred size and quantity, and click "Add to Cart." Review your cart, proceed to checkout, enter your shipping details, choose a payment method, and confirm your order. You will receive an order confirmation email shortly after.',
-  },
-  {
-    category: 'Orders',
-    q: 'Can I modify or cancel my order after placing it?',
-    a: 'Orders can be modified or canceled within 1 hour of placement. Please contact our support team immediately via email or WhatsApp. After this period, the order enters processing and cannot be changed.',
-  },
-  {
-    category: 'Orders',
-    q: 'Will I receive an order confirmation?',
-    a: 'Yes, you will receive an order confirmation email immediately after successfully placing your order. If you do not receive it, please check your spam folder or contact our support team.',
-  },
-  {
-    category: 'Orders',
-    q: 'How do I know if my order went through?',
-    a: 'After placing your order, you will be redirected to an order confirmation page with your order number. You will also receive a confirmation email with your order details and tracking information once shipped.',
-  },
-  {
-    category: 'Shipping',
-    q: 'How can I track my shipment?',
-    a: 'Once your order is shipped, you will receive a tracking number via email and SMS. You can use this number on our tracking page or the courier\'s website to monitor your delivery in real-time.',
-  },
-  {
-    category: 'Shipping',
-    q: 'How long does delivery take?',
-    a: 'Domestic standard delivery takes 3–5 business days, express delivery takes 1–2 business days. International standard delivery takes 7–14 business days, and express takes 3–5 business days. Processing time is 1–2 business days.',
-  },
-  {
-    category: 'Shipping',
-    q: 'Do you ship internationally?',
-    a: 'Yes, we ship worldwide to over 50 countries. International shipping costs vary by destination and shipping method. Customs duties and taxes are the responsibility of the customer.',
-  },
-  {
-    category: 'Shipping',
-    q: 'What is the shipping cost?',
-    a: 'Domestic shipping is free on orders above Rs. 5,000. For orders below Rs. 5,000, standard shipping is Rs. 150. Express domestic shipping is Rs. 350. International shipping starts at $15 USD.',
-  },
-  {
-    category: 'Returns',
-    q: 'How do returns work?',
-    a: 'You can return unworn, unused items within 14 days of delivery. Simply email your return request to returns@aaneddles.com with your order number and reason for return. Our team will guide you through the process.',
-  },
-  {
-    category: 'Returns',
-    q: 'How long does it take to process a refund?',
-    a: 'Refunds are processed within 5–7 business days after we receive and inspect the returned item. The amount will be credited to your original payment method or via bank transfer for COD orders.',
-  },
-  {
-    category: 'Returns',
-    q: 'Can I exchange an item for a different size?',
-    a: 'Yes, exchanges for a different size are welcome within 7 days of delivery, subject to availability. Please contact our support team to initiate the exchange process.',
-  },
-  {
-    category: 'Returns',
-    q: 'Are there items that cannot be returned?',
-    a: 'Yes, earrings, custom-made items, final sale items, intimate apparel, and gift cards are non-returnable. Please review our full Return & Exchange Policy for details.',
-  },
-  {
-    category: 'Payments',
-    q: 'What payment methods do you accept?',
-    a: 'We accept Visa, Mastercard, PayPal, and Cash on Delivery (COD) for domestic orders. All payments are processed through secure, encrypted payment gateways.',
-  },
-  {
-    category: 'Payments',
-    q: 'Is it safe to use my credit card on your website?',
-    a: 'Absolutely. We use 256-bit SSL encryption and PCI DSS compliant payment gateways. Your payment information is securely transmitted and we do not store full card details on our servers.',
-  },
-  {
-    category: 'Payments',
-    q: 'Do you offer Cash on Delivery?',
-    a: 'Yes, we offer Cash on Delivery for all domestic orders within Pakistan. COD orders are subject to a nominal processing fee of Rs. 50.',
-  },
-  {
-    category: 'Account',
-    q: 'How do I create an account?',
-    a: 'Click on the user icon in the top right corner of our website and select "Create Account." Enter your name, email address, and a secure password. You can also sign up during checkout.',
-  },
-  {
-    category: 'Account',
-    q: 'I forgot my password. What should I do?',
-    a: 'Click on the user icon, select "Sign In," and then click "Forgot Password." Enter your email address and we will send you a password reset link.',
-  },
-  {
-    category: 'Account',
-    q: 'How do I update my account information?',
-    a: 'Sign in to your account and navigate to the account settings section. You can update your personal details, shipping addresses, and communication preferences there.',
-  },
-  {
-    category: 'Products',
-    q: 'How do I find the right size?',
-    a: 'Each product page includes a size guide. You can refer to our detailed size chart which includes measurements in inches and centimeters. If you need further assistance, our customer support team is happy to help.',
-  },
-  {
-    category: 'Products',
-    q: 'Are your products true to size?',
-    a: 'Our products are designed to follow standard sizing, but we recommend checking the size guide on each product page for the most accurate fit. Customer reviews can also provide helpful insights.',
-  },
-  {
-    category: 'Products',
-    q: 'How should I care for my garments?',
-    a: 'Care instructions are provided on each product page. Generally, we recommend dry cleaning for formal and bridal wear. Ready-to-wear pieces can be gently hand-washed or dry cleaned as specified.',
-  },
-  {
-    category: 'Products',
-    q: 'Do you offer customization?',
-    a: 'We offer limited customization for select pieces. Please contact our customer support team to inquire about bespoke options and tailoring services.',
-  },
-];
+const CATEGORIES = ['All', 'Orders', 'Shipping', 'Returns', 'Payments', 'Account', 'Products'];
 
 export default function FAQContent() {
+  const [apiFaqs, setApiFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [expanded, setExpanded] = useState(null);
   const [allExpanded, setAllExpanded] = useState(false);
+
+  useEffect(() => {
+    faqsApi.getAll()
+      .then((res) => {
+        const items = res.data || [];
+        if (Array.isArray(items)) setApiFaqs(items);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const faqData = useMemo(() => {
+    return apiFaqs.map((f) => ({
+      category: f.category || 'General',
+      q: f.question,
+      a: f.answer,
+    }));
+  }, [apiFaqs]);
 
   const filtered = useMemo(() => {
     return faqData.filter((faq) => {
@@ -140,7 +48,7 @@ export default function FAQContent() {
         faq.a.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCategory && matchSearch;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, faqData]);
 
   const toggle = (idx) => {
     if (allExpanded) setAllExpanded(false);
@@ -160,7 +68,6 @@ export default function FAQContent() {
 
   return (
     <PageLayout title="Frequently Asked Questions" breadcrumbs={breadcrumbs}>
-      {/* Search */}
       <div className="relative max-w-xl mb-8">
         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
         <input
@@ -182,10 +89,9 @@ export default function FAQContent() {
         )}
       </div>
 
-      {/* Category Filters + Toggle All */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => (
+          {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => { setActiveCategory(cat); setExpanded(null); setAllExpanded(false); }}
@@ -208,15 +114,17 @@ export default function FAQContent() {
         </button>
       </div>
 
-      {/* Results count */}
-      {searchQuery && (
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <div className="w-8 h-8 border-2 border-noor-maroon border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : searchQuery ? (
         <p className="text-sm text-zinc-500 mb-6">
           {results.length} result{results.length !== 1 ? 's' : ''} found
         </p>
-      )}
+      ) : null}
 
-      {/* FAQ Accordions */}
-      {results.length === 0 ? (
+      {!loading && results.length === 0 ? (
         <div className="text-center py-16">
           <Search size={48} className="mx-auto text-zinc-200 mb-4" />
           <h3 className="text-lg font-medium text-noor-black mb-2">No results found</h3>
@@ -273,24 +181,23 @@ export default function FAQContent() {
         </div>
       )}
 
-      {/* Still have questions */}
-      <section className="mt-14 md:mt-20 bg-noor-black p-8 md:p-12 text-center">
-        <h2 className="ty-h2 text-white mb-3">
+      <section className="mt-14 md:mt-20 bg-gradient-to-br from-noor-gold via-noor-gold/90 to-noor-gold/75 p-8 md:p-12 text-center">
+        <h2 className="ty-h2 text-noor-black mb-3">
           Still Have Questions?
         </h2>
-        <p className="text-zinc-400 text-sm max-w-lg mx-auto mb-6">
+        <p className="text-noor-black/75 text-sm max-w-lg mx-auto mb-6">
           Our customer support team is here to help. Reach out to us and we&apos;ll get back to you promptly.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="mailto:hello@aaneddles.com"
-            className="inline-flex items-center justify-center px-8 py-3 bg-noor-maroon text-white ty-button hover:bg-noor-maroon/90 transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 bg-white text-noor-black ty-button hover:bg-zinc-100 transition-colors"
           >
             Email Us
           </a>
           <a
             href="https://wa.me/9242111222333"
-            className="inline-flex items-center justify-center px-8 py-3 border border-zinc-600 text-white ty-button hover:bg-white/10 transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 border border-noor-black/20 text-noor-black ty-button hover:bg-noor-black/5 transition-colors"
           >
             WhatsApp Us
           </a>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { bannersApi } from "@/services/banners";
 
-const SLIDES = [
+const DEFAULT_slides = [
   {
     eyebrow: "NEW COLLECTION 2026",
     heading: "Elevate Your\nEveryday",
@@ -57,15 +59,36 @@ const SLIDES = [
 const AUTOPLAY_MS = 5000;
 
 export default function HeroBanner() {
+  const [slides, setSlides] = useState(DEFAULT_slides);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef(null);
   const progressRef = useRef(null);
   const startTimeRef = useRef(null);
 
+  useEffect(() => {
+    bannersApi.getAll()
+      .then((res) => {
+        if (res.success && res.data?.length) {
+          const mapped = res.data
+            .filter((b) => b.type === "hero")
+            .map((b, i) => ({
+              eyebrow: b.subtitle || b.title || "",
+              heading: b.title || "",
+              body: b.subtitle || "",
+              cta: b.buttonText || "Shop Now",
+              href: b.link || "/",
+              image: b.image || "/images/hero1.jpeg",
+            }));
+          if (mapped.length > 0) setSlides(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Advance to next slide
   const goTo = useCallback((i) => {
-    setIndex((prev) => (i + SLIDES.length) % SLIDES.length);
+    setIndex((prev) => (i + slides.length) % slides.length);
     if (progressRef.current) {
       progressRef.current.style.transform = 'scaleX(0)';
     }
@@ -79,7 +102,7 @@ export default function HeroBanner() {
   useEffect(() => {
     if (paused) return;
     timerRef.current = setInterval(() => {
-      setIndex((prev) => (prev + 1) % SLIDES.length);
+      setIndex((prev) => (prev + 1) % slides.length);
       if (progressRef.current) {
         progressRef.current.style.transform = 'scaleX(0)';
       }
@@ -105,24 +128,61 @@ export default function HeroBanner() {
     return () => cancelAnimationFrame(raf);
   }, [paused, index]);
 
-  const slide = SLIDES[index];
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      next();
+    } else if (isRightSwipe) {
+      prev();
+    }
+  };
+
+  const slide = slides[index] || DEFAULT_slides[0] || {};
 
   return (
     <section
       className="hero"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       aria-roledescription="carousel"
       aria-label="Featured collections"
     >
       {/* Slides */}
-      {SLIDES.map((s, i) => (
+      {slides.map((s, i) => (
         <div
           key={s.eyebrow + i}
           className={`hero__slide ${i === index ? "is-active" : ""}`}
-          style={{ backgroundImage: `url(${s.image})` }}
           aria-hidden={i !== index}
-        />
+        >
+          <Image
+            src={s.image}
+            alt={s.heading ? `${s.heading.replace(/\n/g, ' ')} — ${s.eyebrow}` : 'AA Neddles Collection'}
+            fill
+            priority={i === 0}
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
       ))}
 
       {/* Gradient scrim */}
@@ -151,14 +211,14 @@ export default function HeroBanner() {
           if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
             e.preventDefault();
             const nextIdx = e.key === 'ArrowRight'
-              ? (index + 1) % SLIDES.length
-              : (index - 1 + SLIDES.length) % SLIDES.length;
+              ? (index + 1) % slides.length
+              : (index - 1 + slides.length) % slides.length;
             goTo(nextIdx);
             e.currentTarget.children[nextIdx]?.focus();
           }
         }}
       >
-        {SLIDES.map((s, i) => (
+        {slides.map((s, i) => (
           <button
             key={i}
             role="tab"

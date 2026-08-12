@@ -1,0 +1,145 @@
+/* ========================================================
+   TYPOGRAPHY UTILITY CLASSES
+   ======================================================== */
+
+.ty-logo {
+  font-family: var(--font-logo);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: var(--ls-logo);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.ty-hero {
+  font-family: var(--font-heading);
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+}
+
+.ty-h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
+}
+
+.ty-h2 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: var(--ls-tight);
+}
+
+.ty-h3 {
+  font-family: var(--font-body);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--ls-normal);
+}
+
+.ty-h4 {
+  font-family: var(--font-body);
+  font-size: var(--fs-h4);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: var(--ls-normal);
+}
+
+.ty-section-heading {
+  font-family: var(--font-body);
+  font-size: clamp(1.75rem, 2vw + 0.25rem, 2.25rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.ty-body-lg {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-lg);
+  font-weight: 400;
+  line-height: var(--lh-relaxed);
+  letter-spacing: var(--ls-normal);
+}
+
+.ty-body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+}
+
+.ty-body-sm {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  font-weight: 400;
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+}
+
+.ty-caption {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: var(--ls-normal);
+}
+
+.ty-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+}
+
+.ty-price {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--ls-normal);
+}
+
+.ty-nav {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+}
+
+.ty-button {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+}
+
+.ty-badge {
+  font-family: var(--font-body);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+}
+
+.ty-product-title {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: var(--ls-normal);
+}

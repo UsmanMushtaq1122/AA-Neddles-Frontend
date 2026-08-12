@@ -1,58 +1,20 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Search, ShoppingBag, Heart, User, Plus, Minus, LogOut, Package, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import LogoutModal from '@/components/LogoutModal';
+import AnnouncementBar from '@/components/AnnouncementBar';
+import MobileHeader from '@/components/MobileHeader';
+import { categoriesApi } from '@/services/categories';
 
 /* ── Desktop nav links ── */
 const NAV_LINKS = [];
-
-/* ── Drawer data ── */
-const DRAWER_TABS = [
-  { id: 'women',         label: 'WOMEN',         color: '#1a1a1a' },
-  { id: 'kids',          label: 'KIDS',           color: '#4a9b6f' },
-  { id: 'brides',        label: 'BRIDES',         color: '#b07c4a' },
-  { id: 'men',           label: 'MEN',            color: '#1a1a1a' },
-  { id: 'special-offers',label: 'SPECIAL OFFERS', color: '#cc0000' },
-];
-
-const DRAWER_CATEGORIES = {
-  women: [
-    { label: 'UNSTITCHED',     href: '/category/unstitched',      expandable: true  },
-    { label: 'LUXURY FORMALS', href: '/category/luxury-formals',  expandable: true  },
-    { label: 'LUXURY PRET',    href: '/category/luxury-pret',     expandable: true  },
-    { label: 'STITCHED',       href: '/category/stitched',        expandable: true  },
-    { label: 'M.LUXE FABRICS', href: '/category/mluxe-fabrics',   expandable: false },
-    { label: 'JEWELRY',        href: '/category/jewelry',         expandable: true  },
-    { label: 'ACCESSORIES',    href: '/category/accessories',     expandable: true  },
-    { label: 'FRAGRANCES',     href: '/category/fragrances',      expandable: true  },
-  ],
-  kids: [
-    { label: 'GIRLS',          href: '/category/kids-girls',      expandable: true  },
-    { label: 'BOYS',           href: '/category/kids-boys',       expandable: true  },
-    { label: 'INFANTS',        href: '/category/kids-infants',    expandable: false },
-  ],
-  brides: [
-    { label: 'BRIDAL COUTURE', href: '/category/bridal-couture',  expandable: true  },
-    { label: 'LUXURY FORMALS', href: '/category/luxury-formals',  expandable: true  },
-    { label: 'BRIDESMAID',     href: '/category/bridesmaid',      expandable: false },
-  ],
-  men: [
-    { label: 'KURTA SHALWAR',  href: '/category/kurta-shalwar',   expandable: true  },
-    { label: 'WAISTCOAT',      href: '/category/waistcoat',       expandable: false },
-    { label: 'SHERWANI',       href: '/category/sherwani',        expandable: true  },
-  ],
-  'special-offers': [
-    { label: 'SALE',           href: '/category/sale',            expandable: false },
-    { label: 'BUNDLE DEALS',   href: '/category/bundle-deals',    expandable: false },
-    { label: 'CLEARANCE',      href: '/category/clearance',       expandable: false },
-  ],
-};
 
 function UserAvatar({ name, size = 32 }) {
   const initial = name ? name.charAt(0).toUpperCase() : '?';
@@ -67,18 +29,54 @@ function UserAvatar({ name, size = 32 }) {
 }
 
 export default function Header() {
-  const [drawerOpen, setDrawerOpen]     = useState(false);
-  const [activeTab, setActiveTab]       = useState('women');
-  const [expandedRow, setExpandedRow]   = useState(null);
-  const [isScrolled, setIsScrolled]     = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('women');
+  const [expandedRow, setExpandedRow] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [apiCategories, setApiCategories] = useState([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const { items, openCart } = useCart();
   const { isAuthenticated, user, logout, hydrated } = useAuth();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
   const dropdownRef = useRef(null);
+  const drawerRef = useRef(null);
+
+  useEffect(() => {
+    categoriesApi.getAll()
+      .then((res) => {
+        const cats = res.data?.categories || [];
+        setApiCategories(cats);
+      })
+      .catch(() => { })
+      .finally(() => setCategoriesLoaded(true));
+  }, []);
+
+  const drawerData = useMemo(() => {
+    const parents = apiCategories.filter((c) => !c.parentId);
+    const tabColors = ['#1a1a1a', '#4a9b6f', '#b07c4a', '#1a1a1a'];
+    const tabs = parents.map((p, i) => ({
+      id: p.slug,
+      label: p.name.toUpperCase(),
+      color: tabColors[i] || '#1a1a1a',
+    }));
+
+    const cats = {};
+    parents.forEach((p) => {
+      cats[p.slug] = apiCategories
+        .filter((c) => c.parentId === p.id)
+        .map((c) => ({
+          label: c.name.toUpperCase(),
+          href: `/category/${c.slug}`,
+          expandable: Boolean(c.children?.length),
+        }));
+    });
+
+    return { tabs, categories: cats };
+  }, [apiCategories]);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -93,12 +91,39 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!drawerOpen) return;
+      if (e.key === 'Escape') {
+        closeDrawer();
+      }
+      if (e.key === 'Tab' && drawerRef.current) {
+        const focusables = drawerRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [drawerOpen, closeDrawer]);
+
+  useEffect(() => {
     document.body.style.overflow = drawerOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen]);
 
   useEffect(() => {
-    setUserDropdownOpen(false);
+    const timer = setTimeout(() => setUserDropdownOpen(false), 0);
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   useEffect(() => {
@@ -123,11 +148,15 @@ export default function Header() {
     logout();
   };
 
-  const categories = DRAWER_CATEGORIES[activeTab] || [];
+  const categories = drawerData.categories[activeTab] || [];
 
   return (
     <>
+      <MobileHeader onMenuOpen={() => setDrawerOpen(true)} />
       <div className={`site-header-wrap ${isScrolled ? 'is-scrolled' : ''} ${!isHomePage ? 'is-solid' : ''}`}>
+
+        {/* Announcement bar */}
+        <AnnouncementBar />
 
         {/* Top bar */}
         <div className="site-header-topbar topbar">
@@ -138,16 +167,16 @@ export default function Header() {
               <Link href="/store-locations" className="topbar-link">Store Locations</Link>
             </div>
             <div className="topbar-right">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="topbar-link" aria-label="Instagram">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              <a href="https://instagram.com/aaneddles" target="_blank" rel="noreferrer" className="topbar-link" aria-label="Instagram">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
               </a>
               <span className="topbar-sep">|</span>
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="topbar-link" aria-label="Facebook">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              <a href="https://facebook.com/aaneddles" target="_blank" rel="noreferrer" className="topbar-link" aria-label="Facebook">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
               </a>
               <span className="topbar-sep">|</span>
-              <a href="https://tiktok.com" target="_blank" rel="noreferrer" className="topbar-link" aria-label="TikTok">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+              <a href="https://tiktok.com/@aaneddles" target="_blank" rel="noreferrer" className="topbar-link" aria-label="TikTok">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" /></svg>
               </a>
             </div>
           </div>
@@ -182,10 +211,19 @@ export default function Header() {
               </nav>
             </div>
 
-            {/* CENTER — Logo */}
-            <Link href="/" className="hdr-logo" aria-label="AA Neddles home">
-              AA Neddles.
-            </Link>
+            {/* CENTER */}
+            <div className="header-center">
+              <Link href="/" className="hdr-logo" aria-label="AA Needles Home">
+                <Image
+                  src="/logo.png"
+                  alt="AA Needles"
+                  width={220}
+                  height={220}
+                  priority
+                  className="w-auto object-contain"
+                />
+              </Link>
+            </div>
 
             {/* RIGHT */}
             <div className="header-right">
@@ -307,11 +345,18 @@ export default function Header() {
               role="dialog"
               aria-modal="true"
               aria-label="Navigation menu"
+              id="mobile-navigation-drawer"
             >
               {/* Drawer header */}
               <div className="drawer-head">
                 <Link href="/" className="drawer-logo" onClick={closeDrawer}>
-                  AA Neddles.
+                  <Image
+                    src="/logo.png"
+                    alt="AA Needles"
+                    width={120}
+                    height={120}
+                    style={{ objectFit: 'contain', height: '60px', width: 'auto' }}
+                  />
                 </Link>
                 <button
                   className="drawer-close"
@@ -324,15 +369,14 @@ export default function Header() {
 
               {/* Category tabs */}
               <div className="drawer-tabs" role="tablist">
-                {DRAWER_TABS.map((tab, i) => (
+                {drawerData.tabs.map((tab, i) => (
                   <span key={tab.id} style={{ display: 'contents' }}>
                     {i > 0 && <span className="drawer-tab-sep" aria-hidden="true">|</span>}
                     <button
                       role="tab"
                       aria-selected={activeTab === tab.id}
-                      className={`drawer-tab ${
-                        activeTab === tab.id ? 'is-active' : ''
-                      } ${tab.id === 'special-offers' ? 'is-special' : ''}`}
+                      className={`drawer-tab ${activeTab === tab.id ? 'is-active' : ''
+                        } ${tab.id === 'special-offers' ? 'is-special' : ''}`}
                       onClick={() => {
                         setActiveTab(tab.id);
                         setExpandedRow(null);
@@ -367,7 +411,7 @@ export default function Header() {
                         >
                           {expandedRow === cat.label
                             ? <Minus size={16} strokeWidth={1.5} />
-                            : <Plus  size={16} strokeWidth={1.5} />}
+                            : <Plus size={16} strokeWidth={1.5} />}
                         </button>
                       )}
                     </div>
@@ -391,32 +435,9 @@ export default function Header() {
                 ))}
               </nav>
 
-              {/* Bottom links */}
+              {/* Bottom links removed per request */}
               <div className="drawer-footer">
-                <Link href="/order-tracking" className="drawer-footer-link" onClick={closeDrawer}>Order Tracking</Link>
-                <Link href="/store-locations" className="drawer-footer-link" onClick={closeDrawer}>Store Locations</Link>
-
-                {isAuthenticated ? (
-                  <>
-                    <Link href="/profile" className="drawer-footer-link" onClick={closeDrawer}>My Account</Link>
-                    <Link href="/orders" className="drawer-footer-link" onClick={closeDrawer}>My Orders</Link>
-                    <Link href="/wishlist" className="drawer-footer-link" onClick={closeDrawer}>Wishlist</Link>
-                    <button
-                      className="drawer-footer-link text-left w-full"
-                      onClick={() => {
-                        closeDrawer();
-                        setLogoutModalOpen(true);
-                      }}
-                    >
-                      Sign out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/login" className="drawer-footer-link" onClick={closeDrawer}>Sign in</Link>
-                    <Link href="/register" className="drawer-footer-link" onClick={closeDrawer}>Create account</Link>
-                  </>
-                )}
+                {/* Footer links intentionally removed */}
               </div>
             </motion.div>
           </>
