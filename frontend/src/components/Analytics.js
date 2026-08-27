@@ -3,7 +3,9 @@
 import Script from 'next/script';
 
 export function GoogleAnalytics() {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-MEASUREMENT_ID';
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
+  if (!gaId) return null;
 
   return (
     <>
@@ -26,7 +28,9 @@ export function GoogleAnalytics() {
 }
 
 export function MetaPixel() {
-  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || 'PIXEL_ID';
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+
+  if (!pixelId) return null;
 
   return (
     <Script id="meta-pixel" strategy="afterInteractive">

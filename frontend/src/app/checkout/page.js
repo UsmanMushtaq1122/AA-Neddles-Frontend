@@ -5,19 +5,19 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Loader2, CreditCard, Truck, Shield, ChevronRight, ChevronDown, MapPin, Phone,
-  Mail, User, Check, Store, Clock, Lock, Package, Tag, X, AlertCircle,
-  Gift, MessageSquare, Banknote, Eye, EyeOff, Info, ArrowLeft,
+  Loader2, Truck, Shield, Lock, ChevronRight, ChevronDown, MapPin, Phone,
+  Mail, User, Check, Store, Clock, Package, Tag, X, AlertCircle,
+  Gift, MessageSquare, Banknote, Info, ArrowLeft,
 } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { ordersApi } from '@/services/orders';
 import { api } from '@/services';
+import { roundPrice } from '@/lib/utils';
 import FloatingInput from '@/components/checkout/FloatingInput';
 import CheckoutSection from '@/components/checkout/CheckoutSection';
 import PaymentCard from '@/components/checkout/PaymentCard';
-import { VisaIcon, MastercardIcon, UnionPayIcon, EasypaisaIcon, JazzCashIcon } from '@/components/checkout/PaymentIcons';
 import OrderSummaryContent, { CheckoutSkeleton } from '@/components/checkout/OrderSummaryContent';
 import EmptyCart from '@/components/checkout/EmptyCart';
 import OrderConfirmed from '@/components/checkout/OrderConfirmed';
@@ -33,24 +33,35 @@ export default function CheckoutPage() {
 
 function CheckoutContent() {
   const router = useRouter();
-  const { items, subtotal, clearCart } = useCart();
-  const { user, isAuthenticated } = useAuth();
+  const { items, subtotal, clearCart, refreshCart } = useCart();
+  const { user, isAuthenticated, hydrated } = useAuth();
   const { addToast } = useToast();
   const firstNameRef = useRef(null);
 
-  const [hydrated, setHydrated] = useState(false);
+  const [hydratedPage, setHydratedPage] = useState(false);
+
+  // Revalidate live product prices and cart state from the backend API on checkout mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshCart();
+    }
+  }, [isAuthenticated, refreshCart]);
+
+  // Fallback route protection in case the middleware matcher is bypassed
+  useEffect(() => {
+    if (hydrated && !isAuthenticated) {
+      router.replace('/login?redirect=/checkout');
+    }
+  }, [hydrated, isAuthenticated, router]);
   const [step, setStep] = useState('checkout');
   const [placing, setPlacing] = useState(false);
+  const [confirmedOrderNumber, setConfirmedOrderNumber] = useState('');
   const [shipping, setShipping] = useState(DEFAULT_SHIPPING);
   const [openSection, setOpenSection] = useState('customer');
   const [customer, setCustomer] = useState({ firstName: '', lastName: '', email: '', phone: '' });
   const [address, setAddress] = useState({ country: 'Pakistan', province: '', city: '', area: '', line1: '', line2: '', postalCode: '' });
   const [deliveryMethod, setDeliveryMethod] = useState('standard');
-  const [paymentMethod, setPaymentMethod] = useState('cod');
-  const [card, setCard] = useState({ number: '', name: '', expiry: '', cvv: '' });
-  const [easypaisaNumber, setEasypaisaNumber] = useState('');
-  const [jazzcashNumber, setJazzcashNumber] = useState('');
-  const [showCvv, setShowCvv] = useState(false);
+  const paymentMethod = 'cod';
   const [giftNote, setGiftNote] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
   const [couponCode, setCouponCode] = useState('');
@@ -61,7 +72,7 @@ function CheckoutContent() {
   const [touched, setTouched] = useState({});
 
   useEffect(() => {
-    const timer = setTimeout(() => setHydrated(true), 0);
+    const timer = setTimeout(() => setHydratedPage(true), 0);
     setTimeout(() => firstNameRef.current?.focus(), 300);
     return () => clearTimeout(timer);
   }, []);
@@ -83,11 +94,11 @@ function CheckoutContent() {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (hydrated && items.length === 0 && step !== 'confirmed') {
+    if (hydratedPage && items.length === 0 && step !== 'confirmed') {
       const timer = setTimeout(() => setStep('empty'), 0);
       return () => clearTimeout(timer);
     }
-  }, [hydrated, items, step]);
+  }, [hydratedPage, items, step]);
 
   const shippingCost = useMemo(() => {
     if (deliveryMethod === 'express') return Number(shipping.expressShippingCost) || 0;
@@ -95,11 +106,11 @@ function CheckoutContent() {
   }, [deliveryMethod, subtotal, shipping]);
 
   const codFee = useMemo(
-    () => (paymentMethod === 'cod' && shipping.codEnabled ? Number(shipping.codFee) || 0 : 0),
-    [paymentMethod, shipping]
+    () => (shipping.codEnabled ? Number(shipping.codFee) || 0 : 0),
+    [shipping]
   );
 
-  const total = useMemo(() => Math.max(0, subtotal - discountAmount + shippingCost + codFee), [subtotal, discountAmount, shippingCost, codFee]);
+  const total = useMemo(() => roundPrice(Math.max(0, subtotal - discountAmount + shippingCost + codFee)), [subtotal, discountAmount, shippingCost, codFee]);
 
   const estimatedDelivery = useMemo(() => {
     const days = deliveryMethod === 'express' ? EXPRESS_DAYS : STANDARD_DAYS;
@@ -151,23 +162,9 @@ function CheckoutContent() {
     e.line1 = validateField('line1', address.line1);
     e.province = validateField('province', address.province);
     e.city = validateField('city', address.city);
-    if (paymentMethod === 'card') {
-      if (!card.number.trim() || card.number.replace(/\s/g, '').length < 15) e.cardNumber = 'Valid card number required';
-      if (!card.name.trim()) e.cardName = 'Cardholder name required';
-      if (!card.expiry.trim() || !/^\d{2}\/\d{2}$/.test(card.expiry)) e.cardExpiry = 'MM/YY required';
-      if (!card.cvv.trim() || card.cvv.length < 3) e.cardCvv = 'Valid CVV required';
-    }
-    if (paymentMethod === 'easypaisa') {
-      if (!easypaisaNumber.trim() || !/^(\+92|0)3[0-9]{8,9}$/.test(easypaisaNumber.replace(/[\s\-()]/g, '')))
-        e.easypaisa = 'Valid mobile number required';
-    }
-    if (paymentMethod === 'jazzcash') {
-      if (!jazzcashNumber.trim() || !/^(\+92|0)3[0-9]{8,9}$/.test(jazzcashNumber.replace(/[\s\-()]/g, '')))
-        e.jazzcash = 'Valid mobile number required';
-    }
     Object.keys(e).forEach((k) => { if (!e[k]) delete e[k]; });
     return e;
-  }, [customer, address, paymentMethod, card, easypaisaNumber, jazzcashNumber, validateField]);
+  }, [customer, address, validateField]);
 
   const scrollToError = (errs) => {
     const firstKey = Object.keys(errs)[0];
@@ -236,6 +233,7 @@ function CheckoutContent() {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
+    if (placing) return;
     const allErrors = validate();
     setErrors(allErrors);
     setTouched(Object.fromEntries(Object.keys(allErrors).map((k) => [k, true])));
@@ -255,18 +253,16 @@ function CheckoutContent() {
           firstName: customer.firstName, lastName: customer.lastName, email: customer.email, phone: customer.phone,
           addressLine1: address.line1, addressLine2: address.line2 || '', city: address.city, province: address.province, country: 'Pakistan', postalCode: address.postalCode || '',
         },
-        paymentMethod,
+        paymentMethod: 'COD',
         deliveryMethod,
         ...(couponState === 'success' && couponCode.trim() ? { couponCode: couponCode.trim() } : {}),
         ...(giftNote.trim() ? { giftNote: giftNote.trim() } : {}),
         ...(orderNotes.trim() ? { notes: orderNotes.trim(), orderNotes: orderNotes.trim() } : {}),
-        ...(paymentMethod === 'easypaisa' ? { mobileNumber: easypaisaNumber } : {}),
-        ...(paymentMethod === 'jazzcash' ? { mobileNumber: jazzcashNumber } : {}),
-        ...(paymentMethod === 'card' ? { cardLast4: card.number.replace(/\s/g, '').slice(-4) } : {}),
       };
       const res = await ordersApi.create(orderPayload);
       if (res.success) {
         clearCart();
+        setConfirmedOrderNumber(res.data?.order?.orderNumber || res.data?.orderNumber || '');
         setPlacing(false);
         setStep('confirmed');
         addToast('Order placed successfully!', 'success');
@@ -274,15 +270,23 @@ function CheckoutContent() {
         throw new Error(res.message || 'Failed to place order');
       }
     } catch (err) {
-      addToast(err.message || 'Failed to place order. Please try again.', 'error');
+      if (err.status === 401 || err.message?.toLowerCase().includes('token') || err.message?.toLowerCase().includes('unauthorized') || err.message?.toLowerCase().includes('expired')) {
+        addToast('Your session has expired. Please sign in to complete your order.', 'error');
+        setTimeout(() => {
+          router.push('/login?redirect=/checkout');
+        }, 1500);
+      } else {
+        addToast(err.message || 'Failed to place order. Please try again.', 'error');
+      }
     } finally {
       setPlacing(false);
     }
   };
 
-  if (!hydrated) return <CheckoutSkeleton />;
+  if (!hydratedPage) return <CheckoutSkeleton />;
+  if (hydrated && !isAuthenticated) return <CheckoutSkeleton />;
   if (step === 'empty') return <EmptyCart />;
-  if (step === 'confirmed') return <OrderConfirmed email={customer.email} />;
+  if (step === 'confirmed') return <OrderConfirmed email={customer.email} orderNumber={confirmedOrderNumber} />;
 
   return (
     <div>
@@ -450,54 +454,21 @@ function CheckoutContent() {
 
                 <CheckoutSection
                   number={4} title="PAYMENT METHOD"
-                  subtitle={paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod === 'card' ? 'Credit / Debit Card' : paymentMethod === 'easypaisa' ? 'Easypaisa' : 'JazzCash'}
+                  subtitle="Cash on Delivery (COD)"
                   completed={false}
                   active={openSection === 'payment'}
                   onClick={() => setOpenSection('payment')}
                 >
                   <div className="space-y-3">
-                    <PaymentCard id="pay-cod" selected={paymentMethod === 'cod'} onSelect={() => setPaymentMethod('cod')} icon={<Banknote size={20} className="text-zinc-400" />} label="Cash on Delivery (COD)" description="Pay when your order is delivered to your doorstep" popular />
-                    <PaymentCard id="pay-card" selected={paymentMethod === 'card'} onSelect={() => setPaymentMethod('card')} icon={<CreditCard size={20} className="text-zinc-400" />} label="Credit / Debit Card" description="Pay securely with your bank card" badges={<><VisaIcon /><MastercardIcon /><UnionPayIcon /></>}>
-                      {paymentMethod === 'card' && (
-                        <div className="space-y-3 pt-2">
-                          <FloatingInput label="Card Number" id="cardNumber" required value={card.number} onChange={(e) => setCard({ ...card, number: formatCardNumber(e.target.value) })} error={errors.cardNumber} data-field="cardNumber" placeholder="1234 5678 9012 3456" autoComplete="cc-number" inputMode="numeric" />
-                          <FloatingInput label="Cardholder Name" id="cardName" required value={card.name} onChange={(e) => setCard({ ...card, name: e.target.value })} error={errors.cardName} data-field="cardName" autoComplete="cc-name" />
-                          <div className="grid grid-cols-2 gap-3">
-                            <FloatingInput label="Expiry Date" id="cardExpiry" required value={card.expiry} onChange={(e) => setCard({ ...card, expiry: formatExpiry(e.target.value) })} error={errors.cardExpiry} data-field="cardExpiry" placeholder="MM/YY" autoComplete="cc-exp" inputMode="numeric" />
-                            <div className="relative">
-                              <FloatingInput label="CVV" id="cardCvv" type={showCvv ? 'text' : 'password'} required value={card.cvv} onChange={(e) => setCard({ ...card, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })} error={errors.cardCvv} data-field="cardCvv" placeholder="123" autoComplete="cc-csc" inputMode="numeric" />
-                              <button type="button" onClick={() => setShowCvv(!showCvv)} className="absolute right-3 top-3.5 text-zinc-400 hover:text-zinc-600 transition-colors" aria-label={showCvv ? 'Hide CVV' : 'Show CVV'}>
-                                {showCvv ? <EyeOff size={14} /> : <Eye size={14} />}
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 pt-1">
-                            <Lock size={11} className="text-zinc-300" />
-                            <span className="text-[10px] text-zinc-400">256-bit SSL encryption • Your card info is secure</span>
-                          </div>
-                        </div>
-                      )}
-                    </PaymentCard>
-                    <PaymentCard id="pay-easypaisa" selected={paymentMethod === 'easypaisa'} onSelect={() => setPaymentMethod('easypaisa')} icon={<EasypaisaIcon />} label="Easypaisa" description="Pay via Easypaisa mobile wallet" badges={<EasypaisaIcon />}>
-                      {paymentMethod === 'easypaisa' && (
-                        <div className="space-y-3 pt-2">
-                          <FloatingInput label="Easypaisa Mobile Number" id="easypaisaNum" type="tel" required value={easypaisaNumber} onChange={(e) => setEasypaisaNumber(e.target.value)} error={errors.easypaisa} data-field="easypaisa" placeholder="03XX XXXXXXX" inputMode="tel" />
-                          <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
-                            <p className="text-[11px] text-zinc-500 leading-relaxed">You will receive a payment confirmation on your mobile after placing the order. Complete the payment via Easypaisa app or USSD dial *786#.</p>
-                          </div>
-                        </div>
-                      )}
-                    </PaymentCard>
-                    <PaymentCard id="pay-jazzcash" selected={paymentMethod === 'jazzcash'} onSelect={() => setPaymentMethod('jazzcash')} icon={<JazzCashIcon />} label="JazzCash" description="Pay via JazzCash mobile wallet" badges={<JazzCashIcon />}>
-                      {paymentMethod === 'jazzcash' && (
-                        <div className="space-y-3 pt-2">
-                          <FloatingInput label="JazzCash Mobile Number" id="jazzcashNum" type="tel" required value={jazzcashNumber} onChange={(e) => setJazzcashNumber(e.target.value)} error={errors.jazzcash} data-field="jazzcash" placeholder="03XX XXXXXXX" inputMode="tel" />
-                          <div className="p-3 bg-red-50 border border-red-100 rounded-lg">
-                            <p className="text-[11px] text-zinc-500 leading-relaxed">You will receive a payment prompt on your JazzCash registered mobile. Complete the payment by entering your MPIN.</p>
-                          </div>
-                        </div>
-                      )}
-                    </PaymentCard>
+                    <PaymentCard
+                      id="pay-cod"
+                      selected={true}
+                      onSelect={() => {}}
+                      icon={<Banknote size={20} className="text-noor-gold" />}
+                      label="Cash on Delivery (COD)"
+                      description="Pay with cash when your parcel is delivered to your doorstep. Please ensure exact change is available."
+                      popular
+                    />
                   </div>
 
                   <div className="mt-6 pt-5 border-t border-zinc-100">

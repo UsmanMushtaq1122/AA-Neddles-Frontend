@@ -10,9 +10,6 @@ import { useCarouselKeyboard } from '@/hooks/useCarouselKeyboard';
 import { categoriesApi } from '@/services/categories';
 import { bannersApi } from '@/services/banners';
 
-const CATEGORY_FALLBACK_IMAGE = '/images/AA1.jpeg';
-const EDITORIAL_FALLBACK_IMAGE = '/images/AA1.jpeg';
-
 export default function NewArrival() {
   const [apiCategories, setApiCategories] = useState([]);
   const [editorialBanners, setEditorialBanners] = useState([]);
@@ -35,24 +32,26 @@ export default function NewArrival() {
       .catch(() => {});
   }, []);
 
-  const categories = apiCategories.map((cat) => ({
-    label: cat.name,
-    href: `/category/${cat.slug}`,
-    image: cat.image || CATEGORY_FALLBACK_IMAGE,
-  }));
+  const categories = apiCategories
+    .filter((cat) => cat.image)
+    .map((cat) => ({
+      label: cat.name,
+      href: `/category/${cat.slug}`,
+      image: cat.optimizedImage || cat.image,
+    }));
 
-  const editorialCards = editorialBanners.slice(0, 2).map((b) => ({
+  const editorialCards = editorialBanners.filter((b) => b.image).slice(0, 2).map((b) => ({
     id: b.id,
     label: b.title || 'Shop Collection',
     href: b.link || '/category/all',
-    image: b.image || EDITORIAL_FALLBACK_IMAGE,
+    image: b.optimizedImage || b.image,
   }));
 
-  const tallCards = editorialBanners.slice(2, 5).map((b) => ({
+  const tallCards = editorialBanners.filter((b) => b.image).slice(2, 5).map((b) => ({
     id: b.id,
     label: b.title || 'Shop Collection',
     href: b.link || '/category/all',
-    image: b.image || EDITORIAL_FALLBACK_IMAGE,
+    image: b.optimizedImage || b.image,
   }));
 
   const [emblaRef, emblaApi] = useEmblaCarousel({

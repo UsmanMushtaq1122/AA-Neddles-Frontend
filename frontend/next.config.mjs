@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
+const isDev = process.env.NODE_ENV !== 'production';
+
 const nextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -15,6 +18,7 @@ const nextConfig = {
         hostname: '**.cloudinary.com',
       },
     ],
+    ...(isDev ? { maximumDiskCacheSize: 0 } : {}),
   },
 };
 

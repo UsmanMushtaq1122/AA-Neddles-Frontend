@@ -42,6 +42,9 @@ function ProfileContent() {
     city: '', province: '', postalCode: '', isDefault: false,
   });
   const [addrSaving, setAddrSaving] = useState(false);
+  const [addrErrors, setAddrErrors] = useState({});
+  const [addrSaveError, setAddrSaveError] = useState(null);
+  const [addrSaveSuccess, setAddrSaveSuccess] = useState(false);
 
   useEffect(() => {
     return () => resetChangePassword();
@@ -113,6 +116,22 @@ function ProfileContent() {
       city: '', province: '', postalCode: '', isDefault: false,
     });
     setEditingAddress(null);
+    setAddrErrors({});
+    setAddrSaveError(null);
+    setAddrSaveSuccess(false);
+  };
+
+  const validateAddr = () => {
+    const errs = {};
+    if (!addrForm.fullName.trim()) errs.fullName = 'Full name is required';
+    if (!addrForm.phone.trim()) errs.phone = 'Phone number is required';
+    else if (!/^[+0-9][0-9\-\s]{8,19}$/.test(addrForm.phone.trim())) errs.phone = 'Enter a valid phone number';
+    if (!addrForm.addressLine1.trim()) errs.addressLine1 = 'Street address is required';
+    if (!addrForm.city.trim()) errs.city = 'City is required';
+    if (!addrForm.province.trim()) errs.province = 'Province is required';
+    if (!addrForm.postalCode.trim()) errs.postalCode = 'Postal code is required';
+    else if (!/^\d{4,6}$/.test(addrForm.postalCode.trim())) errs.postalCode = 'Enter a valid postal code';
+    return errs;
   };
 
   const openNewAddress = () => {
@@ -128,6 +147,12 @@ function ProfileContent() {
   };
 
   const handleAddrSave = async () => {
+    const errs = validateAddr();
+    setAddrErrors(errs);
+    setAddrSaveError(null);
+    setAddrSaveSuccess(false);
+    if (Object.keys(errs).length > 0) return;
+
     setAddrSaving(true);
     const updated = [...addresses];
     if (editingAddress !== null) {
@@ -141,8 +166,13 @@ function ProfileContent() {
         setAddresses(Array.isArray(res.data.addresses) ? res.data.addresses : []);
         setShowAddressForm(false);
         resetAddrForm();
+        setAddrSaveSuccess(true);
+      } else {
+        setAddrSaveError(res.message || 'Failed to save address');
       }
-    } catch {} finally {
+    } catch (err) {
+      setAddrSaveError(err.message || 'Failed to save address');
+    } finally {
       setAddrSaving(false);
     }
   };
@@ -160,6 +190,9 @@ function ProfileContent() {
   const displayName = profile?.name || user?.name || 'User';
   const displayEmail = profile?.email || user?.email || '—';
   const displayPhone = profile?.phone || user?.phone || '—';
+
+  const addrInputClass = 'w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon';
+  const addrInputErrorClass = 'w-full px-3 py-2.5 border border-red-300 bg-red-50 text-sm text-noor-black outline-none focus:border-red-400';
 
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-10">
@@ -295,38 +328,57 @@ function ProfileContent() {
                 <h4 className="text-sm font-semibold text-noor-black">
                   {editingAddress !== null ? 'Edit Address' : 'New Address'}
                 </h4>
+
+                {addrSaveSuccess && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 flex items-center gap-2">
+                    <CheckCircle2 size={16} />
+                    Address saved successfully!
+                  </div>
+                )}
+                {addrSaveError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3">
+                    {addrSaveError}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">Label</label>
-                    <input value={addrForm.label} onChange={(e) => setAddrForm({ ...addrForm, label: e.target.value })} placeholder="Home, Office, etc." className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.label} onChange={(e) => setAddrForm({ ...addrForm, label: e.target.value })} placeholder="Home, Office, etc." className={addrInputClass} />
                   </div>
                   <div>
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">Full Name</label>
-                    <input value={addrForm.fullName} onChange={(e) => setAddrForm({ ...addrForm, fullName: e.target.value })} className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.fullName} onChange={(e) => { setAddrForm({ ...addrForm, fullName: e.target.value }); if (addrErrors.fullName) setAddrErrors((prev) => ({ ...prev, fullName: '' })); }} className={addrErrors.fullName ? addrInputErrorClass : addrInputClass} />
+                    {addrErrors.fullName && <p className="text-red-500 ty-caption mt-1">{addrErrors.fullName}</p>}
                   </div>
                   <div>
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">Phone</label>
-                    <input value={addrForm.phone} onChange={(e) => setAddrForm({ ...addrForm, phone: e.target.value })} className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.phone} onChange={(e) => { setAddrForm({ ...addrForm, phone: e.target.value }); if (addrErrors.phone) setAddrErrors((prev) => ({ ...prev, phone: '' })); }} className={addrErrors.phone ? addrInputErrorClass : addrInputClass} />
+                    {addrErrors.phone && <p className="text-red-500 ty-caption mt-1">{addrErrors.phone}</p>}
                   </div>
                   <div className="sm:col-span-2">
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">Address Line 1</label>
-                    <input value={addrForm.addressLine1} onChange={(e) => setAddrForm({ ...addrForm, addressLine1: e.target.value })} className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.addressLine1} onChange={(e) => { setAddrForm({ ...addrForm, addressLine1: e.target.value }); if (addrErrors.addressLine1) setAddrErrors((prev) => ({ ...prev, addressLine1: '' })); }} className={addrErrors.addressLine1 ? addrInputErrorClass : addrInputClass} />
+                    {addrErrors.addressLine1 && <p className="text-red-500 ty-caption mt-1">{addrErrors.addressLine1}</p>}
                   </div>
                   <div className="sm:col-span-2">
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">Address Line 2 (Optional)</label>
-                    <input value={addrForm.addressLine2} onChange={(e) => setAddrForm({ ...addrForm, addressLine2: e.target.value })} className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.addressLine2} onChange={(e) => setAddrForm({ ...addrForm, addressLine2: e.target.value })} className={addrInputClass} />
                   </div>
                   <div>
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">City</label>
-                    <input value={addrForm.city} onChange={(e) => setAddrForm({ ...addrForm, city: e.target.value })} className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.city} onChange={(e) => { setAddrForm({ ...addrForm, city: e.target.value }); if (addrErrors.city) setAddrErrors((prev) => ({ ...prev, city: '' })); }} className={addrErrors.city ? addrInputErrorClass : addrInputClass} />
+                    {addrErrors.city && <p className="text-red-500 ty-caption mt-1">{addrErrors.city}</p>}
                   </div>
                   <div>
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">Province</label>
-                    <input value={addrForm.province} onChange={(e) => setAddrForm({ ...addrForm, province: e.target.value })} className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.province} onChange={(e) => { setAddrForm({ ...addrForm, province: e.target.value }); if (addrErrors.province) setAddrErrors((prev) => ({ ...prev, province: '' })); }} className={addrErrors.province ? addrInputErrorClass : addrInputClass} />
+                    {addrErrors.province && <p className="text-red-500 ty-caption mt-1">{addrErrors.province}</p>}
                   </div>
                   <div>
                     <label className="ty-caption uppercase tracking-[0.1em] text-noor-gray block mb-1">Postal Code</label>
-                    <input value={addrForm.postalCode} onChange={(e) => setAddrForm({ ...addrForm, postalCode: e.target.value })} className="w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon" />
+                    <input value={addrForm.postalCode} onChange={(e) => { setAddrForm({ ...addrForm, postalCode: e.target.value }); if (addrErrors.postalCode) setAddrErrors((prev) => ({ ...prev, postalCode: '' })); }} className={addrErrors.postalCode ? addrInputErrorClass : addrInputClass} />
+                    {addrErrors.postalCode && <p className="text-red-500 ty-caption mt-1">{addrErrors.postalCode}</p>}
                   </div>
                 </div>
                 <div className="flex items-center gap-3 pt-2">

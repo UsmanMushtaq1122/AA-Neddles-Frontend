@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import useEmblaCarousel from 'embla-carousel-react';
 import { useTrendingProducts } from '@/hooks/useProducts';
 import ProductCard from './ProductCard';
 
@@ -13,12 +12,13 @@ const TAB_TO_CATEGORY = {
   'LUXURY PRET': 'luxury-pret',
   'LUXURY FORMALS': 'luxury-formals',
   'KIDSWEAR': 'kids',
-  
 };
 
 export default function TrendingCarousel() {
   const [activeTab, setActiveTab] = useState('NEW ARRIVALS');
   const { data: allProducts, isLoading, error } = useTrendingProducts();
+  const carouselRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const filteredProducts = activeTab === 'NEW ARRIVALS'
     ? allProducts
@@ -27,46 +27,37 @@ export default function TrendingCarousel() {
         return p.category === target || p.subcategory === target;
       }) || [];
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
-    align: 'start',
-    slidesToScroll: 1,
-    containScroll: 'trimSnaps'
-  });
-
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
-
-  const onScroll = useCallback((emblaApi) => {
-    const progress = Math.max(0, Math.min(1, emblaApi.scrollProgress()));
-    setScrollProgress(progress * 100);
-  }, []);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-
-    const timer = setTimeout(() => onScroll(emblaApi), 0);
-    emblaApi.on('scroll', onScroll);
-    emblaApi.on('reInit', onScroll);
-
-    return () => {
-      clearTimeout(timer);
-      emblaApi.destroy();
-    };
-  }, [emblaApi, onScroll]);
-
-  useEffect(() => {
-    if (emblaApi) {
-      emblaApi.reInit();
+  const handleScroll = () => {
+    if (!carouselRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+    const maxScroll = scrollWidth - clientWidth;
+    if (maxScroll > 0) {
+      setScrollProgress(scrollLeft / maxScroll);
+    } else {
+      setScrollProgress(0);
     }
-  }, [activeTab, emblaApi]);
+  };
+
+  const scrollPrev = () => {
+    if (carouselRef.current) {
+      const cardWidth = carouselRef.current.firstElementChild?.clientWidth || 300;
+      carouselRef.current.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+    }
+  };
+
+  const scrollNext = () => {
+    if (carouselRef.current) {
+      const cardWidth = carouselRef.current.firstElementChild?.clientWidth || 300;
+      carouselRef.current.scrollBy({ left: cardWidth, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+      setScrollProgress(0);
+    }
+  }, [activeTab]);
 
   if (isLoading) {
     return (
@@ -131,23 +122,28 @@ export default function TrendingCarousel() {
         </div>
 
         <div className="relative">
-          <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex -ml-4">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex-none w-[85%] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-[22%] pl-4"
-                >
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
+          <div
+            ref={carouselRef}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory gap-4 md:gap-6 pb-4"
+          >
+            {filteredProducts.map((product) => (
+              <div
+                key={product.id}
+                className="flex-none w-[85%] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-[22%] snap-start"
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
           </div>
-          
-          <div className="mt-10 mx-auto relative h-[3px] bg-gray-200">
-            <div 
-              className="absolute top-0 left-0 h-full bg-black transition-all duration-300 ease-out"
-              style={{ width: `${Math.max(15, scrollProgress)}%` }}
+
+          <div className="mt-8 mx-auto relative h-[3px] bg-gray-200">
+            <div
+              className="absolute top-0 h-full bg-black transition-all duration-100 ease-out"
+              style={{
+                width: '20%',
+                left: `${scrollProgress * 80}%`,
+              }}
             />
           </div>
         </div>

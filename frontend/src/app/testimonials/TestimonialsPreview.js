@@ -6,14 +6,15 @@ import { Star, BadgeCheck, Heart, ShoppingBag, Truck, RefreshCw, ArrowRight } fr
 import Link from 'next/link';
 import Image from 'next/image';
 import { testimonialsApi } from '@/services/testimonials';
+import { AA } from '@/lib/images';
 
 const DEFAULT_GALLERY = [
-  { id: 1, name: 'Ayesha Khan', city: 'Lahore', product: 'Luxury Lawn Collection', rating: 5, text: 'Beautiful fabric and exactly like the website photos.', image: '/images/AA1.jpeg', height: 'tall' },
-  { id: 2, name: 'Fatima Riaz', city: 'Karachi', product: 'Luxury Pret — Noor Series', rating: 5, text: 'The embroidery and stitching were flawless.', image: '/images/AA4.jpeg', height: 'medium' },
-  { id: 3, name: 'Sana Tariq', city: 'Islamabad', product: 'Formal Wear — Guldasta', rating: 5, text: 'Simply stunning formal wear. Exquisite details.', image: '/images/AA6.jpeg', height: 'short' },
-  { id: 4, name: 'Hira Qureshi', city: 'Rawalpindi', product: 'Ready to Wear — Spring Edit', rating: 5, text: 'Loyal customer for years. Never disappoints.', image: '/images/AA2.jpeg', height: 'tall' },
-  { id: 5, name: 'Maham Sheikh', city: 'Faisalabad', product: 'Bridal — Mehendi Collection', rating: 5, text: 'Museum-quality craftsmanship. Impeccable.', image: '/images/AA7.jpeg', height: 'medium' },
-  { id: 6, name: 'Zainab Ali', city: 'Multan', product: 'Unstitched — Premium Lawn', rating: 5, text: 'Beautiful designs and excellent fabric.', image: '/images/AA8.jpeg', height: 'short' },
+  { id: 1, name: 'Ayesha Khan', city: 'Lahore', product: 'Luxury Lawn Collection', rating: 5, text: 'Beautiful fabric and exactly like the website photos.', image: AA.AA1, height: 'tall' },
+  { id: 2, name: 'Fatima Riaz', city: 'Karachi', product: 'Luxury Pret — Noor Series', rating: 5, text: 'The embroidery and stitching were flawless.', image: AA.AA4, height: 'medium' },
+  { id: 3, name: 'Sana Tariq', city: 'Islamabad', product: 'Formal Wear — Guldasta', rating: 5, text: 'Simply stunning formal wear. Exquisite details.', image: AA.AA6, height: 'short' },
+  { id: 4, name: 'Hira Qureshi', city: 'Rawalpindi', product: 'Ready to Wear — Spring Edit', rating: 5, text: 'Loyal customer for years. Never disappoints.', image: AA.AA2, height: 'tall' },
+  { id: 5, name: 'Maham Sheikh', city: 'Faisalabad', product: 'Bridal — Mehendi Collection', rating: 5, text: 'Museum-quality craftsmanship. Impeccable.', image: AA.AA7, height: 'medium' },
+  { id: 6, name: 'Zainab Ali', city: 'Multan', product: 'Unstitched — Premium Lawn', rating: 5, text: 'Beautiful designs and excellent fabric.', image: AA.AA8, height: 'short' },
 ];
 
 const trustStats = [
@@ -53,7 +54,7 @@ export default function TestimonialsPreview() {
             product: t.product || '',
             rating: t.rating || 5,
             text: t.comment || t.content || '',
-            image: t.image || '/images/AA1.jpeg',
+            image: t.image || AA.AA1,
             height: ['tall', 'medium', 'short'][i % 3],
           })));
         }
@@ -138,14 +139,14 @@ export default function TestimonialsPreview() {
                 transition={{ duration: 0.5, delay: Math.min(i * 0.06, 0.3) }}
                 className="break-inside-avoid"
               >
-                <div className="group relative block w-full overflow-hidden bg-noor-cream">
+                <div className="group relative block w-full overflow-hidden bg-noor-cream rounded-3xl md:rounded-[20px] max-md:rounded-[16px]">
                   <Image
                     src={customer.image}
                     alt={customer.name}
                     width={400}
                     height={customer.height === 'tall' ? 420 : customer.height === 'medium' ? 320 : 260}
                     className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                    style={{ height: customer.height === 'tall' ? '420px' : customer.height === 'medium' ? '320px' : '260px' }}
+                    style={{ width: '100%', height: customer.height === 'tall' ? '420px' : customer.height === 'medium' ? '320px' : '260px' }}
                     loading="lazy"
                   />
 

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import PageLayout from '@/components/PageLayout';
 import { useToast } from '@/hooks/useToast';
 import { api } from '@/services/index';
+import { AA } from '@/lib/images';
 
 export default function ContactPageContent() {
   const { addToast } = useToast();
@@ -48,7 +49,7 @@ export default function ContactPageContent() {
         <section className="grid gap-10 lg:grid-cols-[1.4fr_1fr] items-center">
           <div className="overflow-hidden shadow-2xl shadow-black/10">
             <Image
-              src="/images/AA1.jpeg"
+              src={AA.AA1}
               alt="Contact Us"
               width={800}
               height={540}

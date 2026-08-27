@@ -42,7 +42,7 @@ export default function ProductCard({ product }) {
           {product.images?.[0] && !imageError ? (
             <Image
               src={product.images[0]}
-              alt={product.altText || product.title ? `${product.title} — AA Neddles` : 'AA Neddles product'}
+              alt={product.title ? `${product.title} — AA Neddles` : 'AA Neddles product'}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -105,15 +105,15 @@ export default function ProductCard({ product }) {
           {product.salePrice ? (
             <div className="flex items-center gap-2 mt-1">
               <p className="ty-price font-bold text-noor-maroon">
-                Rs.{product.salePrice.toLocaleString()}
+                {`Rs. ${product.salePrice.toLocaleString()}`}
               </p>
               <p className="text-[13px] text-zinc-400 line-through">
-                Rs.{product.price?.toLocaleString()}
+                {`Rs. ${product.price?.toLocaleString()}`}
               </p>
             </div>
           ) : (
             <p className="ty-price font-bold text-black mt-1">
-              Rs.{product.price?.toLocaleString()}
+              {`Rs. ${product.price?.toLocaleString()}`}
             </p>
           )}
         </Link>

@@ -158,8 +158,10 @@ function OtpVerificationForm() {
       setSubmitting(false);
 
       if (res.success) {
+        const rawRedirect = searchParams.get('redirect') || '/';
+        const targetRedirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/';
         setSuccessMsg('Email verified successfully! Redirecting...');
-        setTimeout(() => router.replace('/'), 1500);
+        setTimeout(() => router.replace(targetRedirect), 1500);
       } else {
         setErrorMsg(res.error || 'Invalid verification code.');
       }

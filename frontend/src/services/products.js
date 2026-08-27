@@ -18,6 +18,14 @@ export const productsApi = {
   },
   getById: (id) => api.get(`/products/${id}`),
   getBySlug: (slug) => api.get(`/products/slug/${slug}`),
+  search: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.q) query.set('q', params.q);
+    if (params.page) query.set('page', params.page);
+    if (params.limit) query.set('limit', params.limit);
+    const qs = query.toString();
+    return api.get(`/products/search${qs ? `?${qs}` : ''}`);
+  },
   getFacets: (params = {}) => {
     const query = new URLSearchParams();
     if (params.status) query.set('status', params.status);

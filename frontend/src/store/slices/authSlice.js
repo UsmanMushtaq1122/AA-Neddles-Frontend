@@ -11,10 +11,12 @@ function getCookie(name) {
 function setCookie(name, value, maxAge = 86400) {
   if (typeof document === 'undefined') return;
   try {
+    const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+    const secureFlag = isSecure ? '; Secure' : '';
     if (value) {
-      document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+      document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
     } else {
-      document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax; Secure`;
+      document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
     }
   } catch {}
 }
@@ -37,13 +39,22 @@ function saveAuth(data) {
   if (typeof window === 'undefined') return;
   try {
     if (data) {
-      const toStore = { user: data.user, accessToken: data.accessToken };
+      const toStore = {
+        user: data.user,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      };
       localStorage.setItem('aa-auth', JSON.stringify(toStore));
+      if (data.refreshToken) {
+        localStorage.setItem('aa-refresh-token', data.refreshToken);
+      }
       setCookie('accessToken', data.accessToken, 86400);
+      setCookie('refreshToken', data.refreshToken, 2592000);
     } else {
       localStorage.removeItem('aa-auth');
       localStorage.removeItem('aa-refresh-token');
       setCookie('accessToken', null);
+      setCookie('refreshToken', null);
     }
   } catch {}
 }

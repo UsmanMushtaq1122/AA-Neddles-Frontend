@@ -98,7 +98,7 @@ export default function CareersPage() {
     >
       <div className="space-y-16">
         <section className="relative overflow-hidden bg-noor-black text-white">
-          <div className="absolute inset-0 bg-[url('/images/hero1.jpeg')] bg-cover bg-center opacity-40" />
+          <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/osdd9kg4/image/upload/v1786527855/ecommerce/banners/banners/1786527844697-527310682.jpg')] bg-cover bg-center opacity-40" />
           <div className="relative px-6 py-24 sm:px-10 md:px-16 lg:px-20">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight">WEAVE YOUR CAREER WITH US</h1>

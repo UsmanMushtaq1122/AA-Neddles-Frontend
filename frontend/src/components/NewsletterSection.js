@@ -27,14 +27,23 @@ export default function NewsletterSection() {
     }
     setSubscribing(true);
     try {
-      await api.post('/newsletter', { email: email.trim() });
+      const res = await api.post('/newsletter', { email: email.trim() });
       setSubmitted(true);
       setEmail('');
       setError('');
-      addToast('Thank you for subscribing!', 'success');
-    } catch {
-      setError('Failed to subscribe. Please try again later.');
-      addToast('Failed to subscribe. Please try again later.', 'error');
+      if (res?.message === 'Already subscribed') {
+        addToast("You're already subscribed", 'info');
+      } else {
+        addToast('Thank you for subscribing!', 'success');
+      }
+    } catch (err) {
+      if (err?.status === 409) {
+        setError("You're already subscribed.");
+        addToast("You're already subscribed", 'info');
+      } else {
+        setError('Failed to subscribe. Please try again later.');
+        addToast('Failed to subscribe. Please try again later.', 'error');
+      }
     } finally {
       setSubscribing(false);
     }

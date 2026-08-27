@@ -1,5 +1,3 @@
-import { GoogleOAuthProvider } from '@react-oauth/google';
-
 import './globals.css';
 import Header from '@/components/Header';
 import BottomNavigation from '@/components/BottomNavigation';
@@ -10,6 +8,7 @@ import ToastContainer from '@/components/Toast';
 import ClientErrorBoundary from '@/components/ClientErrorBoundary';
 import StoreProvider from '@/store/StoreProvider';
 import Analytics from '@/components/Analytics';
+import GoogleAuthProvider from '@/components/GoogleAuthProvider';
 
 const playfair = { variable: '--font-heading' };
 const inter = { variable: '--font-body' };
@@ -57,7 +56,7 @@ export default function RootLayout({ children }) {
             })
           }}
         />
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+        <GoogleAuthProvider>
           <StoreProvider>
             <Header />
             <main id="main-content" className="flex-1"><ClientErrorBoundary>{children}</ClientErrorBoundary></main>
@@ -68,7 +67,7 @@ export default function RootLayout({ children }) {
             <ToastContainer />
             <Analytics />
           </StoreProvider>
-        </GoogleOAuthProvider>
+        </GoogleAuthProvider>
       </body>
     </html>
   );

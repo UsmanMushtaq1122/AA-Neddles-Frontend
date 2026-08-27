@@ -54,20 +54,18 @@ export default function ForgotPasswordContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="w-full max-w-md px-4 sm:px-6 lg:px-8 py-12">
+    <div className="bg-white flex items-center justify-center px-4 py-8 sm:py-14 min-h-[calc(100vh-140px)]">
+      <div className="w-full max-w-[400px]">
         <GuestGuard>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="text-center mb-8"
-          >
-            <h1 className="ty-h2 text-noor-black">Forgot password?</h1>
-            <p className="ty-body-sm text-noor-gray mt-2">
+          {/* Heading */}
+          <div className="text-center mb-6">
+            <h1 className="text-2xl sm:text-3xl font-medium text-zinc-900">
+              Forgot password?
+            </h1>
+            <p className="text-sm text-zinc-500 mt-2 font-normal">
               Enter your email address and we&apos;ll send you a link to reset your password.
             </p>
-          </motion.div>
+          </div>
 
           <AnimatePresence mode="wait">
             {forgotPassword.success ? (
@@ -78,26 +76,26 @@ export default function ForgotPasswordContent() {
                 exit={{ opacity: 0, y: -10 }}
                 className="text-center"
               >
-                <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle2 size={32} className="text-green-600" />
+                <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
+                  <CheckCircle2 size={28} className="text-green-600" />
                 </div>
-                <h2 className="ty-h3 text-noor-black mb-3">Check your email</h2>
-                <p className="ty-body-sm text-noor-gray mb-2">
+                <h2 className="text-xl font-medium text-zinc-900 mb-2">Check your email</h2>
+                <p className="text-sm text-zinc-500 mb-1">
                   We&apos;ve sent a password reset link to
                 </p>
-                <p className="ty-body font-medium text-noor-black mb-6">{email}</p>
-                <p className="ty-caption text-noor-gray mb-8">
+                <p className="text-sm font-medium text-zinc-900 mb-6">{email}</p>
+                <p className="text-xs text-zinc-500 mb-6">
                   Didn&apos;t receive the email? Check your spam folder or{' '}
                   <button
                     onClick={() => resetForgotPassword()}
-                    className="text-noor-maroon font-medium hover:text-noor-black transition-colors"
+                    className="text-zinc-900 font-semibold hover:underline"
                   >
                     try again
                   </button>
                 </p>
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 ty-body-sm text-noor-maroon hover:text-noor-black transition-colors font-medium"
+                  className="inline-flex items-center gap-2 text-sm text-zinc-900 font-medium hover:underline"
                 >
                   <ArrowLeft size={16} />
                   Back to login
@@ -113,68 +111,62 @@ export default function ForgotPasswordContent() {
                 <AnimatePresence>
                   {forgotPassword.error && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10, height: 0 }}
+                      initial={{ opacity: 0, y: -8, height: 0 }}
                       animate={{ opacity: 1, y: 0, height: 'auto' }}
-                      exit={{ opacity: 0, y: -10, height: 0 }}
-                      className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 mb-6 flex items-center gap-2"
+                      exit={{ opacity: 0, y: -8, height: 0 }}
+                      className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 mb-4 rounded-lg flex items-center gap-2"
                       role="alert"
                     >
-                      <AlertCircle size={16} />
-                      {forgotPassword.error}
+                      <AlertCircle size={15} className="text-red-500 shrink-0" />
+                      <span>{forgotPassword.error}</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                <form onSubmit={handleSubmit} noValidate className="space-y-6">
+                <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
                   <div>
-                    <label htmlFor="fp-email" className="ty-caption uppercase tracking-wider text-zinc-500 font-medium mb-1.5 block">
-                      Email address
-                    </label>
-                    <div className="relative">
-                      <Mail size={18} strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-noor-gray pointer-events-none" />
-                      <input
-                        id="fp-email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        value={email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        placeholder="Enter your email"
-                        className={`w-full pl-14 pr-4 py-4 bg-white border border-zinc-200 ty-body text-noor-black placeholder:text-zinc-300 focus:outline-none focus:ring-2 transition-all ${
-                          errors.email && touched
-                            ? 'border-red-300 focus:ring-red-200 bg-red-50'
-                            : 'focus:ring-noor-maroon/20 focus:border-noor-maroon'
-                        }`}
-                        aria-invalid={!!(errors.email && touched)}
-                        aria-describedby={errors.email ? 'fp-email-error' : undefined}
-                      />
-                    </div>
+                    <input
+                      id="fp-email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      placeholder="Email"
+                      className={`w-full px-4 py-3.5 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder:text-zinc-400 placeholder:font-light text-sm focus:outline-none focus:border-zinc-800 transition-colors ${
+                        errors.email && touched ? 'border-red-400 bg-red-50/20' : ''
+                      }`}
+                      aria-invalid={!!(errors.email && touched)}
+                      aria-describedby={errors.email ? 'fp-email-error' : undefined}
+                    />
                     {errors.email && touched && (
-                      <p id="fp-email-error" className="text-red-500 ty-caption mt-1.5" role="alert">{errors.email}</p>
+                      <p id="fp-email-error" className="text-red-500 text-xs mt-1" role="alert">{errors.email}</p>
                     )}
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={forgotPassword.loading}
-                    className="w-full bg-noor-black text-white py-4 ty-button hover:bg-noor-gold transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {forgotPassword.loading ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      'Send reset link'
-                    )}
-                  </button>
+                  <div className="pt-1">
+                    <button
+                      type="submit"
+                      disabled={forgotPassword.loading}
+                      className="w-full bg-[#111111] hover:bg-black text-white py-3.5 rounded-lg font-medium text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                    >
+                      {forgotPassword.loading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        'Send reset link'
+                      )}
+                    </button>
+                  </div>
                 </form>
 
-                <div className="text-center mt-6">
+                <div className="text-center mt-4">
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-2 ty-body-sm text-noor-maroon hover:text-noor-black transition-colors font-medium"
+                    className="inline-flex items-center gap-2 text-sm text-zinc-800 hover:text-black underline underline-offset-2 transition-colors font-normal"
                   >
                     <ArrowLeft size={16} />
                     Back to login

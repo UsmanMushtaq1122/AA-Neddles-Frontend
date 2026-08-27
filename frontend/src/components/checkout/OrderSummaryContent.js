@@ -7,6 +7,7 @@ import {
   Loader2, Tag, X, AlertCircle, Lock, Truck, Package, ChevronDown
 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
+import { roundPrice } from '@/lib/utils';
 
 function SkeletonLine({ className }) {
   return <div className={`bg-zinc-100 rounded animate-pulse ${className}`} />;
@@ -65,7 +66,7 @@ export default function OrderSummaryContent({ items, subtotal, shippingCost, dis
                 )}
               </div>
               <p className="text-[12px] font-semibold text-noor-black mt-0.5">
-                Rs.{(item.price * item.quantity).toLocaleString()}
+                {`Rs. ${roundPrice(item.price * item.quantity).toLocaleString()}`}
               </p>
             </div>
           </div>
@@ -120,29 +121,29 @@ export default function OrderSummaryContent({ items, subtotal, shippingCost, dis
       <div className="border-t border-zinc-200 pt-4 space-y-2.5">
         <div className="flex justify-between text-[12px]">
           <span className="text-zinc-400">Subtotal</span>
-          <span className="font-medium text-noor-black">Rs.{subtotal.toLocaleString()}</span>
+          <span className="font-medium text-noor-black">{`Rs. ${subtotal.toLocaleString()}`}</span>
         </div>
         {discountAmount > 0 && (
           <div className="flex justify-between text-[12px]">
             <span className="text-emerald-600">Discount</span>
-            <span className="font-medium text-emerald-600">-Rs.{discountAmount.toLocaleString()}</span>
+            <span className="font-medium text-emerald-600">{`-Rs. ${discountAmount.toLocaleString()}`}</span>
           </div>
         )}
         <div className="flex justify-between text-[12px]">
           <span className="text-zinc-400">Shipping</span>
           <span className={`font-medium ${shippingCost === 0 ? 'text-emerald-600' : 'text-noor-black'}`}>
-            {shippingCost === 0 ? 'Free' : `Rs.${shippingCost}`}
+            {shippingCost === 0 ? 'Free' : `Rs. ${shippingCost}`}
           </span>
         </div>
         {codFee > 0 && (
           <div className="flex justify-between text-[12px]">
             <span className="text-zinc-400">Cash on Delivery Fee</span>
-            <span className="font-medium text-noor-black">Rs.{codFee.toLocaleString()}</span>
+            <span className="font-medium text-noor-black">{`Rs. ${codFee.toLocaleString()}`}</span>
           </div>
         )}
         <div className="flex justify-between text-[15px] font-bold text-noor-black pt-3 border-t border-zinc-200">
           <span>Total</span>
-          <span>Rs.{total.toLocaleString()}</span>
+          <span>{`Rs. ${total.toLocaleString()}`}</span>
         </div>
       </div>
 
@@ -171,7 +172,7 @@ export default function OrderSummaryContent({ items, subtotal, shippingCost, dis
           <span className="text-[13px] font-semibold text-noor-black">Order Summary ({items.length} item{items.length !== 1 ? 's' : ''})</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[14px] font-bold text-noor-black">Rs.{total.toLocaleString()}</span>
+          <span className="text-[14px] font-bold text-noor-black">{`Rs. ${total.toLocaleString()}`}</span>
           <ChevronDown size={16} className={`text-zinc-400 transition-transform ${mobileOpen ? 'rotate-180' : ''}`} />
         </div>
       </button>

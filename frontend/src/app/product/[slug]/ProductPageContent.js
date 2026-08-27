@@ -13,6 +13,8 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
 import { useAuth } from '@/hooks/useAuth';
 
+const PLACEHOLDER_IMAGE = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Crect fill='%23f0f0f0' width='400' height='500'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='18' fill='%23999'%3EImage Unavailable%3C/text%3E%3C/svg%3E`;
+
 function shuffleArray(arr) {
   const shuffled = [...arr];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -272,6 +274,9 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       loading={idx === 0 ? 'eager' : 'lazy'}
                       sizes="(max-width: 768px) 100vw, 50vw"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        if (e.currentTarget.src !== PLACEHOLDER_IMAGE) e.currentTarget.src = PLACEHOLDER_IMAGE;
+                      }}
                     />
                   </div>
                 ))}
@@ -366,15 +371,15 @@ export default function ProductPageContent({ slug: initialSlug }) {
                   {isSale ? (
                     <div className="flex items-center gap-3">
                       <span className="text-[22px] font-semibold text-noor-black tracking-tight">
-                        Rs.{(product.salePrice ?? 0).toLocaleString()}
+                        {`Rs. ${(product.salePrice ?? 0).toLocaleString()}`}
                       </span>
                       <span className="text-[16px] text-zinc-400 line-through">
-                        Rs.{(product.price ?? 0).toLocaleString()}
+                        {`Rs. ${(product.price ?? 0).toLocaleString()}`}
                       </span>
                     </div>
                   ) : (
                     <span className="text-[22px] font-semibold text-noor-black tracking-tight">
-                      Rs.{(product.price ?? 0).toLocaleString()}
+                      {`Rs. ${(product.price ?? 0).toLocaleString()}`}
                     </span>
                   )}
                 </div>
@@ -516,29 +521,97 @@ export default function ProductPageContent({ slug: initialSlug }) {
               <Accordion items={[
                 {
                   title: 'Description',
-                  content: product.description,
+                  render: () => {
+                    const ds = product.descriptionSections || {};
+                    const sections = (Array.isArray(ds.sections) ? ds.sections : [])
+                      .filter((s) => s && s.title && Array.isArray(s.items) && s.items.some(Boolean));
+                    const hasStructured =
+                      (typeof ds.color === 'string' && ds.color.trim()) ||
+                      sections.length > 0 ||
+                      (typeof ds.note === 'string' && ds.note.trim());
+                    if (hasStructured) {
+                      return (
+                        <div className="space-y-4">
+                          {typeof ds.color === 'string' && ds.color.trim() && (
+                            <p className="ty-body-sm text-zinc-600">
+                              <span className="font-semibold text-noor-black">Color:</span>{' '}
+                              {ds.color}
+                            </p>
+                          )}
+                          {sections.map((section, idx) => (
+                            <div key={idx}>
+                              <h4 className="ty-body font-semibold text-noor-black">
+                                {section.title}
+                              </h4>
+                              <ul className="mt-2 space-y-1.5 pl-4">
+                                {section.items.filter(Boolean).map((item, i) => (
+                                  <li key={i} className="ty-body-sm text-zinc-600 list-disc">
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                          {typeof ds.note === 'string' && ds.note.trim() && (
+                            <div>
+                              <h4 className="ty-body font-semibold text-noor-black">Note</h4>
+                              <p className="mt-2 ty-body-sm text-zinc-600">{ds.note}</p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                    return product.description;
+                  },
                 },
                 {
                   title: 'Product Care',
-                  render: () => (
-                    <>
-                      <h4 className="ty-body font-semibold text-noor-black">Fabric</h4>
-                      <p className="mt-2 ty-body-sm text-zinc-600">{product.fabric}</p>
-
-                      <h4 className="ty-body font-semibold text-noor-black mt-4">Care</h4>
-                      <div className="mt-3 space-y-3">
-                        {[
-                          { text: "Don't wash — Dry clean only" },
-                          { text: 'Can be ironed on low heat' },
-                          { text: "Don't use too much bleach" },
-                        ].map((item) => (
-                          <div key={item.text} className="flex items-center gap-4 p-3 border border-zinc-100">
-                            <div className="ty-body-sm text-zinc-700">{item.text}</div>
+                  render: () => {
+                    let rawCare = product.careInstructions;
+                    if (typeof rawCare === 'string') {
+                      try {
+                        rawCare = JSON.parse(rawCare);
+                      } catch {
+                        rawCare = [];
+                      }
+                    }
+                    const careInstructions = Array.isArray(rawCare)
+                      ? rawCare.filter(Boolean)
+                      : [];
+                    const hasCare =
+                      (typeof product.fabric === 'string' && product.fabric.trim()) ||
+                      careInstructions.length > 0;
+                    if (!hasCare) {
+                      return (
+                        <p className="ty-body-sm text-zinc-500">
+                          Care information not available for this product.
+                        </p>
+                      );
+                    }
+                    return (
+                      <>
+                        {typeof product.fabric === 'string' && product.fabric.trim() && (
+                          <div className="mb-4">
+                            <h4 className="ty-body font-semibold text-noor-black">Fabric</h4>
+                            <p className="mt-2 ty-body-sm text-zinc-600">{product.fabric}</p>
                           </div>
-                        ))}
-                      </div>
-                    </>
-                  ),
+                        )}
+
+                        {careInstructions.length > 0 && (
+                          <>
+                            <h4 className="ty-body font-semibold text-noor-black mt-2">Care</h4>
+                            <div className="mt-3 divide-y divide-zinc-200 border-t border-b border-zinc-200">
+                              {careInstructions.map((text) => (
+                                <div key={text} className="py-4">
+                                  <div className="text-[14px] md:text-[15px] font-normal text-zinc-600 tracking-wide">{text}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    );
+                  },
                 },
               ]} />
             </div>
@@ -613,16 +686,19 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 >
                   <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
                     <Image
-                      src={item.images?.[0] || '/placeholder.png'}
+                      src={item.images?.[0] || PLACEHOLDER_IMAGE}
                       alt={item.title}
                       width={400}
                       height={533}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
+                      onError={(e) => {
+                        if (e.currentTarget.src !== PLACEHOLDER_IMAGE) e.currentTarget.src = PLACEHOLDER_IMAGE;
+                      }}
                     />
                   </div>
                   <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
-                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{(item.price ?? 0).toLocaleString()}</p>
+                  <p className="ty-body-sm text-zinc-500 mt-1">{`Rs. ${(item.price ?? 0).toLocaleString()}`}</p>
                 </Link>
               ))}
             </div>
@@ -661,16 +737,19 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 >
                   <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
                     <Image
-                      src={item.images?.[0] || '/placeholder.png'}
+                      src={item.images?.[0] || PLACEHOLDER_IMAGE}
                       alt={item.title}
                       width={400}
                       height={533}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
+                      onError={(e) => {
+                        if (e.currentTarget.src !== PLACEHOLDER_IMAGE) e.currentTarget.src = PLACEHOLDER_IMAGE;
+                      }}
                     />
                   </div>
                   <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
-                  <p className="ty-body-sm text-zinc-500 mt-1">Rs.{(item.price ?? 0).toLocaleString()}</p>
+                  <p className="ty-body-sm text-zinc-500 mt-1">{`Rs. ${(item.price ?? 0).toLocaleString()}`}</p>
                 </Link>
               ))}
             </div>

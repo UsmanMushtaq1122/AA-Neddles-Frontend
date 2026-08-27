@@ -280,6 +280,11 @@ export function useAuth() {
 
   const socialLogin = useCallback(
     async (provider, credential) => {
+      if (provider.toLowerCase() === 'google' && !credential) {
+        dispatch(loginFailureAction('Google sign-in is not configured. Add a real NEXT_PUBLIC_GOOGLE_CLIENT_ID and restart the frontend.'));
+        return false;
+      }
+
       dispatch(loginStartAction());
       try {
         const response = await authApi.socialLogin(provider.toLowerCase(), credential || '');

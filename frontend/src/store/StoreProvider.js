@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer, { hydrateAuthAction } from './slices/authSlice';
+import authReducer, { hydrateAuthAction, logoutAction } from './slices/authSlice';
 import cartReducer, { hydrateCartAction, loadCart } from './slices/cartSlice';
 import wishlistReducer, { hydrateWishlistAction, loadWishlist } from './slices/wishlistSlice';
 import toastReducer from './slices/toastSlice';
@@ -39,6 +39,12 @@ function HydrateStore({ store }) {
     }
     store.dispatch(hydrateCartAction(loadCart()));
     store.dispatch(hydrateWishlistAction(loadWishlist()));
+
+    const handleAuthExpired = () => {
+      store.dispatch(logoutAction());
+    };
+    window.addEventListener('aa-auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('aa-auth-expired', handleAuthExpired);
   }, [store]);
   return null;
 }

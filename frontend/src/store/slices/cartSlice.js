@@ -1,6 +1,7 @@
 'use client';
 
 import { createSlice } from '@reduxjs/toolkit';
+import { roundPrice } from '@/lib/utils';
 
 function loadCart() {
   if (typeof window === 'undefined') return [];
@@ -128,7 +129,7 @@ export const selectCartSyncing = (state) => state.cart.syncing;
 export const selectItemCount = (state) =>
   state.cart.items.reduce((sum, item) => sum + item.quantity, 0);
 export const selectSubtotal = (state) =>
-  state.cart.items.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
+  roundPrice(state.cart.items.reduce((sum, item) => sum + roundPrice((item.price || 0) * item.quantity), 0));
 
 export { loadCart };
 export default cartSlice.reducer;

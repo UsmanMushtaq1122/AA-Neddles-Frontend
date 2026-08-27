@@ -1,0 +1,36 @@
+
+> aa-neddles@0.1.0 dev
+> next dev --port 3000
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.6:3000
+- Environments: .env.local
+✓ Ready in 1827ms
+
+○ Compiling / ...
+ GET / 200 in 19.9s (next.js: 18.0s, application-code: 1858ms)
+✓ Compiled in 617ms
+ GET / 200 in 542ms (next.js: 344ms, application-code: 198ms)
+✓ Compiled in 536ms
+ GET / 200 in 392ms (next.js: 223ms, application-code: 169ms)
+✓ Compiled in 1391ms
+✓ Compiled in 651ms
+✓ Compiled in 681ms
+✓ Compiled in 484ms
+ GET / 200 in 631ms (next.js: 449ms, application-code: 182ms)
+✓ Compiled in 495ms
+ GET / 200 in 440ms (next.js: 290ms, application-code: 149ms)
+✓ Compiled in 541ms
+ GET / 200 in 323ms (next.js: 226ms, application-code: 96ms)
+ GET / 200 in 1202ms (next.js: 14ms, application-code: 1188ms)
+ GET / 200 in 690ms (next.js: 16ms, application-code: 673ms)
+ GET / 200 in 575ms (next.js: 22ms, application-code: 553ms)
+ GET / 200 in 8.3s (next.js: 858ms, application-code: 7.5s)
+○ Compiling /_not-found/page ...
+ GET /images/AA7.jpeg 404 in 54s (next.js: 50s, application-code: 3.8s)
+ GET /category/all 200 in 59s (next.js: 58s, application-code: 1080ms)
+✓ Finished writing to filesystem cache in 13.4s
+○ Compiling /product/[slug] ...
+ GET /product/midnight-bloom-luxury-pret-3-piece-embroidered-suit 200 in 8.6s (next.js: 6.5s, application-code: 2.1s)
+[?25h

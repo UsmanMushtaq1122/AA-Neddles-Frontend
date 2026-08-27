@@ -4,26 +4,54 @@ import { useState, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, AlertCircle } from 'lucide-react';
 
-const FloatingInput = forwardRef(function FloatingInput({ label, id, error, required, type = 'text', className, as, children, ...props }, ref) {
+const FloatingInput = forwardRef(function FloatingInput(
+  {
+    label,
+    id,
+    error,
+    required,
+    type = 'text',
+    className = '',
+    as,
+    children,
+    placeholder,
+    onFocus,
+    onBlur,
+    ...props
+  },
+  ref
+) {
   const [focused, setFocused] = useState(false);
   const hasValue = props.value != null && String(props.value).length > 0;
-  const isFloating = focused || hasValue;
+  const isFloating = as === 'select' || focused || hasValue;
 
-  const baseClass = `peer w-full px-4 pt-5 pb-2 border bg-white text-noor-black placeholder-transparent focus:outline-none focus:ring-1 transition-all duration-200 ${
+  const handleFocus = (e) => {
+    setFocused(true);
+    onFocus?.(e);
+  };
+
+  const handleBlur = (e) => {
+    setFocused(false);
+    onBlur?.(e);
+  };
+
+  const baseClass = `peer w-full px-4 pt-5 pb-2 text-[13px] border bg-white focus:outline-none focus:ring-1 transition-all duration-200 ${
     error
       ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
       : 'border-zinc-200 focus:ring-noor-gold/30 focus:border-noor-gold hover:border-zinc-300'
   }`;
 
   return (
-    <div className={`relative ${className || ''}`}>
+    <div className={`relative ${className}`}>
       {as === 'select' ? (
         <select
           id={id}
           ref={ref}
-          className={`${baseClass} appearance-none cursor-pointer`}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          className={`${baseClass} appearance-none cursor-pointer pr-10 ${
+            !hasValue ? 'text-zinc-400' : 'text-noor-black font-medium'
+          } [&>option]:text-noor-black [&>option]:bg-white`}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
           {...props}
@@ -35,9 +63,12 @@ const FloatingInput = forwardRef(function FloatingInput({ label, id, error, requ
           id={id}
           ref={ref}
           rows={3}
-          className={`${baseClass} resize-none`}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          className={`${baseClass} resize-none text-noor-black ${
+            !isFloating ? 'placeholder-transparent' : 'placeholder:text-zinc-400'
+          }`}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          placeholder={isFloating ? (placeholder || '') : ''}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
           {...props}
@@ -47,10 +78,12 @@ const FloatingInput = forwardRef(function FloatingInput({ label, id, error, requ
           id={id}
           ref={ref}
           type={type}
-          className={baseClass}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder={label}
+          className={`${baseClass} text-noor-black ${
+            !isFloating ? 'placeholder-transparent' : 'placeholder:text-zinc-400'
+          }`}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          placeholder={isFloating ? (placeholder || '') : ''}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
           {...props}
@@ -58,7 +91,7 @@ const FloatingInput = forwardRef(function FloatingInput({ label, id, error, requ
       )}
       <label
         htmlFor={id || props.name}
-        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
+        className={`absolute left-4 transition-all duration-200 pointer-events-none select-none ${
           isFloating
             ? 'top-1.5 text-[10px] tracking-wider uppercase font-medium text-zinc-400'
             : 'top-3.5 text-[13px] text-zinc-400'

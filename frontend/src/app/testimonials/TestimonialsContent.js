@@ -26,6 +26,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCarouselKeyboard } from '@/hooks/useCarouselKeyboard';
 import { testimonialsApi } from '@/services/testimonials';
+import { AA } from '@/lib/images';
 
 /* ═══════════════════════════════════════════════
    DATA
@@ -39,7 +40,7 @@ const customerStories = [
     name: 'Ayesha Khan',
     city: 'Lahore',
     product: 'Luxury Lawn Collection',
-    image: '/images/AA1.jpeg',
+    image: AA.AA1,
   },
   {
     before: 'Living abroad, I was sceptical about ordering from Pakistan online.',
@@ -48,7 +49,7 @@ const customerStories = [
     name: 'Fatima Riaz',
     city: 'Karachi (now Dubai)',
     product: 'Luxury Pret — Noor Series',
-    image: '/images/AA4.jpeg',
+    image: AA.AA4,
   },
   {
     before: 'I needed a bridal lehenga but was worried about custom fittings from online orders.',
@@ -57,7 +58,7 @@ const customerStories = [
     name: 'Maham Sheikh',
     city: 'Faisalabad',
     product: 'Bridal — Mehendi Collection',
-    image: '/images/AA7.jpeg',
+    image: AA.AA7,
   },
 ];
 
@@ -76,7 +77,7 @@ const videoTestimonials = [
     city: 'Islamabad',
     product: 'Formal Wear — Guldasta',
     rating: 5,
-    thumbnail: '/images/AA6.jpeg',
+    thumbnail: AA.AA6,
     duration: '0:43',
     review: 'Their formal wear is simply stunning. The embroidery details are exquisite and the fit is perfect.',
     verified: true,
@@ -87,7 +88,7 @@ const videoTestimonials = [
     city: 'Lahore',
     product: 'Bridal Lehenga',
     rating: 5,
-    thumbnail: '/images/AA2.jpeg',
+    thumbnail: AA.AA2,
     duration: '1:12',
     review: 'The bridal lehenga was a dream. Every stitch was perfection. Worth every rupee.',
     verified: true,
@@ -98,7 +99,7 @@ const videoTestimonials = [
     city: 'Rawalpindi',
     product: 'Ready to Wear — Spring Edit',
     rating: 5,
-    thumbnail: '/images/AA10.jpeg',
+    thumbnail: AA.AA10,
     duration: '0:38',
     review: 'I have been a loyal customer for years. The new arrivals never disappoint.',
     verified: true,
@@ -109,7 +110,7 @@ const videoTestimonials = [
     city: 'Karachi',
     product: 'Luxury Pret — Noor Series',
     rating: 5,
-    thumbnail: '/images/AA4.jpeg',
+    thumbnail: AA.AA4,
     duration: '0:55',
     review: 'Absolutely love the luxury pret collection! The fabric quality and finishing are exceptional.',
     verified: true,
@@ -120,7 +121,7 @@ const videoTestimonials = [
     city: 'Faisalabad',
     product: 'Unstitched Collection',
     rating: 5,
-    thumbnail: '/images/AA7.jpeg',
+    thumbnail: AA.AA7,
     duration: '0:47',
     review: 'The unstitched collection gives me freedom to tailor everything perfectly. Premium quality.',
     verified: true,
@@ -131,7 +132,7 @@ const videoTestimonials = [
     city: 'Multan',
     product: 'Luxury Formals — Zara',
     rating: 5,
-    thumbnail: '/images/AA3.jpeg',
+    thumbnail: AA.AA3,
     duration: '1:05',
     review: 'Ordered for my sister wedding. The craftsmanship is museum-quality. Absolutely stunning.',
     verified: true,
@@ -139,34 +140,34 @@ const videoTestimonials = [
 ];
 
 const instagramPosts = [
-  { username: '@qudsia1412', category: 'Unstitched', image: '/images/AA1.jpeg', review: 'In love with this fabric quality!', city: 'Lahore' },
-  { username: '@stopcopyingmyusername', category: 'Luxury Pret', image: '/images/AA4.jpeg', review: 'Perfect Eid outfit every time.', city: 'Karachi' },
-  { username: '@qudsia.ali', category: 'Luxury Formals', image: '/images/AA3.jpeg', review: 'The embroidery is breathtaking.', city: 'Islamabad' },
-  { username: '@mariam.jafry', category: 'Luxury Formals', image: '/images/AA6.jpeg', review: 'My go-to brand for every occasion.', city: 'Rawalpindi' },
-  { username: '@by.rooj1', category: 'Luxury Formals', image: '/images/AA10.jpeg', review: 'Premium packaging and fast delivery.', city: 'Faisalabad' },
-  { username: '@aaneddles.style', category: 'Luxury Pret', image: '/images/AA7.jpeg', review: 'Never disappoints. Pure luxury.', city: 'Multan' },
-  { username: '@fashion.diary', category: 'Ready to Wear', image: '/images/AA8.jpeg', review: 'Best stitching quality in Pakistan.', city: 'Peshawar' },
-  { username: '@elegant.wardrobe', category: 'Bridal', image: '/images/AA11.jpeg', review: 'My bridal lehenga was a dream come true.', city: 'Quetta' },
+  { username: '@qudsia1412', category: 'Unstitched', image: AA.AA1, review: 'In love with this fabric quality!', city: 'Lahore' },
+  { username: '@stopcopyingmyusername', category: 'Luxury Pret', image: AA.AA4, review: 'Perfect Eid outfit every time.', city: 'Karachi' },
+  { username: '@qudsia.ali', category: 'Luxury Formals', image: AA.AA3, review: 'The embroidery is breathtaking.', city: 'Islamabad' },
+  { username: '@mariam.jafry', category: 'Luxury Formals', image: AA.AA6, review: 'My go-to brand for every occasion.', city: 'Rawalpindi' },
+  { username: '@by.rooj1', category: 'Luxury Formals', image: AA.AA10, review: 'Premium packaging and fast delivery.', city: 'Faisalabad' },
+  { username: '@aaneddles.style', category: 'Luxury Pret', image: AA.AA7, review: 'Never disappoints. Pure luxury.', city: 'Multan' },
+  { username: '@fashion.diary', category: 'Ready to Wear', image: AA.AA8, review: 'Best stitching quality in Pakistan.', city: 'Peshawar' },
+  { username: '@elegant.wardrobe', category: 'Bridal', image: AA.AA11, review: 'My bridal lehenga was a dream come true.', city: 'Quetta' },
 ];
 
 const mosaicCards = [
-  { type: 'image', image: '/images/AA1.jpeg', size: 'large', name: 'Ayesha Khan', product: 'Luxury Lawn', review: 'Stunning quality and perfect fit.' },
-  { type: 'video', image: '/images/AA6.jpeg', size: 'medium', name: 'Sana Tariq', product: 'Formal Wear', duration: '0:43' },
-  { type: 'image', image: '/images/AA3.jpeg', size: 'small', name: 'Mehreen Aslam', product: 'Luxury Formals' },
-  { type: 'image', image: '/images/AA4.jpeg', size: 'small', name: 'Fatima Riaz', product: 'Luxury Pret' },
-  { type: 'video', image: '/images/AA2.jpeg', size: 'medium', name: 'Ayesha Malik', product: 'Bridal Lehenga', duration: '1:12' },
-  { type: 'image', image: '/images/AA10.jpeg', size: 'small', name: 'Hira Qureshi', product: 'Ready to Wear' },
-  { type: 'image', image: '/images/AA8.jpeg', size: 'small', name: 'Zainab Ali', product: 'Unstitched Premium' },
-  { type: 'image', image: '/images/AA7.jpeg', size: 'large', name: 'Maham Sheikh', product: 'Bridal Collection', review: 'Museum-quality craftsmanship.' },
-  { type: 'image', image: '/images/AA11.jpeg', size: 'small', name: 'Amina Malik', product: 'Eid Collection' },
-  { type: 'image', image: '/images/AA5.jpeg', size: 'small', name: 'Nadia Hussain', product: 'Luxury Pret' },
+  { type: 'image', image: AA.AA1, size: 'large', name: 'Ayesha Khan', product: 'Luxury Lawn', review: 'Stunning quality and perfect fit.' },
+  { type: 'video', image: AA.AA6, size: 'medium', name: 'Sana Tariq', product: 'Formal Wear', duration: '0:43' },
+  { type: 'image', image: AA.AA3, size: 'small', name: 'Mehreen Aslam', product: 'Luxury Formals' },
+  { type: 'image', image: AA.AA4, size: 'small', name: 'Fatima Riaz', product: 'Luxury Pret' },
+  { type: 'video', image: AA.AA2, size: 'medium', name: 'Ayesha Malik', product: 'Bridal Lehenga', duration: '1:12' },
+  { type: 'image', image: AA.AA10, size: 'small', name: 'Hira Qureshi', product: 'Ready to Wear' },
+  { type: 'image', image: AA.AA8, size: 'small', name: 'Zainab Ali', product: 'Unstitched Premium' },
+  { type: 'image', image: AA.AA7, size: 'large', name: 'Maham Sheikh', product: 'Bridal Collection', review: 'Museum-quality craftsmanship.' },
+  { type: 'image', image: AA.AA11, size: 'small', name: 'Amina Malik', product: 'Eid Collection' },
+  { type: 'image', image: AA.AA5, size: 'small', name: 'Nadia Hussain', product: 'Luxury Pret' },
 ];
 
 const shopTheLookProducts = [
-  { name: 'Luxury Lawn — Summer Breeze', price: 'PKR 8,990', image: '/images/AA1.jpeg', customer: 'Ayesha Khan', city: 'Lahore' },
-  { name: 'Luxury Pret — Noor Series', price: 'PKR 12,500', image: '/images/AA4.jpeg', customer: 'Fatima Riaz', city: 'Karachi' },
-  { name: 'Formal Wear — Guldasta', price: 'PKR 18,900', image: '/images/AA6.jpeg', customer: 'Sana Tariq', city: 'Islamabad' },
-  { name: 'Bridal — Mehendi Collection', price: 'PKR 45,000', image: '/images/AA7.jpeg', customer: 'Maham Sheikh', city: 'Faisalabad' },
+  { name: 'Luxury Lawn — Summer Breeze', price: 'PKR 8,990', image: AA.AA1, customer: 'Ayesha Khan', city: 'Lahore' },
+  { name: 'Luxury Pret — Noor Series', price: 'PKR 12,500', image: AA.AA4, customer: 'Fatima Riaz', city: 'Karachi' },
+  { name: 'Formal Wear — Guldasta', price: 'PKR 18,900', image: AA.AA6, customer: 'Sana Tariq', city: 'Islamabad' },
+  { name: 'Bridal — Mehendi Collection', price: 'PKR 45,000', image: AA.AA7, customer: 'Maham Sheikh', city: 'Faisalabad' },
 ];
 
 const marqueeItems = [
@@ -352,7 +353,7 @@ function CustomerPhotoGallery({ customers = [] }) {
               <button
                 type="button"
                 onClick={() => setSelectedCustomer(customer)}
-                className="group relative block w-full overflow-hidden bg-noor-cream cursor-pointer"
+                className="group relative block w-full overflow-hidden bg-noor-cream cursor-pointer rounded-3xl md:rounded-[20px] max-md:rounded-[16px]"
               >
                 <Image
                   src={customer.image}
@@ -360,7 +361,7 @@ function CustomerPhotoGallery({ customers = [] }) {
                   width={400}
                   height={customer.height === 'tall' ? 420 : customer.height === 'medium' ? 320 : 260}
                   className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                  style={{ height: customer.height === 'tall' ? '420px' : customer.height === 'medium' ? '320px' : '260px' }}
+                  style={{ width: '100%', height: customer.height === 'tall' ? '420px' : customer.height === 'medium' ? '320px' : '260px' }}
                 />
 
                 {/* Hover Overlay */}
@@ -413,7 +414,7 @@ function CustomerPhotoGallery({ customers = [] }) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.92 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="relative w-full max-w-4xl bg-white overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-4xl bg-white overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto rounded-3xl md:rounded-[20px] max-md:rounded-[16px]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -517,7 +518,7 @@ function CustomerStories() {
             >
               {/* Image */}
               <div className="w-full md:w-1/2">
-                <div className="relative overflow-hidden bg-noor-cream">
+                <div className="relative overflow-hidden bg-noor-cream rounded-3xl md:rounded-[20px] max-md:rounded-[16px]">
                   <Image
                     src={story.image}
                     alt={story.name}
@@ -1060,7 +1061,7 @@ function CTASection() {
   return (
     <section className="relative py-20 md:py-28 overflow-hidden bg-noor-dark">
       <Image
-        src="/images/AA3.jpeg"
+        src={AA.AA3}
         alt="AA Neddles collection"
         fill
         className="absolute inset-0 h-full w-full object-cover opacity-25"

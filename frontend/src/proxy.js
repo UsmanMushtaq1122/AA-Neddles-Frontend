@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const PROTECTED_ROUTES = ['/wishlist', '/profile', '/orders', '/checkout'];
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   const isProtected = PROTECTED_ROUTES.some(
@@ -25,5 +25,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/wishlist/:path*', '/profile/:path*', '/orders/:path*', '/checkout'],
+  matcher: ['/wishlist/:path*', '/profile/:path*', '/orders/:path*', '/checkout/:path*', '/checkout'],
 };

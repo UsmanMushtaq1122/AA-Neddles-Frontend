@@ -1,21 +1,22 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, ShoppingBag, Heart, User, Plus, Minus, LogOut, Package, ChevronDown } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, Heart, User, Plus, Minus, LogOut, Package, ChevronDown, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import LogoutModal from '@/components/LogoutModal';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import MobileHeader from '@/components/MobileHeader';
-import { categoriesApi } from '@/services/categories';
+import { menuApi } from '@/services/menu';
 
-/* ── Desktop nav links ── */
-const NAV_LINKS = [];
+/* ── Default menu name/slug ── */
+const MENU_NAME = 'main-mobile-menu';
 
+/* ── UserAvatar ── */
 function UserAvatar({ name, size = 32 }) {
   const initial = name ? name.charAt(0).toUpperCase() : '?';
   return (
@@ -28,16 +29,134 @@ function UserAvatar({ name, size = 32 }) {
   );
 }
 
+/* ── Recursive single menu item renderer ── */
+function MenuNode({ item, depth = 0, onClose, expandedRow, toggleRow }) {
+  const isExternal = item.type === 'EXTERNAL_LINK';
+  const hasChildren = item.children && item.children.length > 0;
+  const isExpanded = expandedRow === item.id;
+
+  const labelStyle = item.isHighlighted
+    ? {
+        color: item.textColor || '#FFFFFF',
+        backgroundColor: item.bgColor || '#8B1A1A',
+        fontWeight: item.fontWeight === 'bold' ? 700 : item.fontWeight === 'semibold' ? 600 : 400,
+        borderRadius: '4px',
+        padding: '2px 10px',
+        display: 'inline-block',
+        margin: '2px 0',
+      }
+    : {};
+
+  const indent = depth > 0 ? { paddingLeft: `${depth * 16 + 16}px` } : {};
+
+  if (isExternal) {
+    return (
+      <div className="drawer-row-wrap">
+        <div className="drawer-row" style={indent}>
+          <a
+            href={item.url || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="drawer-row-label flex items-center gap-1.5"
+            style={labelStyle}
+            onClick={onClose}
+          >
+            {item.icon && <span aria-hidden="true">{item.icon}</span>}
+            <span>{item.title}</span>
+            <ExternalLink size={12} strokeWidth={1.5} className="opacity-50" />
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="drawer-row-wrap">
+      <div className="drawer-row" style={indent}>
+        {item.url ? (
+          <Link
+            href={item.url}
+            className="drawer-row-label"
+            style={labelStyle}
+            onClick={onClose}
+          >
+            {item.icon && <span aria-hidden="true" className="mr-1.5">{item.icon}</span>}
+            {item.title}
+          </Link>
+        ) : (
+          <span className="drawer-row-label" style={labelStyle}>
+            {item.icon && <span aria-hidden="true" className="mr-1.5">{item.icon}</span>}
+            {item.title}
+          </span>
+        )}
+
+        {hasChildren && (
+          <button
+            className="drawer-row-toggle"
+            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+            onClick={() => toggleRow(item.id)}
+          >
+            {isExpanded ? (
+              <Minus size={16} strokeWidth={1.5} />
+            ) : (
+              <Plus size={16} strokeWidth={1.5} />
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* Children (recursive) */}
+      <AnimatePresence initial={false}>
+        {hasChildren && isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="drawer-sub"
+            style={{ overflow: 'hidden' }}
+          >
+            {item.url && (
+              <Link
+                href={item.url}
+                className="drawer-sub-link"
+                onClick={onClose}
+                style={{ paddingLeft: `${(depth + 1) * 16 + 16}px` }}
+              >
+                View All {item.title}
+              </Link>
+            )}
+            {item.children.map((child) => (
+              <MenuNode
+                key={child.id}
+                item={child}
+                depth={depth + 1}
+                onClose={onClose}
+                expandedRow={expandedRow}
+                toggleRow={toggleRow}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── Main Header ── */
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('women');
+  const [activeTabId, setActiveTabId] = useState(null);
   const [expandedRow, setExpandedRow] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [apiCategories, setApiCategories] = useState([]);
-  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+
+  /* ── Menu data ── */
+  const [menuData, setMenuData] = useState(null);
+  const [menuLoaded, setMenuLoaded] = useState(false);
+
   const { items, openCart } = useCart();
   const { isAuthenticated, user, logout, hydrated } = useAuth();
   const pathname = usePathname();
@@ -45,39 +164,29 @@ export default function Header() {
   const dropdownRef = useRef(null);
   const drawerRef = useRef(null);
 
+  /* ── Fetch menu from API ── */
   useEffect(() => {
-    categoriesApi.getAll()
+    menuApi.getTree(MENU_NAME)
       .then((res) => {
-        const cats = res.data?.categories || [];
-        setApiCategories(cats);
+        const data = res.data;
+        setMenuData(data);
+        // Set first active tab
+        if (data?.items?.length > 0) {
+          setActiveTabId(data.items[0].id);
+        }
       })
-      .catch(() => { })
-      .finally(() => setCategoriesLoaded(true));
+      .catch(() => {})
+      .finally(() => setMenuLoaded(true));
   }, []);
 
-  const drawerData = useMemo(() => {
-    const parents = apiCategories.filter((c) => !c.parentId);
-    const tabColors = ['#1a1a1a', '#4a9b6f', '#b07c4a', '#1a1a1a'];
-    const tabs = parents.map((p, i) => ({
-      id: p.slug,
-      label: p.name.toUpperCase(),
-      color: tabColors[i] || '#1a1a1a',
-    }));
+  /* ── Top-level tabs (items with no parent, rendered as tabs) ── */
+  const tabs = menuData?.items || [];
 
-    const cats = {};
-    parents.forEach((p) => {
-      cats[p.slug] = apiCategories
-        .filter((c) => c.parentId === p.id)
-        .map((c) => ({
-          label: c.name.toUpperCase(),
-          href: `/category/${c.slug}`,
-          expandable: Boolean(c.children?.length),
-        }));
-    });
+  /* ── Children of active tab ── */
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const activeChildren = activeTab?.children || [];
 
-    return { tabs, categories: cats };
-  }, [apiCategories]);
-
+  /* ── Scroll handler ── */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -90,11 +199,13 @@ export default function Header() {
     setExpandedRow(null);
   }, []);
 
+  /* ── Keyboard handler ── */
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!drawerOpen) return;
       if (e.key === 'Escape') {
         closeDrawer();
+        return;
       }
       if (e.key === 'Tab' && drawerRef.current) {
         const focusables = drawerRef.current.querySelectorAll(
@@ -116,16 +227,19 @@ export default function Header() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [drawerOpen, closeDrawer]);
 
+  /* ── Body scroll lock ── */
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen]);
 
+  /* ── Close user dropdown on route change ── */
   useEffect(() => {
     const timer = setTimeout(() => setUserDropdownOpen(false), 0);
     return () => clearTimeout(timer);
   }, [pathname]);
 
+  /* ── Click outside user dropdown ── */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -136,8 +250,8 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleRow = (label) =>
-    setExpandedRow((prev) => (prev === label ? null : label));
+  const toggleRow = (id) =>
+    setExpandedRow((prev) => (prev === id ? null : id));
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -147,8 +261,6 @@ export default function Header() {
     setUserDropdownOpen(false);
     logout();
   };
-
-  const categories = drawerData.categories[activeTab] || [];
 
   return (
     <>
@@ -201,14 +313,6 @@ export default function Header() {
               <Link href="/search" className="hdr-icon-btn" aria-label="Search">
                 <Search size={20} strokeWidth={1.5} />
               </Link>
-
-              <nav className="hidden md:flex items-center gap-7" aria-label="Primary navigation">
-                {NAV_LINKS.map((link) => (
-                  <Link key={link.href} href={link.href} className="hdr-nav-link">
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
             </div>
 
             {/* CENTER */}
@@ -263,24 +367,15 @@ export default function Header() {
                           <p className="ty-micro text-noor-gray truncate">{user?.email}</p>
                         </div>
                         <div className="py-1">
-                          <Link
-                            href="/profile"
-                            className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors"
-                          >
+                          <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors">
                             <User size={16} strokeWidth={1.5} />
                             My Profile
                           </Link>
-                          <Link
-                            href="/orders"
-                            className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors"
-                          >
+                          <Link href="/orders" className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors">
                             <Package size={16} strokeWidth={1.5} />
                             My Orders
                           </Link>
-                          <Link
-                            href="/wishlist"
-                            className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors"
-                          >
+                          <Link href="/wishlist" className="flex items-center gap-3 px-4 py-2.5 ty-body-sm text-noor-black hover:bg-zinc-50 transition-colors">
                             <Heart size={16} strokeWidth={1.5} />
                             Wishlist
                           </Link>
@@ -319,7 +414,7 @@ export default function Header() {
       </div>
 
       {/* ══════════════════════════════════════════
-          MEGA DRAWER
+          MEGA DRAWER — API-driven, unlimited nesting
       ══════════════════════════════════════════ */}
       <AnimatePresence>
         {drawerOpen && (
@@ -337,6 +432,7 @@ export default function Header() {
 
             <motion.div
               key="drawer-panel"
+              ref={drawerRef}
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -367,77 +463,65 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* Category tabs */}
-              <div className="drawer-tabs" role="tablist">
-                {drawerData.tabs.map((tab, i) => (
-                  <span key={tab.id} style={{ display: 'contents' }}>
-                    {i > 0 && <span className="drawer-tab-sep" aria-hidden="true">|</span>}
-                    <button
-                      role="tab"
-                      aria-selected={activeTab === tab.id}
-                      className={`drawer-tab ${activeTab === tab.id ? 'is-active' : ''
-                        } ${tab.id === 'special-offers' ? 'is-special' : ''}`}
-                      onClick={() => {
-                        setActiveTab(tab.id);
-                        setExpandedRow(null);
-                      }}
-                    >
-                      {tab.label}
-                    </button>
-                  </span>
-                ))}
-              </div>
+              {/* Loading skeleton */}
+              {!menuLoaded && (
+                <div className="drawer-tabs">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-4 w-16 bg-zinc-200 animate-pulse rounded"
+                    />
+                  ))}
+                </div>
+              )}
 
-              {/* Section label */}
-              <div className="drawer-section-label">BEST SELLERS</div>
-
-              {/* Category rows */}
-              <nav className="drawer-nav" aria-label="Category navigation">
-                {categories.map((cat) => (
-                  <div key={cat.label} className="drawer-row-wrap">
-                    <div className="drawer-row">
-                      <Link
-                        href={cat.href}
-                        className="drawer-row-label"
-                        onClick={closeDrawer}
+              {/* Category tabs — top-level menu items */}
+              {menuLoaded && tabs.length > 0 && (
+                <div className="drawer-tabs" role="tablist">
+                  {tabs.map((tab, i) => (
+                    <span key={tab.id} style={{ display: 'contents' }}>
+                      {i > 0 && <span className="drawer-tab-sep" aria-hidden="true">|</span>}
+                      <button
+                        role="tab"
+                        aria-selected={activeTabId === tab.id}
+                        className={`drawer-tab ${activeTabId === tab.id ? 'is-active' : ''} ${tab.isHighlighted ? 'is-special' : ''}`}
+                        style={
+                          tab.isHighlighted
+                            ? { color: tab.textColor, backgroundColor: tab.bgColor }
+                            : undefined
+                        }
+                        onClick={() => {
+                          setActiveTabId(tab.id);
+                          setExpandedRow(null);
+                        }}
                       >
-                        {cat.label}
-                      </Link>
-                      {cat.expandable && (
-                        <button
-                          className="drawer-row-toggle"
-                          aria-label={expandedRow === cat.label ? 'Collapse' : 'Expand'}
-                          onClick={() => toggleRow(cat.label)}
-                        >
-                          {expandedRow === cat.label
-                            ? <Minus size={16} strokeWidth={1.5} />
-                            : <Plus size={16} strokeWidth={1.5} />}
-                        </button>
-                      )}
-                    </div>
-                    <AnimatePresence initial={false}>
-                      {expandedRow === cat.label && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.22, ease: 'easeInOut' }}
-                          className="drawer-sub"
-                          style={{ overflow: 'hidden' }}
-                        >
-                          <Link href={cat.href} className="drawer-sub-link" onClick={closeDrawer}>
-                            View All {cat.label.charAt(0) + cat.label.slice(1).toLowerCase()}
-                          </Link>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                        {tab.icon && <span aria-hidden="true" className="mr-1">{tab.icon}</span>}
+                        {tab.title.toUpperCase()}
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Nav rows — children of active tab, unlimited nesting */}
+              <nav className="drawer-nav" aria-label="Category navigation">
+                {activeChildren.map((item) => (
+                  <MenuNode
+                    key={item.id}
+                    item={item}
+                    depth={0}
+                    onClose={closeDrawer}
+                    expandedRow={expandedRow}
+                    toggleRow={toggleRow}
+                  />
                 ))}
+                {menuLoaded && activeChildren.length === 0 && (
+                  <p className="px-4 py-6 text-sm text-zinc-400">No items in this section.</p>
+                )}
               </nav>
 
-              {/* Bottom links removed per request */}
               <div className="drawer-footer">
-                {/* Footer links intentionally removed */}
+                {/* Footer links — configurable via menu items with no parent and type CUSTOM_URL */}
               </div>
             </motion.div>
           </>

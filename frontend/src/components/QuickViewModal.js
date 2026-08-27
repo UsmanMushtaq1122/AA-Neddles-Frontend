@@ -113,15 +113,15 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
                     {isSale ? (
                       <>
                         <span className="text-[18px] font-bold text-noor-maroon">
-                          Rs.{(product.salePrice ?? 0).toLocaleString()}
+                          {`Rs. ${(product.salePrice ?? 0).toLocaleString()}`}
                         </span>
                         <span className="text-[14px] text-zinc-400 line-through">
-                          Rs.{(product.price ?? 0).toLocaleString()}
+                          {`Rs. ${(product.price ?? 0).toLocaleString()}`}
                         </span>
                       </>
                     ) : (
                       <span className="text-[18px] font-bold text-noor-black">
-                        Rs.{(product.price ?? 0).toLocaleString()}
+                        {`Rs. ${(product.price ?? 0).toLocaleString()}`}
                       </span>
                     )}
                   </div>

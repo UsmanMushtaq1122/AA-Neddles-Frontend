@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
-export default function OrderConfirmed({ email }) {
-  const [orderId] = useState(() => Date.now().toString(36).toUpperCase().slice(0, 8));
+export default function OrderConfirmed({ email, orderNumber }) {
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
@@ -28,7 +27,7 @@ export default function OrderConfirmed({ email }) {
             A confirmation email has been sent to <span className="text-noor-black font-medium">{email}</span>
           </p>
           <p className="ty-caption text-zinc-300 mb-10">
-            Order #AA-{orderId}
+            {orderNumber ? `Order #${orderNumber}` : 'Your order number is available in My Orders.'}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/orders" className="w-full sm:w-auto px-8 py-3.5 bg-noor-black text-white ty-button hover:bg-noor-gold transition-colors text-center">

@@ -7,8 +7,9 @@ import { motion, useInView } from 'framer-motion';
 import {
   Sparkles, Heart, Star, ShieldCheck, Award, Truck,
   RotateCcw, CreditCard, Headphones, TrendingUp, ArrowRight,
-  Quote, ChevronLeft, ChevronRight,
+  Quote,   ChevronLeft, ChevronRight,
 } from 'lucide-react';
+import { HERO_1, HERO_2, AA } from '@/lib/images';
 
 /* ──────────────────────────────────────────────
    SHARED ANIMATION VARIANTS
@@ -79,7 +80,7 @@ function HeroBanner() {
       {/* Background slide */}
       <div
         className="hero__slide is-active"
-        style={{ backgroundImage: 'url(/images/hero1.jpeg)' }}
+        style={{ backgroundImage: `url(${HERO_1})` }}
       />
 
       {/* Gradient scrim */}
@@ -136,7 +137,7 @@ function BrandStory() {
         <motion.div variants={scaleIn} className="relative">
           <div className="overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
             <Image
-              src="/images/AA3.jpeg"
+              src={AA.AA3}
               alt="AA Neddles brand story"
               width={600}
               height={800}
@@ -186,7 +187,7 @@ function ImageStoryGrid() {
           <motion.div variants={scaleIn} className="grid gap-6">
             <div className="overflow-hidden rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
               <Image
-                src="/images/AA5.jpeg"
+                src={AA.AA5}
                 alt="Craftsmanship"
                 width={600}
                 height={750}
@@ -195,7 +196,7 @@ function ImageStoryGrid() {
             </div>
             <div className="overflow-hidden rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
               <Image
-                src="/images/AA7.jpeg"
+                src={AA.AA7}
                 alt="Premium fabrics"
                 width={600}
                 height={400}
@@ -364,21 +365,21 @@ function Testimonials() {
       city: 'Lahore',
       rating: 5,
       text: 'AA Neddles has completely transformed my wardrobe. The quality of their fabrics and the attention to detail in every piece is unmatched. I feel confident and elegant every time I wear their designs.',
-      image: '/images/AA1.jpeg',
+      image: AA.AA1,
     },
     {
       name: 'Fatima Riaz',
       city: 'Karachi',
       rating: 5,
       text: 'The luxury formal collection exceeded all my expectations. The embroidery work is breathtaking, and the fit is perfect. AA Neddles is my go-to for every special occasion.',
-      image: '/images/AA4.jpeg',
+      image: AA.AA4,
     },
     {
       name: 'Sana Malik',
       city: 'Islamabad',
       rating: 5,
       text: 'From the moment I walked into their store, I knew I was experiencing something special. Their customer service is exceptional, and the quality of their unstitched collections is premium.',
-      image: '/images/AA6.jpeg',
+      image: AA.AA6,
     },
   ];
 
@@ -482,7 +483,7 @@ function CallToAction() {
   return (
     <Section className="relative overflow-hidden py-28 md:py-36">
       <div className="absolute inset-0">
-        <Image src="/images/Hero2.jpeg" alt="CTA background" fill className="object-cover" />
+        <Image src={HERO_2} alt="CTA background" fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-noor-dark/80 via-noor-dark/60 to-noor-dark/80" />
       </div>
       <div className="relative z-10 mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 text-center">

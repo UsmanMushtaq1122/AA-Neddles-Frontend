@@ -49,8 +49,8 @@ export default function SearchPageContent() {
     setSearched(true);
 
     try {
-      const response = await productsApi.getAll({
-        search: q,
+      const response = await productsApi.search({
+        q,
         page: pageNum,
         limit: PAGE_SIZE,
       });

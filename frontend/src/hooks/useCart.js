@@ -11,6 +11,7 @@ import {
   openCartAction,
   closeCartAction,
   mergeCartFromApiAction,
+  setCartFromApiAction,
   setSyncingAction,
   selectCartItems,
   selectCartIsOpen,
@@ -123,9 +124,24 @@ export function useCart() {
     }
   }, [dispatch, isAuthenticated]);
 
+  const refreshCart = useCallback(async () => {
+    if (!isAuthenticated) return;
+    dispatch(setSyncingAction(true));
+    try {
+      const res = await cartApi.get();
+      if (res.success && res.data) {
+        const apiItems = (res.data.items || []).map(mapApiItem);
+        dispatch(setCartFromApiAction(apiItems));
+      }
+    } catch {}
+    finally {
+      dispatch(setSyncingAction(false));
+    }
+  }, [dispatch, isAuthenticated]);
+
   const toggleCart = useCallback(() => dispatch(toggleCartAction()), [dispatch]);
   const openCart = useCallback(() => dispatch(openCartAction()), [dispatch]);
   const closeCart = useCallback(() => dispatch(closeCartAction()), [dispatch]);
 
-  return { items, isOpen, syncing, itemCount, subtotal, addToCart, removeFromCart, updateQuantity, clearCart, toggleCart, openCart, closeCart };
+  return { items, isOpen, syncing, itemCount, subtotal, addToCart, removeFromCart, updateQuantity, clearCart, refreshCart, toggleCart, openCart, closeCart };
 }

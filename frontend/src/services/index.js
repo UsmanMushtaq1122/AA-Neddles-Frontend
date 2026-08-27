@@ -18,6 +18,10 @@ class ApiClient {
   getAccessToken() {
     if (typeof window === 'undefined') return null;
     try {
+      const match = document.cookie.match(/(?:^|; )accessToken=([^;]*)/);
+      if (match && match[1]) return decodeURIComponent(match[1]);
+    } catch {}
+    try {
       const auth = localStorage.getItem('aa-auth');
       if (auth) {
         const parsed = JSON.parse(auth);
@@ -29,29 +33,62 @@ class ApiClient {
 
   getRefreshToken() {
     if (typeof window === 'undefined') return null;
-    const match = document.cookie.match(/(?:^|; )refreshToken=([^;]*)/);
-    return match ? decodeURIComponent(match[1]) : null;
+    try {
+      const match = document.cookie.match(/(?:^|; )refreshToken=([^;]*)/);
+      if (match && match[1]) return decodeURIComponent(match[1]);
+    } catch {}
+    try {
+      const auth = localStorage.getItem('aa-auth');
+      if (auth) {
+        const parsed = JSON.parse(auth);
+        if (parsed.refreshToken) return parsed.refreshToken;
+      }
+    } catch {}
+    try {
+      const rf = localStorage.getItem('aa-refresh-token');
+      if (rf) return rf;
+    } catch {}
+    return null;
   }
 
   setTokens(accessToken, refreshToken) {
     if (typeof window === 'undefined') return;
-    if (typeof document !== 'undefined') {
-      document.cookie = `refreshToken=${refreshToken || ''}; path=/; max-age=86400; SameSite=Lax; Secure`;
-    }
+    try {
+      const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+      if (accessToken) {
+        document.cookie = `accessToken=${accessToken}; path=/; max-age=86400; SameSite=Lax${secure}`;
+      }
+      if (refreshToken) {
+        document.cookie = `refreshToken=${refreshToken}; path=/; max-age=2592000; SameSite=Lax${secure}`;
+        localStorage.setItem('aa-refresh-token', refreshToken);
+      }
+      const auth = localStorage.getItem('aa-auth');
+      if (auth) {
+        const parsed = JSON.parse(auth);
+        if (accessToken) parsed.accessToken = accessToken;
+        if (refreshToken) parsed.refreshToken = refreshToken;
+        localStorage.setItem('aa-auth', JSON.stringify(parsed));
+      }
+    } catch {}
   }
 
   clearAuth() {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem('aa-auth');
-    if (typeof document !== 'undefined') {
-      document.cookie = 'accessToken=; path=/; max-age=0; SameSite=Lax; Secure';
-      document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax; Secure';
-    }
+    try {
+      localStorage.removeItem('aa-auth');
+      localStorage.removeItem('aa-refresh-token');
+      const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `accessToken=; path=/; max-age=0; SameSite=Lax${secure}`;
+      document.cookie = `refreshToken=; path=/; max-age=0; SameSite=Lax${secure}`;
+      window.dispatchEvent(new CustomEvent('aa-auth-expired'));
+    } catch {}
   }
 
   async refreshToken() {
     if (this._refreshPromise) return this._refreshPromise;
-    this._refreshPromise = this._doRefresh().finally(() => { this._refreshPromise = null; });
+    this._refreshPromise = this._doRefresh().finally(() => {
+      this._refreshPromise = null;
+    });
     return this._refreshPromise;
   }
 
@@ -64,11 +101,17 @@ class ApiClient {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),
       });
-      if (!res.ok) return false;
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 400) {
+          this.clearAuth();
+        }
+        return false;
+      }
       const data = await res.json();
       if (data.success && data.data) {
-        this.updateStoredToken(data.data.token);
-        this.setTokens(data.data.token, data.data.refreshToken);
+        const newToken = data.data.token || data.data.accessToken;
+        const newRefreshToken = data.data.refreshToken || refreshToken;
+        this.setTokens(newToken, newRefreshToken);
         return true;
       }
       return false;
@@ -77,19 +120,8 @@ class ApiClient {
     }
   }
 
-  updateStoredToken(newToken) {
-    if (typeof window === 'undefined') return;
-    try {
-      const auth = localStorage.getItem('aa-auth');
-      if (auth) {
-        const parsed = JSON.parse(auth);
-        parsed.accessToken = newToken;
-        localStorage.setItem('aa-auth', JSON.stringify(parsed));
-      }
-      if (typeof document !== 'undefined') {
-        document.cookie = `accessToken=${newToken}; path=/; max-age=86400; SameSite=Lax; Secure`;
-      }
-    } catch {}
+  updateStoredToken(newToken, newRefreshToken) {
+    this.setTokens(newToken, newRefreshToken);
   }
 
   async request(endpoint, options = {}) {
@@ -110,7 +142,7 @@ class ApiClient {
       body: formData || (body ? JSON.stringify(body) : undefined),
     });
 
-    if (response.status === 401 && token) {
+    if (response.status === 401 && (token || this.getRefreshToken())) {
       const refreshed = await this.refreshToken();
       if (refreshed) {
         const newToken = this.getAccessToken();
