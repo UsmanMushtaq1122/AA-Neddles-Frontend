@@ -190,13 +190,13 @@ export default function FAQContent() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="mailto:hello@aaneddles.com"
+            href="mailto:aaneedlesofficial@gmail.com"
             className="inline-flex items-center justify-center px-8 py-3 bg-white text-noor-black ty-button hover:bg-zinc-100 transition-colors"
           >
             Email Us
           </a>
           <a
-            href="https://wa.me/9242111222333"
+            href="https://wa.me/923076916882"
             className="inline-flex items-center justify-center px-8 py-3 border border-noor-black/20 text-noor-black ty-button hover:bg-noor-black/5 transition-colors"
           >
             WhatsApp Us

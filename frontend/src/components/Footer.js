@@ -9,9 +9,9 @@ const footerSections = [
   {
     title: 'Contact',
     links: [
-      { label: 'Email', href: 'mailto:info@aeneddles.com' },
-      { label: 'Phone Number', href: 'tel:+923111162742' },
-      { label: 'WhatsApp', href: 'https://wa.me/923154001914' },
+      { label: 'Email', href: 'mailto:aaneedlesofficial@gmail.com' },
+      { label: 'Phone Number', href: 'tel:+923076916882' },
+      { label: 'WhatsApp', href: 'https://wa.me/923076916882' },
       { label: 'Store Location', href: '/store-locations' },
     ],
   },
@@ -103,11 +103,10 @@ export default function Footer() {
                 />
               </Link>
               <address className="desktop-footer-address">
-                <span>5.5 KM, Raiwind Road (Near Fatehbad Village)</span>
-                <span>Lahore, Pakistan.</span>
-                <a href="tel:+923111162742">Call: +923111162742</a>
-                <a href="https://wa.me/923154001914" target="_blank" rel="noreferrer">WhatsApp: +923154001914</a>
-                <a href="mailto:info@aeneddles.com">Email: info@aeneddles.com</a>
+                <span>Near Punjab College, Rachna Town, Ferozwala, Shahdara, Lahore, Lahore</span>
+                <a href="tel:+923076916882">Call: 03076916882</a>
+                <a href="https://wa.me/923076916882" target="_blank" rel="noreferrer">WhatsApp: 03076916882</a>
+                <a href="mailto:aaneedlesofficial@gmail.com">Email: aaneedlesofficial@gmail.com</a>
               </address>
             </div>
 

@@ -48,12 +48,12 @@ export default function TermsPage() {
 
         <div>
           <h3 className="text-noor-black font-semibold text-base mb-2">Damaged or Missing Products</h3>
-          <p>In case if the products are found damaged or missing, the outer packaging images are required to be shared via email at help@aaneddles.com as evidence before discarding the packaging.</p>
+          <p>In case if the products are found damaged or missing, the outer packaging images are required to be shared via email at aaneedlesofficial@gmail.com as evidence before discarding the packaging.</p>
         </div>
 
         <div>
           <h3 className="text-noor-black font-semibold text-base mb-2">Dispute Resolution</h3>
-          <p>Please email pictures of the defective item to help@aaneddles.com or call at +923111162742, within 7 days after order delivery in the case to raise a dispute. AA Neddles will look at each dispute on an individual basis and will make every effort to be fair to both parties. Once the dispute is settled fairly, we will then issue a replacement (product) against the product mentioned in the invoice or entertain you with a coupon of the same product(s) value that can be used to purchase from AA Neddles within the next 60 days.</p>
+          <p>Please email pictures of the defective item to aaneedlesofficial@gmail.com or call at 03076916882, within 7 days after order delivery in the case to raise a dispute. AA Neddles will look at each dispute on an individual basis and will make every effort to be fair to both parties. Once the dispute is settled fairly, we will then issue a replacement (product) against the product mentioned in the invoice or entertain you with a coupon of the same product(s) value that can be used to purchase from AA Neddles within the next 60 days.</p>
           <p className="mt-2">Please note that no dispute will be accepted after a given time period i.e. 7 days after order delivery.</p>
         </div>
 

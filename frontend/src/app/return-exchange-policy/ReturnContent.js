@@ -91,7 +91,7 @@ export default function ReturnContent() {
 
         <div className="bg-zinc-50 border border-zinc-100 p-6 md:p-8 mb-8">
           <p className="ty-body-sm text-zinc-600 mb-4">
-            Please email pictures of the defective item to <strong>help@aaneddles.com</strong> or call at <strong>+923111162742</strong>, within 7 days after order delivery in case to raise a dispute. AA Neddles will look at each dispute on an individual basis and will make every effort to be fair to both parties.
+            Please email pictures of the defective item to <strong>aaneedlesofficial@gmail.com</strong> or call at <strong>03076916882</strong>, within 7 days after order delivery in case to raise a dispute. AA Neddles will look at each dispute on an individual basis and will make every effort to be fair to both parties.
           </p>
           <p className="ty-body-sm text-zinc-600">
             Once we receive the item our team will review the damage &mdash; once the dispute is settled fairly we will issue a replacement of the same value against the product mentioned in the invoice and send it to the buyer&apos;s address.
@@ -166,14 +166,14 @@ export default function ReturnContent() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="mailto:help@aaneddles.com"
+              href="mailto:aaneedlesofficial@gmail.com"
               className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-noor-black ty-button hover:bg-zinc-100 transition-colors"
             >
               <Mail size={14} />
               Email Returns
             </a>
             <a
-              href="https://wa.me/923154001914"
+              href="https://wa.me/923076916882"
               className="inline-flex items-center justify-center gap-2 px-8 py-3 border border-noor-black/20 text-noor-black ty-button hover:bg-noor-black/5 transition-colors"
             >
               <MessageSquare size={14} />

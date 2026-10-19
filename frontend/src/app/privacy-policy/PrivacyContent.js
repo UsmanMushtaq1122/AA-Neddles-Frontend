@@ -244,11 +244,11 @@ export default function PrivacyContent() {
             please contact our Data Protection Officer.
           </p>
           <a
-            href="mailto:privacy@aaneddles.com"
+            href="mailto:aaneedlesofficial@gmail.com"
             className="inline-flex items-center gap-2 px-8 py-3 bg-white text-noor-black ty-button hover:bg-zinc-100 transition-colors"
           >
             <Mail size={14} />
-            privacy@aaneddles.com
+            aaneedlesofficial@gmail.com
           </a>
         </div>
       </section>
