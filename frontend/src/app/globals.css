@@ -937,6 +937,12 @@ body {
   height: 71px;
 }
 
+/* Bottom navigation safe-area clearance for page content */
+.bottom-nav-spacer {
+  height: calc(96px + max(12px, env(safe-area-inset-bottom)));
+  display: none;
+}
+
 .mobile-header,
 .mobile-header-wrap,
 .bottom-navigation {
@@ -1590,7 +1596,8 @@ body {
 
 @media (max-width: 768px) {
   .mobile-footer {
-    padding: 42px 6px 16px;
+    padding: 36px 16px calc(112px + env(safe-area-inset-bottom, 12px));
+    background: #FFFFFF;
   }
 
   .desktop-footer-content {
@@ -1598,7 +1605,24 @@ body {
   }
 
   .mobile-footer-bottom {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid #E5E5E5;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.85rem;
+  }
+
+  .mobile-footer-socials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    color: #4B5563;
   }
 
   .mobile-footer-logo-link {
@@ -1632,7 +1656,12 @@ body {
   }
 
   .site-header-spacer {
-    height: 98px;
+    /* announcement bar (30px) + mobile header (64px) = 94px */
+    height: 94px;
+  }
+
+  .bottom-nav-spacer {
+    display: block;
   }
 
   .mobile-header-wrap {
@@ -1817,7 +1846,7 @@ body {
   height: 100vh;
   height: 100svh;
   height: 100dvh;
-  min-height: 100%;
+  min-height: 540px;
   overflow: hidden;
   background: #0c0c0c;
   font-family: var(--font-body, "Inter", sans-serif);
@@ -2064,11 +2093,11 @@ body {
 
 @media (max-width: 767px) {
   .hero {
-    height: 100vh;
-    height: 100svh;
-    height: 100dvh;
-    min-height: 100dvh;
-    max-height: none;
+    /* On mobile: responsive height that delivers edge-to-edge luxury while previewing content below */
+    height: min(85svh, 600px);
+    height: min(85dvh, 600px);
+    min-height: 440px;
+    max-height: 640px;
   }
 
   .hero__img--desktop {
@@ -3488,5 +3517,22 @@ body {
 
   .tst-marquee {
     animation: none;
+  }
+}
+
+/* ========================================================
+   Mobile Form Inputs & Responsive Touch Helpers
+   ======================================================== */
+@media (max-width: 767px) {
+  /* Prevent automatic iOS Safari zoom by enforcing 16px minimum */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
   }
 }

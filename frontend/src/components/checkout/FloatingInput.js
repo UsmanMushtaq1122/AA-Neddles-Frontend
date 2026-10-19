@@ -35,7 +35,7 @@ const FloatingInput = forwardRef(function FloatingInput(
     onBlur?.(e);
   };
 
-  const baseClass = `peer w-full px-4 pt-5 pb-2 text-[13px] border bg-white focus:outline-none focus:ring-1 transition-all duration-200 ${
+  const baseClass = `peer w-full px-4 pt-5 pb-2 text-[16px] sm:text-[13px] border bg-white focus:outline-none focus:ring-1 transition-all duration-200 ${
     error
       ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
       : 'border-zinc-200 focus:ring-noor-gold/30 focus:border-noor-gold hover:border-zinc-300'

@@ -81,15 +81,15 @@ export default function TrendingCarousel() {
   return (
     <section className="py-16 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-[32px] font-normal tracking-wide mb-6">MOST TRENDING</h2>
+        <h2 className="text-2xl sm:text-[32px] font-normal tracking-wide mb-6">MOST TRENDING</h2>
 
-        <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
-          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+          <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar touch-pan-x pb-2 max-w-full">
             {TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`text-sm uppercase whitespace-nowrap transition-colors tracking-wide ${
+                className={`text-xs sm:text-sm uppercase whitespace-nowrap transition-colors tracking-wide shrink-0 ${
                   activeTab === tab
                     ? 'text-black border-b border-black pb-1'
                     : 'text-gray-500 hover:text-black pb-1'
@@ -100,22 +100,22 @@ export default function TrendingCarousel() {
             ))}
           </div>
 
-          <div className="flex items-center gap-6 flex-shrink-0">
-            <Link href="/category/all" className="text-sm border-b border-black pb-0.5 hover:text-gray-600 transition-colors">View all</Link>
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between sm:justify-end gap-6 flex-shrink-0">
+            <Link href="/category/all" className="text-xs sm:text-sm border-b border-black pb-0.5 hover:text-gray-600 transition-colors">View all</Link>
+            <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={scrollPrev}
-                className="text-gray-500 hover:text-black transition-colors"
+                className="text-gray-500 hover:text-black transition-colors p-1"
                 aria-label="Previous slide"
               >
-                <ArrowLeft strokeWidth={1.5} size={22} />
+                <ArrowLeft strokeWidth={1.5} size={20} />
               </button>
               <button
                 onClick={scrollNext}
-                className="text-gray-500 hover:text-black transition-colors"
+                className="text-gray-500 hover:text-black transition-colors p-1"
                 aria-label="Next slide"
               >
-                <ArrowRight strokeWidth={1.5} size={22} />
+                <ArrowRight strokeWidth={1.5} size={20} />
               </button>
             </div>
           </div>
@@ -125,12 +125,12 @@ export default function TrendingCarousel() {
           <div
             ref={carouselRef}
             onScroll={handleScroll}
-            className="flex overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory gap-4 md:gap-6 pb-4"
+            className="flex overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory gap-3 sm:gap-4 md:gap-6 pb-4"
           >
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="flex-none w-[85%] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-[22%] snap-start"
+                className="flex-none w-[75%] sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-[22%] snap-start"
               >
                 <ProductCard product={product} />
               </div>

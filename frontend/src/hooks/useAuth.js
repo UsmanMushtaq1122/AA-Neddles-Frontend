@@ -280,9 +280,15 @@ export function useAuth() {
 
   const socialLogin = useCallback(
     async (provider, credential) => {
-      if (provider.toLowerCase() === 'google' && !credential) {
-        dispatch(loginFailureAction('Google sign-in is not configured. Add a real NEXT_PUBLIC_GOOGLE_CLIENT_ID and restart the frontend.'));
-        return false;
+      if (provider.toLowerCase() === 'google') {
+        if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+          dispatch(loginFailureAction('Google sign-in is not configured. Add a real NEXT_PUBLIC_GOOGLE_CLIENT_ID and restart the frontend.'));
+          return false;
+        }
+        if (!credential) {
+          dispatch(loginFailureAction('Google sign-in did not return an ID token. Please try again.'));
+          return false;
+        }
       }
 
       dispatch(loginStartAction());

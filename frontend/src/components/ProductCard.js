@@ -66,6 +66,19 @@ export default function ProductCard({ product }) {
           </span>
         ) : null}
 
+        {/* Mobile touch-accessible wishlist toggle */}
+        <button
+          type="button"
+          onClick={handleWishlistToggle}
+          className="md:hidden absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center shadow-sm"
+          aria-label={isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <Heart
+            size={16}
+            className={isWishlisted(product.id) ? 'fill-noor-maroon text-noor-maroon' : 'text-zinc-600'}
+          />
+        </button>
+
         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 z-10 pointer-events-auto">
           <div className="flex items-center bg-white/95 backdrop-blur-sm rounded-xl shadow-lg px-4 py-2.5">
             <Link href={`/product/${slug}`} className="flex items-center gap-2 text-sm font-medium text-zinc-800 flex-1 hover:text-noor-maroon transition-colors">

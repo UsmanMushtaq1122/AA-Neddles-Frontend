@@ -143,7 +143,7 @@ export default function NewArrival() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.45, delay: i * 0.06 }}
-                  className="min-w-0 flex-[0_0_86%] sm:flex-[0_0_56%] md:flex-[0_0_42%] lg:flex-[0_0_31%] xl:flex-[0_0_26%]"
+                  className="min-w-0 flex-[0_0_78%] sm:flex-[0_0_56%] md:flex-[0_0_42%] lg:flex-[0_0_31%] xl:flex-[0_0_26%]"
                 >
                   <Link
                     href={category.href}
@@ -198,7 +198,7 @@ export default function NewArrival() {
               >
                 <Link
                   href={card.href}
-                  className="group relative block overflow-hidden bg-noor-black shadow-[0_14px_40px_rgba(0,0,0,0.10)] h-[72vh] md:h-[84vh] lg:h-[92vh] min-h-[520px] rounded-3xl md:rounded-[20px] max-md:rounded-[16px] transition-all duration-300 ease hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
+                  className="group relative block overflow-hidden bg-noor-black shadow-[0_14px_40px_rgba(0,0,0,0.10)] h-[52vh] sm:h-[68vh] md:h-[84vh] lg:h-[92vh] min-h-[360px] sm:min-h-[460px] md:min-h-[520px] rounded-3xl md:rounded-[20px] max-md:rounded-[16px] transition-all duration-300 ease hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
                 >
                   <Image
                     src={encodeURI(card.image)}
@@ -231,7 +231,7 @@ export default function NewArrival() {
               >
                 <Link
                   href={card.href}
-                  className="group relative block overflow-hidden bg-noor-black shadow-[0_14px_40px_rgba(0,0,0,0.10)] h-[72vh] lg:h-[88vh] min-h-[540px] rounded-3xl md:rounded-[20px] max-md:rounded-[16px] transition-all duration-300 ease hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
+                  className="group relative block overflow-hidden bg-noor-black shadow-[0_14px_40px_rgba(0,0,0,0.10)] h-[52vh] sm:h-[68vh] lg:h-[88vh] min-h-[360px] sm:min-h-[460px] md:min-h-[540px] rounded-3xl md:rounded-[20px] max-md:rounded-[16px] transition-all duration-300 ease hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
                 >
                   <Image
                     src={encodeURI(card.image)}

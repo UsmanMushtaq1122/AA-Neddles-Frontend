@@ -13,7 +13,7 @@ export default function ProductGrid({ products = [], loading = false, columns = 
 
   if (loading) {
     return (
-      <div className={`grid ${gridCols[columns] || gridCols[3]} gap-4 md:gap-6`}>
+      <div className={`grid ${gridCols[columns] || gridCols[3]} gap-3 sm:gap-4 md:gap-6`}>
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="animate-skeleton">
             <div className="aspect-[3/4] bg-zinc-100 rounded-3xl md:rounded-[20px] max-md:rounded-[16px]" />
@@ -53,7 +53,7 @@ export default function ProductGrid({ products = [], loading = false, columns = 
   }
 
   return (
-    <div className={`grid ${gridCols[columns] || gridCols[3]} gap-4 md:gap-6`}>
+    <div className={`grid ${gridCols[columns] || gridCols[3]} gap-3 sm:gap-4 md:gap-6`}>
       {products.map((product, i) => (
         <motion.div
           key={product.id}

@@ -1,39 +1,37 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function SocialLoginButton({ provider, onClick, onSuccess, onError, loading = false, disabled = false, label }) {
   const isGoogle = provider === 'google';
   const hasGoogleClientId = !!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE';
 
-  let customGoogleLogin = null;
-  try {
-    if (isGoogle && hasGoogleClientId) {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      customGoogleLogin = useGoogleLogin({
-        onSuccess: (tokenResponse) => {
-          if (onSuccess) onSuccess(tokenResponse);
-          else if (onClick) onClick();
-        },
-        onError: (err) => {
-          if (onError) onError(err);
-        },
-      });
-    }
-  } catch {
-    // If GoogleOAuthProvider is not wrapping, fallback to onClick
+  if (isGoogle && hasGoogleClientId) {
+    return (
+      <div
+        className="w-full flex justify-center"
+        style={{ pointerEvents: loading || disabled ? 'none' : 'auto', opacity: loading || disabled ? 0.6 : 1 }}
+      >
+        <GoogleLogin
+          onSuccess={onSuccess}
+          onError={onError}
+          type="standard"
+          theme="outline"
+          size="large"
+          shape="rectangular"
+          text={label?.toLowerCase().includes('sign up') ? 'signup_with' : 'signin_with'}
+          width={400}
+        />
+      </div>
+    );
   }
 
   const handleClick = () => {
-    if (isGoogle && customGoogleLogin) {
-      customGoogleLogin();
-    } else if (onClick) {
-      onClick();
-    }
+    if (onClick) onClick();
   };
 
-  if (provider === 'google') {
+  if (isGoogle) {
     return (
       <button
         type="button"
@@ -84,4 +82,3 @@ export default function SocialLoginButton({ provider, onClick, onSuccess, onErro
 
   return null;
 }
-

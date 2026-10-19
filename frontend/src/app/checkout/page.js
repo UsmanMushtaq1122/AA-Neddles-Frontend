@@ -530,13 +530,13 @@ function CheckoutContent() {
         </form>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-zinc-200 p-4 lg:hidden z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-zinc-200 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] lg:hidden z-40">
         <motion.button whileTap={{ scale: 0.985 }} type="submit" disabled={placing} onClick={handlePlaceOrder} className="w-full py-4 bg-noor-black text-white text-[12px] font-semibold uppercase tracking-[0.14em] hover:bg-noor-gold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 rounded-lg">
           {placing ? (<><Loader2 size={18} className="animate-spin" /> Processing...</>) : (<><Lock size={15} /> Place Secure Order — Rs.{total.toLocaleString()}</>)}
         </motion.button>
         <p className="text-center text-[9px] text-zinc-300 mt-2">By placing your order you agree to our Terms & Privacy Policy</p>
       </div>
-      <div className="h-28 lg:hidden" />
+      <div className="h-32 lg:hidden" />
     </div>
   );
 }

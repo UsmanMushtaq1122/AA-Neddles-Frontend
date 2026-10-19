@@ -21,6 +21,10 @@ export default function BottomNavigation() {
   const { itemCount, openCart } = useCart();
   const isVisible = useScrollDirection();
 
+  if (pathname === '/checkout') {
+    return null;
+  }
+
   return (
     <nav
       className={`bottom-navigation ${isVisible ? 'is-visible' : 'is-hidden'}`}

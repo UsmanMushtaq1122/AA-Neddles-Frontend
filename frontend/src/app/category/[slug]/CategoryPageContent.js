@@ -151,15 +151,15 @@ export default function CategoryPageContent({ slug }) {
   }, [allProducts, filters, activeTab, sortBy, facets]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12 pt-[115px]">
+    <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12 pt-[104px] md:pt-[115px]">
       <nav className="flex items-center gap-2 font-body text-xs text-zinc-400 mb-6 overflow-x-auto whitespace-nowrap" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-noor-black transition-colors">Home</Link>
         <ChevronRight size={12} className="shrink-0 text-zinc-300" />
         <span className="text-zinc-800 font-medium">{categoryName}</span>
       </nav>
 
-      <div className="mb-10">
-        <h1 className="font-body text-[36px] md:text-[50px] font-bold text-noor-black tracking-tight leading-[1.1]">
+      <div className="mb-8 md:mb-10">
+        <h1 className="font-body text-[28px] sm:text-[36px] md:text-[50px] font-bold text-noor-black tracking-tight leading-[1.1]">
           {categoryName}
         </h1>
         {subCategories.length > 0 && (

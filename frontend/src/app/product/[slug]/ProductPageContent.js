@@ -223,10 +223,10 @@ export default function ProductPageContent({ slug: initialSlug }) {
 
   return (
     <div>
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12 pt-[115px]">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12 pt-[104px] md:pt-[115px]">
         {/* ── Breadcrumb ── */}
-        <nav className="flex items-center gap-3 mb-8 flex-wrap" aria-label="Breadcrumb">
-          <Link href="/" className="text-zinc-400 hover:text-noor-black transition-colors text-[15px] tracking-wide" style={{ textDecoration: 'underline', textUnderlineOffset: '4px', textDecorationColor: '#ccc' }}>Home</Link>
+        <nav className="flex items-center gap-2 sm:gap-3 mb-6 md:mb-8 overflow-x-auto no-scrollbar whitespace-nowrap text-xs sm:text-[15px]" aria-label="Breadcrumb">
+          <Link href="/" className="text-zinc-400 hover:text-noor-black transition-colors tracking-wide" style={{ textDecoration: 'underline', textUnderlineOffset: '4px', textDecorationColor: '#ccc' }}>Home</Link>
           <span aria-hidden="true" className="text-zinc-300 text-sm">&gt;</span>
           <Link
             href={`/category/${product.category}`}
@@ -733,7 +733,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 <Link
                   key={item.id}
                   href={`/product/${item.slug}`}
-                  className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer block"
+                  className="w-[65vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer block"
                 >
                   <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
                     <Image
@@ -783,7 +783,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
               className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4"
             >
               {related.map(p => (
-                <div key={p.id} className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(25%-15px)] shrink-0 snap-start">
+                <div key={p.id} className="w-[65vw] sm:w-[calc(50%-10px)] md:w-[calc(25%-15px)] shrink-0 snap-start">
                   <ProductCard product={p} />
                 </div>
               ))}
@@ -818,7 +818,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
               className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4"
             >
               {recentlyViewed.map(p => (
-                <div key={p.id} className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(25%-15px)] shrink-0 snap-start">
+                <div key={p.id} className="w-[65vw] sm:w-[calc(50%-10px)] md:w-[calc(25%-15px)] shrink-0 snap-start">
                   <ProductCard product={p} />
                 </div>
               ))}
