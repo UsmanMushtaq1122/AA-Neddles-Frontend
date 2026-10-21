@@ -56,7 +56,7 @@ function CheckoutContent() {
   const [step, setStep] = useState('checkout');
   const [placing, setPlacing] = useState(false);
   const [confirmedOrderNumber, setConfirmedOrderNumber] = useState('');
-  const [confirmedEmailSent, setConfirmedEmailSent] = useState(false);
+  const [confirmedEmailAccepted, setConfirmedEmailAccepted] = useState(false);
   const [shipping, setShipping] = useState(DEFAULT_SHIPPING);
   const [openSection, setOpenSection] = useState('customer');
   const [customer, setCustomer] = useState({ firstName: '', lastName: '', email: '', phone: '' });
@@ -264,7 +264,9 @@ function CheckoutContent() {
       if (res.success) {
         clearCart();
         setConfirmedOrderNumber(res.data?.order?.orderNumber || res.data?.orderNumber || '');
-        setConfirmedEmailSent(res.data?.order?.emailStatus === 'sent' || res.data?.emailStatus === 'sent');
+        setConfirmedEmailAccepted(
+          res.data?.order?.emailStatus === 'accepted' || res.data?.emailStatus === 'accepted'
+        );
         setPlacing(false);
         setStep('confirmed');
         addToast('Order placed successfully!', 'success');
@@ -292,7 +294,7 @@ function CheckoutContent() {
     return (
       <OrderConfirmed
         email={customer.email}
-        emailSent={confirmedEmailSent}
+        emailAccepted={confirmedEmailAccepted}
         orderNumber={confirmedOrderNumber}
       />
     );

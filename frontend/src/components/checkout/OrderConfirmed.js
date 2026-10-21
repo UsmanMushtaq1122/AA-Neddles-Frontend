@@ -1,11 +1,8 @@
-'use client';
-
-import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
-export default function OrderConfirmed({ email, emailSent, orderNumber }) {
+export default function OrderConfirmed({ email, emailAccepted, orderNumber }) {
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
@@ -23,13 +20,13 @@ export default function OrderConfirmed({ email, emailSent, orderNumber }) {
           <p className="ty-body text-zinc-400 leading-relaxed mb-2">
             Your order has been placed successfully.
           </p>
-          {emailSent ? (
+          {emailAccepted ? (
             <p className="ty-body-sm text-zinc-400 mb-1">
-              A confirmation email was sent to <span className="text-noor-black font-medium">{email}</span>
+              The email provider accepted a confirmation email for <span className="text-noor-black font-medium">{email}</span>. Check your inbox and spam folder.
             </p>
           ) : (
             <p className="ty-body-sm text-amber-700 mb-1" role="status">
-              We couldn’t send the confirmation email. Your order is placed; please check your email address or contact customer support.
+              We couldn’t submit the confirmation email. Your order is placed; please check your email address or contact customer support.
             </p>
           )}
           <p className="ty-caption text-zinc-300 mb-10">

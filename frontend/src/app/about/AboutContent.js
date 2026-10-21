@@ -76,29 +76,45 @@ function Counter({ target, suffix = '', duration = 2000 }) {
    ══════════════════════════════════════════════ */
 function HeroBanner() {
   return (
-    <section className="hero">
-      {/* Background slide */}
-      <div
-        className="hero__slide is-active"
-        style={{ backgroundImage: `url(${HERO_1})` }}
+    <section className="relative w-full h-[88vh] min-h-[580px] sm:h-[90vh] md:h-screen md:min-h-[640px] md:max-h-[960px] overflow-hidden bg-[#0c0c0c]">
+      {/* Background image with Next/Image */}
+      <Image
+        src={HERO_1}
+        alt="About AA Needles — Crafting Elegance"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-[78%_top] sm:object-[center_25%] scale-[1.02]"
       />
 
-      {/* Gradient scrim */}
-      <div className="hero__scrim" />
+      {/* Luxury Scrim */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/25 sm:bg-gradient-to-r sm:from-black/85 sm:via-black/50 sm:to-transparent" />
 
-      {/* Content — bottom-left like main hero */}
-      <div className="hero__content">
-        <p className="hero__eyebrow">About Our Brand</p>
-        <h1 className="hero__heading">
-          <span className="hero__heading-line">Crafting Elegance</span>
-          <span className="hero__heading-line">for the Modern Woman</span>
-        </h1>
-        <p className="hero__body">
-          Discover timeless fashion designed to celebrate confidence, beauty, and individuality.
-        </p>
-        <Link href="/category/all" className="hero__cta">
-          Explore Collection
-        </Link>
+      {/* Content */}
+      <div className="relative z-10 mx-auto flex h-full max-w-[1400px] flex-col justify-end px-5 sm:px-8 lg:px-12 pb-[105px] sm:pb-28 md:pb-24">
+        <div className="max-w-[620px] space-y-3.5 sm:space-y-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#C9A27E] drop-shadow-sm">
+            About Our Brand
+          </p>
+          <h1
+            className="text-[clamp(2rem,5.5vw,3.8rem)] font-normal leading-[1.1] tracking-tight text-white drop-shadow-md"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            Crafting Elegance <br className="hidden sm:inline" />
+            for the Modern Woman
+          </h1>
+          <p className="text-[13.5px] sm:text-[15px] leading-relaxed text-white/90 drop-shadow-sm max-w-[480px]">
+            Discover timeless fashion designed to celebrate confidence, beauty, and individuality.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/category/all"
+              className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#171308] shadow-lg transition-all duration-300 hover:bg-[#C9A27E] hover:text-white hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Explore Collection
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -137,10 +153,11 @@ function BrandStory() {
         <motion.div variants={scaleIn} className="relative">
           <div className="overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
             <Image
-              src={AA.AA3}
-              alt="AA Needles brand story"
-              width={600}
-              height={800}
+              src="/about-us.jpg"
+              alt="AA Needles founders — Malik Azyan & Family"
+              width={768}
+              height={1024}
+              priority
               className="aspect-[3/4] w-full object-cover transition-transform duration-700 hover:scale-105"
             />
           </div>
@@ -161,7 +178,7 @@ function ImageStoryGrid() {
   return (
     <Section className="bg-[#F8F8F8] py-24 md:py-32">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <motion.div variants={fadeUp} className="space-y-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A27E]">Our Craft</p>
             <h2
@@ -184,23 +201,25 @@ function ImageStoryGrid() {
               </div>
             </div>
           </motion.div>
-          <motion.div variants={scaleIn} className="grid gap-6">
-            <div className="overflow-hidden rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
+          <motion.div variants={scaleIn} className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 items-center">
+            <div className="group overflow-hidden rounded-2xl sm:rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.08)] bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_56px_rgba(0,0,0,0.14)] sm:translate-y-3">
               <Image
                 src={AA.AA5}
                 alt="Craftsmanship"
-                width={600}
-                height={750}
-                className="aspect-[4/5] w-full object-cover transition-transform duration-700 hover:scale-105"
+                width={750}
+                height={1000}
+                className="aspect-[3/4] w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 450px"
               />
             </div>
-            <div className="overflow-hidden rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
+            <div className="group overflow-hidden rounded-2xl sm:rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.08)] bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_56px_rgba(0,0,0,0.14)] sm:-translate-y-3">
               <Image
                 src={AA.AA7}
-                alt="Premium fabrics"
-                width={600}
-                height={400}
-                className="aspect-[3/2] w-full object-cover transition-transform duration-700 hover:scale-105"
+                alt="Premium fabrics & embroidery"
+                width={750}
+                height={1000}
+                className="aspect-[3/4] w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 450px"
               />
             </div>
           </motion.div>
@@ -300,7 +319,7 @@ function OurValues() {
 function JourneyTimeline() {
   const milestones = [
     { year: '2010', title: 'Brand Founded', desc: 'Started with a small startup and a vision for premium fashion.' },
-    { year: '2015', title: 'First Collection Launch', desc: 'Launched our signature luxury Pret collection.' },
+    { year: '2011', title: 'First Collection Launch', desc: 'Launched our signature luxury Pret collection.' },
     { year: '2020', title: '10,000 Customers', desc: 'Reached the milestone of serving 10,000 satisfied customers.' },
     { year: '2025', title: 'National Expansion', desc: 'Expanded across Pakistan with multiple wholesale dealers.' },
     { year: '2026', title: 'Premium Fashion Brand', desc: 'We are excited to take the next step in our journey by bringing AA NEEDLES online.' },
