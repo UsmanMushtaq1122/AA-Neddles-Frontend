@@ -64,7 +64,7 @@ const importantNotes = [
   {
     icon: Info,
     title: 'Address Accuracy',
-    desc: 'Please ensure your shipping address is correct. AA Neddles is not responsible for packages lost due to incorrect addresses.',
+    desc: 'Please ensure your shipping address is correct. AA Needles is not responsible for packages lost due to incorrect addresses.',
   },
   {
     icon: Info,

@@ -1,26 +1,62 @@
 'use client';
 
-const MESSAGES = [
-  'FREE SHIPPING ON ORDERS ABOVE PKR 5,000',
-  'NEW COLLECTION 2026 — SHOP NOW',
-  'EASY RETURNS & EXCHANGES WITHIN 7 DAYS',
-  'EXCLUSIVE STITCHING AVAILABLE — CALL US',
-  'FOLLOW US @AANEDDLES FOR DAILY STYLE INSPO',
-];
+import { useEffect, useState } from 'react';
+import { bannersApi } from '@/services/banners';
 
 export default function AnnouncementBar() {
-  // Repeat messages so the marquee looks seamless
-  const repeated = [...MESSAGES, ...MESSAGES, ...MESSAGES];
+  const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    bannersApi.getAll()
+      .then((res) => {
+        if (cancelled) return;
+        const activeAnnouncements = (Array.isArray(res?.data) ? res.data : [])
+          .filter((banner) => banner.type === 'announcement' && banner.title)
+          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+        setAnnouncements(activeAnnouncements);
+      })
+      .catch((error) => {
+        console.error('Failed to load announcements:', error);
+        if (!cancelled) setAnnouncements([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (announcements.length === 0) return null;
+
+  const repeated = [...announcements, ...announcements, ...announcements];
 
   return (
     <div className="announcement-bar" role="marquee" aria-live="off" aria-label="Site announcements">
-      <div className="announcement-track" aria-hidden="true">
-        {repeated.map((msg, i) => (
-          <span key={i} className="announcement-item">
-            {msg}
-            <span className="announcement-dot" aria-hidden="true">•</span>
-          </span>
-        ))}
+      <div className="announcement-track">
+        {repeated.map((announcement, i) => {
+          const content = (
+            <>
+              {announcement.title}
+              <span className="announcement-dot" aria-hidden="true">•</span>
+            </>
+          );
+          const className = "announcement-item";
+          const style = {
+            backgroundColor: announcement.bgColor || '#1a1a1a',
+            color: announcement.textColor || '#fff',
+          };
+
+          return announcement.link ? (
+            <a key={`${announcement.id}-${i}`} className={className} href={announcement.link} style={style}>
+              {content}
+            </a>
+          ) : (
+            <span key={`${announcement.id}-${i}`} className={className} style={style}>
+              {content}
+            </span>
+          );
+        })}
       </div>
 
       <style jsx>{`
@@ -37,7 +73,8 @@ export default function AnnouncementBar() {
 
         .announcement-track {
           display: flex;
-          align-items: center;
+          align-items: stretch;
+          height: 100%;
           white-space: nowrap;
           animation: announcementScroll 38s linear infinite;
           will-change: transform;
@@ -57,6 +94,7 @@ export default function AnnouncementBar() {
           display: inline-flex;
           align-items: center;
           padding: 0 0;
+          text-decoration: none;
         }
 
         .announcement-dot {

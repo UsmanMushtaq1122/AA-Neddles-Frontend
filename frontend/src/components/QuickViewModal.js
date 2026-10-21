@@ -8,6 +8,7 @@ import { X, Minus, Plus, Heart, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
+import WhatsAppOrderLink from '@/components/WhatsAppOrderLink';
 
 export default function QuickViewModal({ product, isOpen, onClose }) {
   const { addToCart } = useCart();
@@ -92,7 +93,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
                   {product.images?.[0] ? (
                     <Image
                       src={product.images[0]}
-                      alt={product.altText || product.title || 'AA Neddles product'}
+                      alt={product.altText || product.title || 'AA Needles product'}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover"
@@ -178,6 +179,11 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
                   </div>
 
                   <div className="mt-6 flex flex-col gap-2.5">
+                    <WhatsAppOrderLink
+                      product={product}
+                      size={selectedSize}
+                      className="flex min-h-12 w-full items-center justify-center gap-2.5 bg-[#25D366] py-3.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition-colors hover:bg-[#1EBE5D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#128C7E] focus-visible:ring-offset-2"
+                    />
                     <button
                       onClick={handleAddToBag}
                       className="w-full py-3.5 bg-noor-black text-white text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-2.5 hover:bg-noor-gold transition-all"

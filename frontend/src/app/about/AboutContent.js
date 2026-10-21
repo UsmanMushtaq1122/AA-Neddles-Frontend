@@ -138,7 +138,7 @@ function BrandStory() {
           <div className="overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
             <Image
               src={AA.AA3}
-              alt="AA Neddles brand story"
+              alt="AA Needles brand story"
               width={600}
               height={800}
               className="aspect-[3/4] w-full object-cover transition-transform duration-700 hover:scale-105"
@@ -364,14 +364,14 @@ function Testimonials() {
       name: 'Ayesha Khan',
       city: 'Lahore',
       rating: 5,
-      text: 'AA Neddles has completely transformed my wardrobe. The quality of their fabrics and the attention to detail in every piece is unmatched. I feel confident and elegant every time I wear their designs.',
+      text: 'AA Needles has completely transformed my wardrobe. The quality of their fabrics and the attention to detail in every piece is unmatched. I feel confident and elegant every time I wear their designs.',
       image: AA.AA1,
     },
     {
       name: 'Fatima Riaz',
       city: 'Karachi',
       rating: 5,
-      text: 'The luxury formal collection exceeded all my expectations. The embroidery work is breathtaking, and the fit is perfect. AA Neddles is my go-to for every special occasion.',
+      text: 'The luxury formal collection exceeded all my expectations. The embroidery work is breathtaking, and the fit is perfect. AA Needles is my go-to for every special occasion.',
       image: AA.AA4,
     },
     {
@@ -452,7 +452,7 @@ function WhyChooseUs() {
     <Section className="py-24 md:py-32">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <motion.div variants={fadeUp} className="mb-14 text-center">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A27E]">The AA Neddles Promise</p>
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A27E]">The AA Needles Promise</p>
           <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-medium text-noor-black" style={{ fontFamily: 'var(--font-heading)' }}>
             Why Choose Us
           </h2>

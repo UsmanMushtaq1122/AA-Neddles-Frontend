@@ -1,39 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Star, BadgeCheck, Heart, ShoppingBag, Truck, RefreshCw, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { testimonialsApi } from '@/services/testimonials';
-import { AA } from '@/lib/images';
-
-const DEFAULT_GALLERY = [
-  { id: 1, name: 'Ayesha Khan', city: 'Lahore', product: 'Luxury Lawn Collection', rating: 5, text: 'Beautiful fabric and exactly like the website photos.', image: AA.AA1, height: 'tall' },
-  { id: 2, name: 'Fatima Riaz', city: 'Karachi', product: 'Luxury Pret — Noor Series', rating: 5, text: 'The embroidery and stitching were flawless.', image: AA.AA4, height: 'medium' },
-  { id: 3, name: 'Sana Tariq', city: 'Islamabad', product: 'Formal Wear — Guldasta', rating: 5, text: 'Simply stunning formal wear. Exquisite details.', image: AA.AA6, height: 'short' },
-  { id: 4, name: 'Hira Qureshi', city: 'Rawalpindi', product: 'Ready to Wear — Spring Edit', rating: 5, text: 'Loyal customer for years. Never disappoints.', image: AA.AA2, height: 'tall' },
-  { id: 5, name: 'Maham Sheikh', city: 'Faisalabad', product: 'Bridal — Mehendi Collection', rating: 5, text: 'Museum-quality craftsmanship. Impeccable.', image: AA.AA7, height: 'medium' },
-  { id: 6, name: 'Zainab Ali', city: 'Multan', product: 'Unstitched — Premium Lawn', rating: 5, text: 'Beautiful designs and excellent fabric.', image: AA.AA8, height: 'short' },
-];
-
-const trustStats = [
-  { value: '50,000+', label: 'Happy Customers', icon: Heart },
-  { value: '100,000+', label: 'Orders Delivered', icon: ShoppingBag },
-  { value: '4.9/5', label: 'Average Rating', icon: Star },
-  { value: '95%', label: 'Repeat Customers', icon: RefreshCw },
-  { value: '100%', label: 'Nationwide Delivery', icon: Truck },
-];
-
-/* ═══════════════════════════════════════════════
-   ANIMATED COUNTER
-   ═══════════════════════════════════════════════ */
-
-function AnimatedNumber({ value, duration = 2000 }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
-  return <span ref={ref}>{inView ? value : '0'}</span>;
-}
 
 /* ═══════════════════════════════════════════════
    HOMEPAGE PREVIEW — lightweight, no carousels,
@@ -41,26 +13,30 @@ function AnimatedNumber({ value, duration = 2000 }) {
    ═══════════════════════════════════════════════ */
 
 export default function TestimonialsPreview() {
-  const [galleryCustomers, setGalleryCustomers] = useState(DEFAULT_GALLERY);
+  const [galleryCustomers, setGalleryCustomers] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     testimonialsApi.getAll()
       .then((res) => {
-        if (res.success && res.data?.length) {
-          setGalleryCustomers(res.data.map((t, i) => ({
+        if (res.success && Array.isArray(res.data)) {
+          setGalleryCustomers(res.data
+            .filter((t) => (!t.type || t.type === 'gallery') && (t.image || t.customerImage))
+            .map((t) => ({
             id: t.id,
-            name: t.name || t.customerName || `Customer ${i + 1}`,
-            city: t.city || '',
-            product: t.product || '',
-            rating: t.rating || 5,
-            text: t.comment || t.content || '',
-            image: t.image || AA.AA1,
-            height: ['tall', 'medium', 'short'][i % 3],
+            name: t.customerName || 'Customer',
+            rating: t.rating,
+            text: t.content || '',
+            image: t.image || t.customerImage,
+            height: 'medium',
           })));
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoaded(true));
   }, []);
+
+  if (!loaded || galleryCustomers.length === 0) return null;
 
   return (
     <>
@@ -78,20 +54,11 @@ export default function TestimonialsPreview() {
               Testimonials
             </span>
             <h2 className="ty-h1 text-noor-black leading-[1.08]">
-              Loved By Women
-              <br />
-              Across Pakistan
+              What Our Customers Say
             </h2>
             <p className="mt-5 text-base text-noor-gray max-w-xl mx-auto leading-relaxed">
-              Thousands of women trust our quality, craftsmanship, and timeless designs.
+              Customer experiences, shared in their own words.
             </p>
-            <div className="mt-6 flex items-center justify-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={16} className="fill-noor-gold text-noor-gold" />
-              ))}
-              <span className="ml-2 text-sm font-medium text-noor-black">4.9/5</span>
-              <span className="ml-1 text-sm text-noor-gray">from 12,400+ reviews</span>
-            </div>
           </motion.div>
         </div>
       </section>
@@ -125,7 +92,7 @@ export default function TestimonialsPreview() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mt-4 max-w-2xl mx-auto text-sm leading-relaxed text-noor-gray"
             >
-              Real women. Real photos. Real trust in our quality and craftsmanship.
+              Photos and feedback shared by our customers.
             </motion.p>
           </div>
 
@@ -162,7 +129,6 @@ export default function TestimonialsPreview() {
                     </p>
                     <div className="mt-2 flex items-center gap-1.5">
                       <p className="text-white text-xs font-semibold">{customer.name}</p>
-                      <span className="text-white/50 text-[0.625rem]">{customer.city}</span>
                     </div>
                   </div>
 
@@ -171,7 +137,7 @@ export default function TestimonialsPreview() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-white text-xs font-semibold">{customer.name}</p>
-                        <p className="text-white/60 text-[0.625rem]">{customer.city}</p>
+                        <p className="text-white/60 text-[0.625rem]">Customer</p>
                       </div>
                       <div className="flex items-center gap-0.5">
                         {Array.from({ length: 5 }).map((_, j) => (
@@ -204,32 +170,6 @@ export default function TestimonialsPreview() {
         </div>
       </section>
 
-      {/* ── Trust Bar ── */}
-      <section className="tst-trustbar">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="tst-trustbar-grid">
-            {trustStats.map((stat, i) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="flex flex-col items-center"
-                >
-                  <Icon size={20} className="text-noor-gold mb-3" />
-                  <div className="tst-trustbar-value">
-                    <AnimatedNumber value={stat.value} />
-                  </div>
-                  <p className="tst-trustbar-label">{stat.label}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
     </>
   );
 }

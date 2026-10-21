@@ -1,11 +1,11 @@
 import VerifyEmailContent from './VerifyEmailContent';
 
 export const metadata = {
-  title: 'Verify Email — AA Neddles',
-  description: 'Verify your AA Neddles email address.',
+  title: 'Verify Email — AA Needles',
+  description: 'Verify your AA Needles email address.',
   openGraph: {
-    title: 'Verify Email — AA Neddles',
-    description: 'Verify your AA Neddles email address.',
+    title: 'Verify Email — AA Needles',
+    description: 'Verify your AA Needles email address.',
     type: 'website',
   },
 };

@@ -2,17 +2,17 @@ import PageLayout from '@/components/PageLayout';
 import OffersPageContent from './OffersPageContent';
 
 export const metadata = {
-  title: 'Offers — AA Neddles',
-  description: 'Explore exclusive offers and sale items at AA Neddles.',
+  title: 'Offers — AA Needles',
+  description: 'Explore exclusive offers and sale items at AA Needles.',
   openGraph: {
-    title: 'Offers — AA Neddles',
-    description: 'Explore exclusive offers and sale items at AA Neddles.',
+    title: 'Offers — AA Needles',
+    description: 'Explore exclusive offers and sale items at AA Needles.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Offers — AA Neddles',
-    description: 'Explore exclusive offers and sale items at AA Neddles.',
+    title: 'Offers — AA Needles',
+    description: 'Explore exclusive offers and sale items at AA Needles.',
   },
 };
 

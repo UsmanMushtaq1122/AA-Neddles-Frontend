@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
 
   if (!product) {
     return {
-      title: 'Product Not Found — AA Neddles',
+      title: 'Product Not Found — AA Needles',
       description: 'The product you are looking for does not exist.',
     };
   }
@@ -21,18 +21,18 @@ export async function generateMetadata({ params }) {
   const categoryLabel = product.category?.name || '';
 
   return {
-    title: `${product.name} — AA Neddles`,
-    description: product.description?.slice(0, 160) || `Shop ${product.name} from AA Neddles. Premium Pakistani luxury fashion.`,
+    title: `${product.name} — AA Needles`,
+    description: product.description?.slice(0, 160) || `Shop ${product.name} from AA Needles. Premium Pakistani luxury fashion.`,
     openGraph: {
-      title: `${product.name} — AA Neddles`,
-      description: product.description?.slice(0, 160) || `Shop ${product.name} from AA Neddles.`,
+      title: `${product.name} — AA Needles`,
+      description: product.description?.slice(0, 160) || `Shop ${product.name} from AA Needles.`,
       type: 'website',
       images: product.images?.[0] ? [{ url: typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0]) }] : [],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.name} — AA Neddles`,
-      description: product.description?.slice(0, 160) || `Shop ${product.name} from AA Neddles.`,
+      title: `${product.name} — AA Needles`,
+      description: product.description?.slice(0, 160) || `Shop ${product.name} from AA Needles.`,
     },
   };
 }
@@ -67,7 +67,7 @@ export default async function ProductPage({ params }) {
               description: product.description?.slice(0, 500),
               image: product.images?.map((i) => i.url || i) || [],
               sku: product.sku,
-              brand: { '@type': 'Brand', name: 'AA Neddles' },
+              brand: { '@type': 'Brand', name: 'AA Needles' },
               offers: {
                 '@type': 'Offer',
                 url: `https://aaneddles.com/product/${slug}`,

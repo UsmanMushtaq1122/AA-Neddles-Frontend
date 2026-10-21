@@ -1,22 +1,22 @@
 import FAQContent from './FAQContent';
 
 export const metadata = {
-  title: 'FAQs | AA Neddles — Pakistani Luxury Fashion',
+  title: 'FAQs | AA Needles — Pakistani Luxury Fashion',
   description:
-    'Find answers to frequently asked questions about AA Neddles — ordering, shipping, returns, payments, account management, and more.',
+    'Find answers to frequently asked questions about AA Needles — ordering, shipping, returns, payments, account management, and more.',
   openGraph: {
-    title: 'FAQs | AA Neddles',
+    title: 'FAQs | AA Needles',
     description:
-      'Find answers to frequently asked questions about AA Neddles — ordering, shipping, returns, payments, and more.',
+      'Find answers to frequently asked questions about AA Needles — ordering, shipping, returns, payments, and more.',
     url: 'https://aaneddles.com/faqs',
-    siteName: 'AA Neddles',
+    siteName: 'AA Needles',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FAQs | AA Neddles',
+    title: 'FAQs | AA Needles',
     description:
-      'Find answers to frequently asked questions about AA Neddles — ordering, shipping, returns, payments, and more.',
+      'Find answers to frequently asked questions about AA Needles — ordering, shipping, returns, payments, and more.',
   },
 };
 

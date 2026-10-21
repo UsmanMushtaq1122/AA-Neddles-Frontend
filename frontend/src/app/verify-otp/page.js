@@ -225,7 +225,7 @@ function OtpVerificationForm() {
             </p>
             <h2 className="text-4xl xl:text-5xl font-light tracking-[0.18em] uppercase text-white mb-3"
               style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}>
-              AA Neddles
+              AA Needles
             </h2>
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-14" style={{ background: 'rgba(201,169,110,0.5)' }} />
@@ -281,7 +281,7 @@ function OtpVerificationForm() {
 
         <div className="relative z-10 text-center pb-8">
           <p className="text-xs tracking-widest" style={{ color: '#3a3a3a', fontFamily: 'Inter, sans-serif' }}>
-            © {new Date().getFullYear()} AA NEDDLES
+            © {new Date().getFullYear()} AA NEEDLES
           </p>
         </div>
       </div>
@@ -290,7 +290,7 @@ function OtpVerificationForm() {
       <div className="flex-1 flex flex-col min-h-screen bg-white">
         {/* Mobile top bar */}
         <div className="lg:hidden px-6 py-5 flex items-center justify-between" style={{ borderBottom: '1px solid #F0F0F0' }}>
-          <span className="text-xs tracking-[0.3em] uppercase font-medium" style={{ color: '#C9A96E', fontFamily: 'Inter, sans-serif' }}>AA Neddles</span>
+          <span className="text-xs tracking-[0.3em] uppercase font-medium" style={{ color: '#C9A96E', fontFamily: 'Inter, sans-serif' }}>AA Needles</span>
           <div className="flex items-center gap-2" style={{ color: '#9A9A9A' }}>
             <ShieldCheck size={14} />
             <span className="text-xs tracking-wider" style={{ fontFamily: 'Inter, sans-serif' }}>Secure Verification</span>
@@ -584,7 +584,7 @@ function OtpVerificationForm() {
         {/* Mobile footer */}
         <div className="lg:hidden text-center py-5" style={{ borderTop: '1px solid #F5F5F5' }}>
           <p className="text-xs tracking-widest uppercase" style={{ color: '#CCCCCC', fontFamily: 'Inter, sans-serif' }}>
-            © {new Date().getFullYear()} AA Neddles
+            © {new Date().getFullYear()} AA Needles
           </p>
         </div>
       </div>

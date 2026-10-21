@@ -34,16 +34,16 @@ const nonReturnableItems = [
 ];
 
 const cancellationPolicy = [
-  'AA Neddles does not offer a "refund" or "money back guarantee" on purchased items.',
-  'Customers paying via Credit Card or PayPal may cancel within 24 hours of placing the order. Order amount will not be refunded back instead a coupon of same value will be provided that can be used to purchase from AA Neddles within next 60 days.',
-  'AA Neddles may cancel orders for any reason. Common reasons may include: the item is out of stock, damage found during quality check, technical error or credit card or PayPal payment is declined.',
+  'AA Needles does not offer a "refund" or "money back guarantee" on purchased items.',
+  'Customers paying via Credit Card or PayPal may cancel within 24 hours of placing the order. Order amount will not be refunded back instead a coupon of same value will be provided that can be used to purchase from AA Needles within next 60 days.',
+  'AA Needles may cancel orders for any reason. Common reasons may include: the item is out of stock, damage found during quality check, technical error or credit card or PayPal payment is declined.',
   'We do not store Credit card details nor do we share customer details with any 3rd parties.',
 ];
 
 const disclaimerItems = [
-  'AA Neddles makes every effort to ensure that product images & descriptions are as accurate as possible. Please note, however, that there might be some minor differences between product images on the website and the actual product. Such variations may come about due to extra embellishments used during shoots which may differ from original products slightly.',
+  'AA Needles makes every effort to ensure that product images & descriptions are as accurate as possible. Please note, however, that there might be some minor differences between product images on the website and the actual product. Such variations may come about due to extra embellishments used during shoots which may differ from original products slightly.',
   'Please bear in mind that colors in pictures may vary slightly from actual item due to the lighting during photo shoot, your device display settings or printing quality of catalog and/or inlay cards.',
-  'All details of AA Neddles products are given on the website and we make every effort to guarantee that the information provided is accurate. Customers are requested to review the product description before making an order.',
+  'All details of AA Needles products are given on the website and we make every effort to guarantee that the information provided is accurate. Customers are requested to review the product description before making an order.',
 ];
 
 export default function ReturnContent() {
@@ -58,7 +58,7 @@ export default function ReturnContent() {
               <Ban size={20} className="text-noor-gold" />
             </div>
             <p className="ty-body-sm font-medium text-noor-black">
-              AA Neddles does not offer any &lsquo;Exchange&rsquo; or &lsquo;Return&rsquo; for any of products.
+              AA Needles does not offer any &lsquo;Exchange&rsquo; or &lsquo;Return&rsquo; for any of products.
             </p>
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function ReturnContent() {
 
         <div className="bg-zinc-50 border border-zinc-100 p-6 md:p-8 mb-8">
           <p className="ty-body-sm text-zinc-600 mb-4">
-            Please email pictures of the defective item to <strong>aaneedlesofficial@gmail.com</strong> or call at <strong>03076916882</strong>, within 7 days after order delivery in case to raise a dispute. AA Neddles will look at each dispute on an individual basis and will make every effort to be fair to both parties.
+            Please email pictures of the defective item to <strong>aaneedlesofficial@gmail.com</strong> or call at <strong>03076916882</strong>, within 7 days after order delivery in case to raise a dispute. AA Needles will look at each dispute on an individual basis and will make every effort to be fair to both parties.
           </p>
           <p className="ty-body-sm text-zinc-600">
             Once we receive the item our team will review the damage &mdash; once the dispute is settled fairly we will issue a replacement of the same value against the product mentioned in the invoice and send it to the buyer&apos;s address.

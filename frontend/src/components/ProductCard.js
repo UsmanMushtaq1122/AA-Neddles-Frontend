@@ -8,6 +8,7 @@ import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
 import QuickViewModal from '@/components/QuickViewModal';
+import WhatsAppOrderLink from '@/components/WhatsAppOrderLink';
 
 export default function ProductCard({ product }) {
   const [imageError, setImageError] = useState(false);
@@ -42,7 +43,7 @@ export default function ProductCard({ product }) {
           {product.images?.[0] && !imageError ? (
             <Image
               src={product.images[0]}
-              alt={product.title ? `${product.title} — AA Neddles` : 'AA Neddles product'}
+              alt={product.title ? `${product.title} — AA Needles` : 'AA Needles product'}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -79,6 +80,12 @@ export default function ProductCard({ product }) {
           />
         </button>
 
+        <WhatsAppOrderLink
+          product={product}
+          iconOnly
+          className="absolute bottom-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md text-[#25D366] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 md:hidden"
+        />
+
         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 z-10 pointer-events-auto">
           <div className="flex items-center bg-white/95 backdrop-blur-sm rounded-xl shadow-lg px-4 py-2.5">
             <Link href={`/product/${slug}`} className="flex items-center gap-2 text-sm font-medium text-zinc-800 flex-1 hover:text-noor-maroon transition-colors">
@@ -94,6 +101,11 @@ export default function ProductCard({ product }) {
               >
                 <ScanSearch size={20} className="text-zinc-500" />
               </button>
+              <WhatsAppOrderLink
+                product={product}
+                iconOnly
+                className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[#25D366]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] text-[#25D366]"
+              />
               <button
                 type="button"
                 onClick={handleWishlistToggle}

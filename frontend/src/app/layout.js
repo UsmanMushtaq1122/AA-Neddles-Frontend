@@ -15,25 +15,25 @@ const inter = { variable: '--font-body' };
 const cormorant = { variable: '--font-logo' };
 
 export const metadata = {
-  title: 'AA Neddles — Pakistani Luxury Fashion',
-  description: 'Discover premium Pakistani fashion at AA Neddles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
+  title: 'AA Needles — Pakistani Luxury Fashion',
+  description: 'Discover premium Pakistani fashion at AA Needles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
   metadataBase: new URL('https://aaneddles.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'AA Neddles — Pakistani Luxury Fashion',
-    description: 'Discover premium Pakistani fashion at AA Neddles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
+    title: 'AA Needles — Pakistani Luxury Fashion',
+    description: 'Discover premium Pakistani fashion at AA Needles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
     url: 'https://aaneddles.com',
-    siteName: 'AA Neddles',
+    siteName: 'AA Needles',
     locale: 'en_US',
     type: 'website',
     images: [{ url: '/og-default.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AA Neddles — Pakistani Luxury Fashion',
-    description: 'Discover premium Pakistani fashion at AA Neddles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
+    title: 'AA Needles — Pakistani Luxury Fashion',
+    description: 'Discover premium Pakistani fashion at AA Needles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
   },
 };
 
@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'AA Neddles',
+              name: 'AA Needles',
               url: 'https://aaneddles.com',
               logo: 'https://aaneddles.com/logo.png',
               description: 'Pakistani luxury fashion brand offering ready-to-wear, formal, and bridal collections.',

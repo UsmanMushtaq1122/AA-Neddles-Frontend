@@ -1,17 +1,16 @@
 'use client';
 
 import { useState, useEffect, use, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Minus, Plus, Heart, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Heart, ShoppingBag, X } from 'lucide-react';
 import { productsApi } from '@/services/products';
 import ProductCard from '@/components/ProductCard';
 import Accordion from '@/components/Accordion';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
-import { useAuth } from '@/hooks/useAuth';
+import WhatsAppOrderLink from '@/components/WhatsAppOrderLink';
 
 const PLACEHOLDER_IMAGE = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Crect fill='%23f0f0f0' width='400' height='500'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='18' fill='%23999'%3EImage Unavailable%3C/text%3E%3C/svg%3E`;
 
@@ -25,8 +24,6 @@ function shuffleArray(arr) {
 }
 
 export default function ProductPageContent({ slug: initialSlug }) {
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const slug = initialSlug;
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
@@ -34,6 +31,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [sizeChartOpen, setSizeChartOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [galleryScrollEl, setGalleryScrollEl] = useState(null);
@@ -45,6 +43,21 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const [customersAlsoBought, setCustomersAlsoBought] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [topTrendingProducts, setTopTrendingProducts] = useState([]);
+
+  useEffect(() => {
+    if (!sizeChartOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setSizeChartOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [sizeChartOpen]);
 
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -168,6 +181,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const isSale = product.salePrice !== null;
   const isCustomSize = product.sizes.length === 1 && (product.sizes[0] === 'Custom' || product.sizes[0] === 'One Size');
   const MAX_QUANTITY = 10;
+  const sizeChart = [
+    { size: 'XS', bust: '32', waist: '26', hips: '36' },
+    { size: 'S', bust: '34', waist: '28', hips: '38' },
+    { size: 'M', bust: '36', waist: '30', hips: '40' },
+    { size: 'L', bust: '38', waist: '32', hips: '42' },
+    { size: 'XL', bust: '40', waist: '34', hips: '44' },
+    { size: '2XL', bust: '42', waist: '36', hips: '46' },
+  ];
 
   const handleAddToBag = () => {
     if (!selectedSize) {
@@ -185,24 +206,6 @@ export default function ProductPageContent({ slug: initialSlug }) {
       slug: product.slug,
     });
     addToast(`${product.title} added to your bag`);
-  };
-
-  const handleBuyNow = () => {
-    if (!selectedSize) {
-      addToast('Please select a size', 'warning');
-      return;
-    }
-    addToCart({
-      id: product.id,
-      title: product.title,
-      price: product.salePrice || product.price,
-      image: product.images?.[0] || '',
-      selectedSize,
-      selectedColor: null,
-      quantity,
-      slug: product.slug,
-    });
-    router.push(isAuthenticated ? '/checkout' : '/login?redirect=/checkout');
   };
 
   const categoryLabel = (product.category || '')
@@ -408,8 +411,10 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     Size
                   </span>
                   <button
-                    onClick={() => addToast('Size guide coming soon.', 'info')}
-                    className="text-[12px] text-zinc-500 flex items-center gap-1.5 hover:text-noor-black transition-colors uppercase tracking-[0.06em]"
+                    type="button"
+                    onClick={() => setSizeChartOpen(true)}
+                    className="flex min-h-10 items-center gap-1.5 rounded-sm text-[12px] uppercase tracking-[0.06em] text-zinc-500 transition-colors hover:text-noor-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-noor-gold focus-visible:ring-offset-2"
+                    aria-haspopup="dialog"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M22 7L2 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -508,13 +513,11 @@ export default function ProductPageContent({ slug: initialSlug }) {
                   ADD TO CART
                 </button>
               </div>
-              <button
-                onClick={handleBuyNow}
-                className="w-full py-4 bg-noor-gold text-white text-[11px] font-semibold uppercase tracking-[0.06em] hover:bg-noor-gold/90 transition-all"
-                aria-label="Buy now"
-              >
-                BUY IT NOW
-              </button>
+              <WhatsAppOrderLink
+                product={product}
+                size={selectedSize}
+                className="flex min-h-14 w-full items-center justify-center gap-3 bg-[#25D366] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition-colors hover:bg-[#1EBE5D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#128C7E] focus-visible:ring-offset-2"
+              />
             </div>
 
             <div className="mt-6 border-t border-zinc-100">
@@ -556,6 +559,82 @@ export default function ProductPageContent({ slug: initialSlug }) {
                             <div>
                               <h4 className="ty-body font-semibold text-noor-black">Note</h4>
                               <p className="mt-2 ty-body-sm text-zinc-600">{ds.note}</p>
+                            </div>
+                          )}
+                          {sizeChartOpen && (
+                            <div
+                              className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-6"
+                              onMouseDown={(event) => {
+                                if (event.target === event.currentTarget) setSizeChartOpen(false);
+                              }}
+                            >
+                              <section
+                                role="dialog"
+                                aria-modal="true"
+                                aria-labelledby="size-chart-title"
+                                className="relative max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-8"
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => setSizeChartOpen(false)}
+                                  className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-noor-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-noor-gold"
+                                  aria-label="Close size chart"
+                                >
+                                  <X size={20} />
+                                </button>
+
+                                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-noor-gold">
+                                  AA NEEDLES FIT GUIDE
+                                </p>
+                                <h2 id="size-chart-title" className="pr-12 text-2xl font-medium text-noor-black sm:text-3xl">
+                                  Women&apos;s Size Chart
+                                </h2>
+                                <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-500">
+                                  Use these approximate body measurements to help choose your size. Measurements are in inches.
+                                </p>
+
+                                <div className="mt-6 overflow-x-auto rounded-xl border border-zinc-200">
+                                  <table className="w-full min-w-[420px] border-collapse text-left text-sm">
+                                    <thead>
+                                      <tr className="bg-[#F7F4EF] text-[11px] uppercase tracking-wider text-zinc-600">
+                                        <th scope="col" className="px-4 py-3 font-semibold">Size</th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Bust (in)</th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Waist (in)</th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Hips (in)</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {sizeChart.map((row) => (
+                                        <tr
+                                          key={row.size}
+                                          className={`border-t border-zinc-100 ${
+                                            selectedSize?.toUpperCase() === row.size
+                                              ? 'bg-[#C9A96E]/10 font-semibold text-noor-black'
+                                              : 'text-zinc-600'
+                                          }`}
+                                        >
+                                          <th scope="row" className="px-4 py-3.5 font-medium">{row.size}</th>
+                                          <td className="px-4 py-3.5">{row.bust}</td>
+                                          <td className="px-4 py-3.5">{row.waist}</td>
+                                          <td className="px-4 py-3.5">{row.hips}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+
+                                <div className="mt-5 rounded-xl bg-[#F7F4EF] p-4">
+                                  <h3 className="text-sm font-semibold text-noor-black">How to measure</h3>
+                                  <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-zinc-600 sm:text-sm">
+                                    <li><strong>Bust:</strong> Measure around the fullest part of your chest.</li>
+                                    <li><strong>Waist:</strong> Measure around your natural waistline.</li>
+                                    <li><strong>Hips:</strong> Measure around the fullest part of your hips.</li>
+                                  </ul>
+                                </div>
+                                <p className="mt-4 text-xs leading-relaxed text-zinc-500">
+                                  Fit can vary by style and fabric. For sizing help, please contact our customer support before ordering.
+                                </p>
+                              </section>
                             </div>
                           )}
                         </div>

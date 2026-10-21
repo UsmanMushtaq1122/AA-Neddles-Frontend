@@ -203,7 +203,7 @@ function ProfileContent() {
         </div>
         <div className="text-center sm:text-left flex-1">
           <h2 className="ty-h3 text-noor-black">{displayName}</h2>
-          <p className="ty-body-sm text-noor-gray mt-1">Member of AA Neddles</p>
+          <p className="ty-body-sm text-noor-gray mt-1">Member of AA Needles</p>
         </div>
         {!editMode && (
           <button

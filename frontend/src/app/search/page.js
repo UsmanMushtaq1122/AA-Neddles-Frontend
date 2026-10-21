@@ -5,11 +5,11 @@ export async function generateMetadata({ searchParams }) {
   const params = await searchParams;
   const q = params?.q || '';
   if (!q) {
-    return { title: 'Search — AA Neddles', description: 'Search our collections for the perfect outfit.' };
+    return { title: 'Search — AA Needles', description: 'Search our collections for the perfect outfit.' };
   }
   return {
-    title: `"${q}" Search Results — AA Neddles`,
-    description: `Browse search results for "${q}" at AA Neddles. Find your perfect outfit from our luxury collection.`,
+    title: `"${q}" Search Results — AA Needles`,
+    description: `Browse search results for "${q}" at AA Needles. Find your perfect outfit from our luxury collection.`,
   };
 }
 

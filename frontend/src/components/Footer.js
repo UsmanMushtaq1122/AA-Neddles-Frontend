@@ -36,9 +36,9 @@ const footerSections = [
 ];
 
 const socialLinks = [
-  { label: 'Instagram', href: 'https://instagram.com/aaneddles', icon: 'instagram' },
+  { label: 'Instagram', href: 'https://www.instagram.com/aaneedlesofficial/', icon: 'instagram' },
   { label: 'Facebook', href: 'https://facebook.com/aaneddles', icon: 'facebook' },
-  { label: 'TikTok', href: 'https://tiktok.com/@aaneddles', icon: 'tiktok' },
+  { label: 'TikTok', href: 'https://www.tiktok.com/@aaneedlesofficial', icon: 'tiktok' },
 ];
 
 function SocialIcon({ href, label, icon }) {
@@ -93,10 +93,10 @@ export default function Footer() {
         <div className="desktop-footer-content">
           <div className="desktop-footer-main">
             <div className="desktop-footer-contact">
-              <Link href="/" aria-label="AA Neddles home" className="desktop-footer-logo-link">
+              <Link href="/" aria-label="AA Needles home" className="desktop-footer-logo-link">
                 <Image
                   src="/logo.png"
-                  alt="AA Neddles"
+                  alt="AA Needles"
                   width={220}
                   height={220}
                   className="desktop-footer-logo"
@@ -121,7 +121,7 @@ export default function Footer() {
 
             <div className="desktop-footer-column">
               <h2>Customer Care</h2>
-              <Link href="/about">About AA Neddles</Link>
+              <Link href="/about">About AA Needles</Link>
               <Link href="/contact">Contact Us</Link>
               <Link href="/careers">Careers</Link>
               <Link href="/terms">Terms and Conditions</Link>
@@ -129,7 +129,7 @@ export default function Footer() {
           </div>
 
           <div className="desktop-footer-bottom">
-            <p>&copy; {new Date().getFullYear()}, AA Neddles Designs</p>
+            <p>&copy; {new Date().getFullYear()}, AA Needles Designs</p>
             <div className="desktop-footer-socials">
               {socialLinks.map((social) => (
                 <SocialIcon key={social.label} {...social} />
@@ -138,10 +138,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <Link href="/" aria-label="AA Neddles home" className="mobile-footer-logo-link">
+        <Link href="/" aria-label="AA Needles home" className="mobile-footer-logo-link">
           <Image
             src="/logo.png"
-            alt="AA Neddles"
+            alt="AA Needles"
             width={220}
             height={220}
             priority={false}
@@ -162,7 +162,7 @@ export default function Footer() {
         </div>
 
         <div className="mobile-footer-bottom">
-          <p>&copy; {new Date().getFullYear()}, AA Neddles Designs</p>
+          <p>&copy; {new Date().getFullYear()}, AA Needles Designs</p>
 
           <div className="mobile-footer-socials">
             {socialLinks.map((social) => (

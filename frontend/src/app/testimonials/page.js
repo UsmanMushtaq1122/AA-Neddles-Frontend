@@ -1,13 +1,11 @@
 import TestimonialsContent from './TestimonialsContent';
 
 export const metadata = {
-  title: 'Testimonials — AA Neddles',
-  description:
-    'Read what our customers say about AA Neddles. 50,000+ happy customers, 4.9/5 average rating. Discover premium Pakistani luxury fashion loved by thousands.',
+  title: 'Testimonials — AA Needles',
+  description: 'Read customer testimonials and watch stories shared with AA Needles.',
   openGraph: {
-    title: 'Testimonials — AA Neddles',
-    description:
-      'Read what our customers say about AA Neddles. 50,000+ happy customers, 4.9/5 average rating.',
+    title: 'Testimonials — AA Needles',
+    description: 'Read customer testimonials and watch stories shared with AA Needles.',
     type: 'website',
   },
 };

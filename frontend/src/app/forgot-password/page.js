@@ -1,11 +1,11 @@
 import ForgotPasswordContent from './ForgotPasswordContent';
 
 export const metadata = {
-  title: 'Forgot Password — AA Neddles',
-  description: 'Reset your AA Neddles account password.',
+  title: 'Forgot Password — AA Needles',
+  description: 'Reset your AA Needles account password.',
   openGraph: {
-    title: 'Forgot Password — AA Neddles',
-    description: 'Reset your AA Neddles account password.',
+    title: 'Forgot Password — AA Needles',
+    description: 'Reset your AA Needles account password.',
     type: 'website',
   },
 };

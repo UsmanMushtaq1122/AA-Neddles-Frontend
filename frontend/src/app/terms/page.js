@@ -1,18 +1,18 @@
 import PageLayout from '@/components/PageLayout';
 
 export const metadata = {
-  title: 'Terms and Conditions — AA Neddles',
+  title: 'Terms and Conditions — AA Needles',
   description:
-    'Read the terms and conditions for shopping at AA Neddles. Exchange policy, dispute resolution, payment terms, and more.',
+    'Read the terms and conditions for shopping at AA Needles. Exchange policy, dispute resolution, payment terms, and more.',
   openGraph: {
-    title: 'Terms and Conditions — AA Neddles',
-    description: 'Read the terms and conditions for shopping at AA Neddles.',
+    title: 'Terms and Conditions — AA Needles',
+    description: 'Read the terms and conditions for shopping at AA Needles.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Terms and Conditions — AA Neddles',
-    description: 'Read the terms and conditions for shopping at AA Neddles.',
+    title: 'Terms and Conditions — AA Needles',
+    description: 'Read the terms and conditions for shopping at AA Needles.',
   },
 };
 
@@ -53,7 +53,7 @@ export default function TermsPage() {
 
         <div>
           <h3 className="text-noor-black font-semibold text-base mb-2">Dispute Resolution</h3>
-          <p>Please email pictures of the defective item to aaneedlesofficial@gmail.com or call at 03076916882, within 7 days after order delivery in the case to raise a dispute. AA Neddles will look at each dispute on an individual basis and will make every effort to be fair to both parties. Once the dispute is settled fairly, we will then issue a replacement (product) against the product mentioned in the invoice or entertain you with a coupon of the same product(s) value that can be used to purchase from AA Neddles within the next 60 days.</p>
+          <p>Please email pictures of the defective item to aaneedlesofficial@gmail.com or call at 03076916882, within 7 days after order delivery in the case to raise a dispute. AA Needles will look at each dispute on an individual basis and will make every effort to be fair to both parties. Once the dispute is settled fairly, we will then issue a replacement (product) against the product mentioned in the invoice or entertain you with a coupon of the same product(s) value that can be used to purchase from AA Needles within the next 60 days.</p>
           <p className="mt-2">Please note that no dispute will be accepted after a given time period i.e. 7 days after order delivery.</p>
         </div>
 
@@ -64,13 +64,13 @@ export default function TermsPage() {
 
         <div>
           <h3 className="text-noor-black font-semibold text-base mb-2">Marketing &amp; Communications</h3>
-          <p>AA Neddles is able to share marketing offers such as newsletters and our catalogues (e.g. your email address, wish lists, your name, and your postal address). Also can create your personal account at aaneddles.com (e.g. your name, number, and email address).</p>
+          <p>AA Needles is able to share marketing offers such as newsletters and our catalogues (e.g. your email address, wish lists, your name, and your postal address). Also can create your personal account at aaneddles.com (e.g. your name, number, and email address).</p>
           <p className="mt-2">Our team can contact you in the event of any problem with the delivery of your items (e.g. telephone number, address).</p>
         </div>
 
         <div>
           <h3 className="text-noor-black font-semibold text-base mb-2">Data Disclosure</h3>
-          <p>AA Neddles can disclose your data to fraud prevention agencies.</p>
+          <p>AA Needles can disclose your data to fraud prevention agencies.</p>
         </div>
 
         <div>

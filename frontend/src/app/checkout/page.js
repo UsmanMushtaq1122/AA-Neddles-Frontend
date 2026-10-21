@@ -56,6 +56,7 @@ function CheckoutContent() {
   const [step, setStep] = useState('checkout');
   const [placing, setPlacing] = useState(false);
   const [confirmedOrderNumber, setConfirmedOrderNumber] = useState('');
+  const [confirmedEmailSent, setConfirmedEmailSent] = useState(false);
   const [shipping, setShipping] = useState(DEFAULT_SHIPPING);
   const [openSection, setOpenSection] = useState('customer');
   const [customer, setCustomer] = useState({ firstName: '', lastName: '', email: '', phone: '' });
@@ -263,6 +264,7 @@ function CheckoutContent() {
       if (res.success) {
         clearCart();
         setConfirmedOrderNumber(res.data?.order?.orderNumber || res.data?.orderNumber || '');
+        setConfirmedEmailSent(res.data?.order?.emailStatus === 'sent' || res.data?.emailStatus === 'sent');
         setPlacing(false);
         setStep('confirmed');
         addToast('Order placed successfully!', 'success');
@@ -286,7 +288,15 @@ function CheckoutContent() {
   if (!hydratedPage) return <CheckoutSkeleton />;
   if (hydrated && !isAuthenticated) return <CheckoutSkeleton />;
   if (step === 'empty') return <EmptyCart />;
-  if (step === 'confirmed') return <OrderConfirmed email={customer.email} orderNumber={confirmedOrderNumber} />;
+  if (step === 'confirmed') {
+    return (
+      <OrderConfirmed
+        email={customer.email}
+        emailSent={confirmedEmailSent}
+        orderNumber={confirmedOrderNumber}
+      />
+    );
+  }
 
   return (
     <div>

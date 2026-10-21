@@ -36,7 +36,7 @@ const customerStories = [
   {
     before: 'I was hesitant to order online because fabric quality often disappoints.',
     experience: 'The dress arrived exactly as shown in the photos. The embroidery, the fabric, the stitching — everything was premium.',
-    result: "Now I've ordered five more outfits. AA Neddles is my trusted brand for every occasion.",
+    result: "Now I've ordered five more outfits. AA Needles is my trusted brand for every occasion.",
     name: 'Ayesha Khan',
     city: 'Lahore',
     product: 'Luxury Lawn Collection',
@@ -54,7 +54,7 @@ const customerStories = [
   {
     before: 'I needed a bridal lehenga but was worried about custom fittings from online orders.',
     experience: 'The team helped with custom measurements and colour adjustments. The craftsmanship was breathtaking.',
-    result: 'On my wedding day I felt like royalty. I have recommended AA Neddles to all my friends.',
+    result: 'On my wedding day I felt like royalty. I have recommended AA Needles to all my friends.',
     name: 'Maham Sheikh',
     city: 'Faisalabad',
     product: 'Bridal — Mehendi Collection',
@@ -284,10 +284,6 @@ function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
   );
 }
 
-/* ═══════════════════════════════════════════════
-   SECTION TITLE — "Loved By Women Across Pakistan"
-   ═══════════════════════════════════════════════ */
-
 function SectionTitle() {
   return (
     <section className="tst-section tst-section--cream">
@@ -302,21 +298,10 @@ function SectionTitle() {
           <span className="inline-block text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-noor-maroon mb-4">
             Testimonials
           </span>
-          <h1 className="ty-h1 text-noor-black leading-[1.08]">
-            Loved By Women
-            <br />
-            Across Pakistan
-          </h1>
+          <h1 className="ty-h1 text-noor-black leading-[1.08]">Customer Testimonials</h1>
           <p className="mt-5 text-base text-noor-gray max-w-xl mx-auto leading-relaxed">
-            Thousands of women trust our quality, craftsmanship, and timeless designs.
+            Feedback and stories shared by our customers.
           </p>
-          <div className="mt-6 flex items-center justify-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} size={16} className="fill-noor-gold text-noor-gold" />
-            ))}
-            <span className="ml-2 text-sm font-medium text-noor-black">4.9/5</span>
-            <span className="ml-1 text-sm text-noor-gray">from 12,400+ reviews</span>
-          </div>
         </motion.div>
       </div>
     </section>
@@ -336,7 +321,7 @@ function CustomerPhotoGallery({ customers = [] }) {
         <SectionHeading
           eyebrow="Gallery"
           title="Our Customers, Our Pride"
-          subtitle="Real women. Real photos. Real trust in our quality and craftsmanship."
+          subtitle="Customer photos and feedback."
         />
 
         {/* Masonry Grid */}
@@ -501,7 +486,7 @@ function CustomerStories() {
         <SectionHeading
           eyebrow="Stories"
           title="Real Women, Real Stories"
-          subtitle="Every outfit tells a story. Hear the journeys of women who trust AA Neddles."
+          subtitle="Every outfit tells a story. Hear the journeys of women who trust AA Needles."
         />
 
         <div className="space-y-10 md:space-y-16">
@@ -1062,7 +1047,7 @@ function CTASection() {
     <section className="relative py-20 md:py-28 overflow-hidden bg-noor-dark">
       <Image
         src={AA.AA3}
-        alt="AA Neddles collection"
+        alt="AA Needles collection"
         fill
         className="absolute inset-0 h-full w-full object-cover opacity-25"
         sizes="100vw"
@@ -1105,6 +1090,42 @@ function CTASection() {
   );
 }
 
+function PublishedVideoTestimonials({ testimonials }) {
+  if (testimonials.length === 0) return null;
+
+  return (
+    <section className="tst-section bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionHeading
+          eyebrow="Video testimonials"
+          title="Customer Stories"
+          subtitle="Videos shared by our customers."
+        />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {testimonials.map((testimonial) => (
+            <article key={testimonial.id} className="overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm">
+              <video
+                src={testimonial.videoUrl}
+                controls
+                playsInline
+                preload="metadata"
+                className="aspect-video w-full bg-black object-contain"
+              />
+              <div className="space-y-2 p-4">
+                <p className="font-semibold text-noor-black">{testimonial.customerName || "Customer"}</p>
+                {testimonial.content && (
+                  <p className="text-sm leading-relaxed text-noor-gray">{testimonial.content}</p>
+                )}
+                {testimonial.rating && <StarRating rating={testimonial.rating} size={12} />}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ═══════════════════════════════════════════════
    MAIN CONTENT
    ═══════════════════════════════════════════════ */
@@ -1112,6 +1133,7 @@ function CTASection() {
 export default function TestimonialsContent() {
   const [apiTestimonials, setApiTestimonials] = useState([]);
   const [testimonialsLoaded, setTestimonialsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     testimonialsApi.getAll()
@@ -1119,13 +1141,15 @@ export default function TestimonialsContent() {
         const data = res.data || [];
         setApiTestimonials(Array.isArray(data) ? data : []);
       })
-      .catch(() => {})
+      .catch(() => setLoadError(true))
       .finally(() => setTestimonialsLoaded(true));
   }, []);
 
   const galleryData = useMemo(() => {
     if (!testimonialsLoaded) return [];
-    const gallery = apiTestimonials.filter((t) => !t.type || t.type === 'gallery' || t.type === 'photo');
+    const gallery = apiTestimonials.filter(
+      (t) => (!t.type || t.type === 'gallery' || t.type === 'photo') && (t.image || t.customerImage)
+    );
     return gallery.map((t, i) => ({
       id: t.id || i,
       name: t.customerName || 'Customer',
@@ -1133,25 +1157,40 @@ export default function TestimonialsContent() {
       product: t.product || '',
       rating: t.rating || 5,
       text: t.content || t.comment || '',
-      image: t.image || t.customerImage || '',
+      image: t.image || t.customerImage,
       verified: true,
       date: t.date || '',
       height: (['tall', 'medium', 'short'])[i % 3],
     }));
   }, [apiTestimonials, testimonialsLoaded]);
 
+  const videoData = useMemo(
+    () => apiTestimonials.filter((testimonial) => testimonial.type === 'video' && testimonial.videoUrl),
+    [apiTestimonials]
+  );
+
   return (
     <>
       <SectionTitle />
-      <CustomerPhotoGallery customers={galleryData} />
-      <CustomerStories />
-      <TrustBar />
-      <VideoShowcase />
-      <InstagramWall />
-      <MosaicGrid />
-      <ShopTheLook />
-      <SocialProofStrip />
-      <CTASection />
+      {loadError ? (
+        <section className="bg-white px-4 py-16 text-center text-sm text-noor-gray">
+          Testimonials are temporarily unavailable. Please try again later.
+        </section>
+      ) : !testimonialsLoaded ? (
+        <section className="bg-white px-4 py-16 text-center text-sm text-noor-gray">
+          Loading testimonials...
+        </section>
+      ) : (
+        <>
+          {galleryData.length > 0 && <CustomerPhotoGallery customers={galleryData} />}
+          {galleryData.length === 0 && videoData.length === 0 && (
+            <section className="bg-white px-4 py-16 text-center">
+              <p className="text-sm text-noor-gray">No testimonials have been published yet.</p>
+            </section>
+          )}
+          <PublishedVideoTestimonials testimonials={videoData} />
+        </>
+      )}
     </>
   );
 }

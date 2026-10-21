@@ -1,22 +1,22 @@
 import ReturnContent from './ReturnContent';
 
 export const metadata = {
-  title: 'Return & Exchange Policy | AA Neddles — Pakistani Luxury Fashion',
+  title: 'Return & Exchange Policy | AA Needles — Pakistani Luxury Fashion',
   description:
-    'AA Neddles hassle-free return and exchange policy. Easy returns within 14 days. Learn about our return process, eligibility, and refund policy.',
+    'AA Needles hassle-free return and exchange policy. Easy returns within 14 days. Learn about our return process, eligibility, and refund policy.',
   openGraph: {
-    title: 'Return & Exchange Policy | AA Neddles',
+    title: 'Return & Exchange Policy | AA Needles',
     description:
-      'AA Neddles hassle-free return and exchange policy. Easy returns within 14 days.',
+      'AA Needles hassle-free return and exchange policy. Easy returns within 14 days.',
     url: 'https://aaneddles.com/return-exchange-policy',
-    siteName: 'AA Neddles',
+    siteName: 'AA Needles',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Return & Exchange Policy | AA Neddles',
+    title: 'Return & Exchange Policy | AA Needles',
     description:
-      'AA Neddles hassle-free return and exchange policy. Easy returns within 14 days.',
+      'AA Needles hassle-free return and exchange policy. Easy returns within 14 days.',
   },
 };
 

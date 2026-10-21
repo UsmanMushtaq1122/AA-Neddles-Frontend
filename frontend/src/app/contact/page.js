@@ -1,18 +1,18 @@
 import ContactPageContent from './ContactPageContent';
 
 export const metadata = {
-  title: 'Contact Us — AA Neddles',
+  title: 'Contact Us — AA Needles',
   description:
-    'Get in touch with AA Neddles. Reach out for order inquiries, customer support, or business partnerships.',
+    'Get in touch with AA Needles. Reach out for order inquiries, customer support, or business partnerships.',
   openGraph: {
-    title: 'Contact Us — AA Neddles',
-    description: 'Get in touch with AA Neddles for order inquiries and support.',
+    title: 'Contact Us — AA Needles',
+    description: 'Get in touch with AA Needles for order inquiries and support.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact Us — AA Neddles',
-    description: 'Get in touch with AA Neddles for order inquiries and support.',
+    title: 'Contact Us — AA Needles',
+    description: 'Get in touch with AA Needles for order inquiries and support.',
   },
 };
 

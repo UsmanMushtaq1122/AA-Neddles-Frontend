@@ -43,10 +43,10 @@ export default function MobileHeader({ onMenuOpen }) {
           <Menu size={25} strokeWidth={1.5} aria-hidden="true" />
         </button>
 
-        <Link href="/" className="mobile-header-logo" aria-label="AA Neddles home">
+        <Link href="/" className="mobile-header-logo" aria-label="AA Needles home">
           <Image
             src="/logo.png"
-            alt="AA Neddles"
+            alt="AA Needles"
             width={180}
             height={80}
             priority

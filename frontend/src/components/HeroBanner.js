@@ -186,7 +186,7 @@ export default function HeroBanner() {
               alt={
                 s.heading
                   ? `${s.heading.replace(/\n/g, " ")}${s.eyebrow ? ` — ${s.eyebrow}` : ""}`
-                  : "AA Neddles Collection"
+                  : "AA Needles Collection"
               }
               fill
               priority={i === 0}
