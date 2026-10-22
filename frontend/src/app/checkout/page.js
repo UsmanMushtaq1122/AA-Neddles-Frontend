@@ -249,6 +249,7 @@ function CheckoutContent() {
           productId: item.id,
           quantity: item.quantity,
           price: item.price,
+          selectedSize: item.selectedSize || '',
         })),
         shippingAddress: {
           firstName: customer.firstName, lastName: customer.lastName, email: customer.email, phone: customer.phone,

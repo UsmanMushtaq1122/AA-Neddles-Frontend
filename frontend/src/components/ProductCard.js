@@ -34,6 +34,18 @@ export default function ProductCard({ product }) {
   if (!product) return null;
 
   const slug = product.slug || product.id;
+  const originalPrice = Number(product.price);
+  const salePrice = Number(product.salePrice);
+  const discountPercentage =
+    product.salePrice !== null &&
+    product.salePrice !== undefined &&
+    Number.isFinite(originalPrice) &&
+    originalPrice > 0 &&
+    Number.isFinite(salePrice) &&
+    salePrice >= 0 &&
+    salePrice < originalPrice
+      ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
+      : 0;
 
   return (
     <>
@@ -57,12 +69,18 @@ export default function ProductCard({ product }) {
           )}
         </Link>
 
+        {discountPercentage > 0 && (
+          <span className="pointer-events-none absolute left-0 top-0 z-20 rounded-tl-xl rounded-tr-xl rounded-br-md bg-[#c9dfad] px-2.5 py-1 text-xs font-semibold text-[#24301e] shadow-sm">
+            -{discountPercentage}%
+          </span>
+        )}
+
         {product.badge ? (
-          <span className="absolute top-3 left-3 px-3 py-1 bg-noor-maroon text-white text-xs font-medium shadow-sm z-10 rounded-full">
+          <span className={`absolute left-3 px-3 py-1 bg-noor-maroon text-white text-xs font-medium shadow-sm z-10 rounded-full ${discountPercentage > 0 ? 'top-10' : 'top-3'}`}>
             {product.badge}
           </span>
         ) : product.isNew ? (
-          <span className="absolute top-3 left-3 px-3 py-1 bg-white text-black text-xs font-medium shadow-sm z-10 rounded-full">
+          <span className={`absolute left-3 px-3 py-1 bg-white text-black text-xs font-medium shadow-sm z-10 rounded-full ${discountPercentage > 0 ? 'top-10' : 'top-3'}`}>
             New
           </span>
         ) : null}

@@ -11,10 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import LogoutModal from '@/components/LogoutModal';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import MobileHeader from '@/components/MobileHeader';
-import { menuApi } from '@/services/menu';
-
-/* ── Default menu name/slug ── */
-const MENU_NAME = 'main-mobile-menu';
+import { categoriesApi } from '@/services/categories';
 
 /* ── UserAvatar ── */
 function UserAvatar({ name, size = 32 }) {
@@ -153,9 +150,9 @@ export default function Header() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  /* ── Menu data ── */
-  const [menuData, setMenuData] = useState(null);
-  const [menuLoaded, setMenuLoaded] = useState(false);
+  /* ── Categories data ── */
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
 
   const { items, openCart } = useCart();
   const { isAuthenticated, user, logout, hydrated } = useAuth();
@@ -164,27 +161,24 @@ export default function Header() {
   const dropdownRef = useRef(null);
   const drawerRef = useRef(null);
 
-  /* ── Fetch menu from API ── */
+  /* ── Fetch categories from API ── */
   useEffect(() => {
-    menuApi.getTree(MENU_NAME)
+    categoriesApi.getAll()
       .then((res) => {
-        const data = res.data;
-        setMenuData(data);
-        // Set first active tab
-        if (data?.items?.length > 0) {
-          setActiveTabId(data.items[0].id);
-        }
+        const allCats = Array.isArray(res.data?.categories)
+          ? res.data.categories
+          : Array.isArray(res.data)
+          ? res.data
+          : [];
+        // Only top-level (no parent) sorted by sortOrder
+        const topLevel = allCats
+          .filter((c) => !c.parentId)
+          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+        setCategories(topLevel);
       })
       .catch(() => {})
-      .finally(() => setMenuLoaded(true));
+      .finally(() => setCategoriesLoaded(true));
   }, []);
-
-  /* ── Top-level tabs (items with no parent, rendered as tabs) ── */
-  const tabs = menuData?.items || [];
-
-  /* ── Children of active tab ── */
-  const activeTab = tabs.find((t) => t.id === activeTabId);
-  const activeChildren = activeTab?.children || [];
 
   /* ── Scroll handler ── */
   useEffect(() => {
@@ -464,61 +458,78 @@ export default function Header() {
               </div>
 
               {/* Loading skeleton */}
-              {!menuLoaded && (
-                <div className="drawer-tabs">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="h-4 w-16 bg-zinc-200 animate-pulse rounded"
-                    />
+              {!categoriesLoaded && (
+                <div className="px-5 pt-4 space-y-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-zinc-100 animate-pulse flex-shrink-0" />
+                      <div className="h-4 flex-1 bg-zinc-100 animate-pulse rounded" />
+                    </div>
                   ))}
                 </div>
               )}
 
-              {/* Category tabs — top-level menu items */}
-              {menuLoaded && tabs.length > 0 && (
-                <div className="drawer-tabs" role="tablist">
-                  {tabs.map((tab, i) => (
-                    <span key={tab.id} style={{ display: 'contents' }}>
-                      {i > 0 && <span className="drawer-tab-sep" aria-hidden="true">|</span>}
-                      <button
-                        role="tab"
-                        aria-selected={activeTabId === tab.id}
-                        className={`drawer-tab ${activeTabId === tab.id ? 'is-active' : ''} ${tab.isHighlighted ? 'is-special' : ''}`}
-                        style={
-                          tab.isHighlighted
-                            ? { color: tab.textColor, backgroundColor: tab.bgColor }
-                            : undefined
-                        }
-                        onClick={() => {
-                          setActiveTabId(tab.id);
-                          setExpandedRow(null);
-                        }}
-                      >
-                        {tab.icon && <span aria-hidden="true" className="mr-1">{tab.icon}</span>}
-                        {tab.title.toUpperCase()}
-                      </button>
+              {/* Category navigation list */}
+              {categoriesLoaded && (
+                <nav className="drawer-nav" aria-label="Category navigation">
+                  {/* Shop All */}
+                  <Link
+                    href="/category/all"
+                    onClick={closeDrawer}
+                    className="flex items-center gap-3 px-5 py-3.5 border-b border-zinc-100 hover:bg-[#fdf8f5] transition-colors group"
+                  >
+                    <div className="h-10 w-10 rounded-xl bg-[#C9A27E]/10 flex items-center justify-center flex-shrink-0">
+                      <ShoppingBag size={18} strokeWidth={1.5} className="text-[#C9A27E]" />
+                    </div>
+                    <span className="text-[14px] font-semibold tracking-wide text-noor-black group-hover:text-[#C9A27E] transition-colors">
+                      Shop All
                     </span>
-                  ))}
-                </div>
-              )}
+                  </Link>
 
-              {/* Nav rows — children of active tab, unlimited nesting */}
-              <nav className="drawer-nav" aria-label="Category navigation">
-                {activeChildren.map((item) => (
-                  <MenuNode
-                    key={item.id}
-                    item={item}
-                    depth={0}
-                    onClose={closeDrawer}
-                    expandedRow={expandedRow}
-                    toggleRow={toggleRow}
-                  />
-                ))}
-                {menuLoaded && activeChildren.length === 0 && (
-                  <p className="px-4 py-6 text-sm text-zinc-400">No items in this section.</p>
-                )}
-              </nav>
+                  {/* Per category */}
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat.id}
+                      href={`/category/${cat.slug}`}
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 px-5 py-3 border-b border-zinc-100 hover:bg-[#fdf8f5] transition-colors group"
+                    >
+                      {cat.image ? (
+                        <div className="h-10 w-10 rounded-xl overflow-hidden flex-shrink-0 bg-zinc-100">
+                          <Image
+                            src={cat.image}
+                            alt={cat.name}
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-10 w-10 rounded-xl bg-[#C9A27E]/10 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[13px] font-bold text-[#C9A27E]">
+                            {cat.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[14px] font-medium text-noor-black group-hover:text-[#C9A27E] transition-colors truncate">
+                          {cat.name}
+                        </p>
+                        {cat.description && (
+                          <p className="text-[11px] text-zinc-400 truncate mt-0.5">{cat.description}</p>
+                        )}
+                      </div>
+                      <ChevronDown size={14} strokeWidth={1.5} className="text-zinc-300 -rotate-90 flex-shrink-0" />
+                    </Link>
+                  ))}
+
+                  {categoriesLoaded && categories.length === 0 && (
+                    <div className="px-5 py-8 text-center">
+                      <p className="text-[13px] text-zinc-400">No categories available.</p>
+                    </div>
+                  )}
+                </nav>
+              )}
 
               <div className="drawer-footer">
                 {/* Footer links — configurable via menu items with no parent and type CUSTOM_URL */}

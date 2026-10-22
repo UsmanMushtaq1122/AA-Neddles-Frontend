@@ -10,9 +10,20 @@ function WhatsAppIcon({ className = 'h-5 w-5' }) {
   );
 }
 
-export default function WhatsAppOrderLink({ product, size, className = '', iconOnly = false }) {
+export default function WhatsAppOrderLink({
+  product,
+  size,
+  className = '',
+  iconOnly = false,
+  requireSize = false,
+  onMissingSize,
+}) {
   const handleClick = (event) => {
     event.preventDefault();
+    if (requireSize && !size) {
+      onMissingSize?.();
+      return;
+    }
     const url = createWhatsAppOrderUrl(product, {
       size,
       baseUrl: window.location.origin,

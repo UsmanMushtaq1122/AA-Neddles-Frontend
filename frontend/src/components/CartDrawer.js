@@ -100,7 +100,7 @@ export default function CartDrawer() {
                             {item.title || 'Untitled'}
                           </h3>
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 sm:mt-2">
-                            <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-wider">Size: <span className="bg-zinc-100 px-1.5 py-0.5 font-semibold text-noor-black ml-1">{item.selectedSize || 'S'}</span></span>
+                            <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-wider">Size: <span className="bg-zinc-100 px-1.5 py-0.5 font-semibold text-noor-black ml-1">{item.selectedSize || 'Not selected'}</span></span>
                             <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-wider">Color: <span className="bg-zinc-100 px-1.5 py-0.5 font-semibold text-noor-black ml-1">{item.selectedColor || 'BROWN'}</span></span>
                           </div>
                         </div>

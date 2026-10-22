@@ -79,11 +79,11 @@ const cartSlice = createSlice({
       const serverItems = action.payload;
       const localItems = state.items;
       const merged = [];
-      const serverIds = new Set();
+      const itemKey = (item) => `${item.id}:${item.selectedSize || ''}:${item.selectedColor || ''}`;
+      const serverIds = new Set(serverItems.map(itemKey));
 
       for (const serverItem of serverItems) {
-        serverIds.add(serverItem.id);
-        const localMatches = localItems.filter((l) => l.id === serverItem.id);
+        const localMatches = localItems.filter((item) => itemKey(item) === itemKey(serverItem));
 
         if (localMatches.length > 0) {
           const totalLocalQty = localMatches.reduce((sum, l) => sum + l.quantity, 0);
@@ -95,7 +95,7 @@ const cartSlice = createSlice({
       }
 
       for (const localItem of localItems) {
-        if (!serverIds.has(localItem.id)) {
+        if (!serverIds.has(itemKey(localItem))) {
           merged.push(localItem);
         }
       }

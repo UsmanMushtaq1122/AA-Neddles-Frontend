@@ -78,9 +78,21 @@ export default function ProductPageContent({ slug: initialSlug }) {
     const fetchProduct = async () => {
       try {
         setFetchError(false);
+        setSelectedSize(null);
         const res = await productsApi.getBySlug(slug);
         const found = res.data;
-        setProduct(found || null);
+        let rawSizes = found?.sizes;
+        if (typeof rawSizes === 'string') {
+          try {
+            rawSizes = JSON.parse(rawSizes);
+          } catch {
+            rawSizes = [];
+          }
+        }
+        const sizes = Array.isArray(rawSizes)
+          ? rawSizes.filter((size) => typeof size === 'string' && size.trim()).map((size) => size.trim())
+          : [];
+        setProduct(found ? { ...found, sizes: sizes.length > 0 ? sizes : ['One Size'] } : null);
         if (found) {
           const relatedRes = await productsApi.getAll({ limit: 10 });
           const allProducts = relatedRes.data?.products || [];
@@ -109,9 +121,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
             console.error("Could not parse recently viewed", e);
           }
 
-          const sizes = found.sizes || (found.images || []).length > 0 ? ['One Size'] : ['One Size'];
-          const isCustomSize = sizes.length === 1 && (sizes[0] === 'Custom' || sizes[0] === 'One Size');
-          setSelectedSize(isCustomSize ? sizes[0] : sizes[0]);
+          setSelectedSize(sizes.length === 1 ? sizes[0] : null);
           setQuantity(1);
           setScrollProgress(0);
           setGalleryScrollEl(null);
@@ -179,7 +189,9 @@ export default function ProductPageContent({ slug: initialSlug }) {
   }
 
   const isSale = product.salePrice !== null;
-  const isCustomSize = product.sizes.length === 1 && (product.sizes[0] === 'Custom' || product.sizes[0] === 'One Size');
+  const singleSize = product.sizes.length === 1 ? product.sizes[0] : null;
+  const isSingleSize = ['custom', 'one size', 'free size'].includes(singleSize?.toLowerCase());
+  const isCustomSize = singleSize?.toLowerCase() === 'custom';
   const MAX_QUANTITY = 10;
   const sizeChart = [
     { size: 'XS', bust: '32', waist: '26', hips: '36' },
@@ -221,7 +233,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
     : null;
 
   // Build a SKU-like article number from slug + selected size
-  const articleNumber = `${product.slug}-${selectedSize || product.sizes[0]}`
+  const articleNumber = `${product.slug}-${selectedSize || 'select-size'}`
     .replace(/\s+/g, '-');
 
   return (
@@ -397,12 +409,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
               </div>
             </div>
 
-            {isCustomSize ? (
+            {isSingleSize ? (
               <div className="border-t border-zinc-200 mt-5 pt-5">
                 <span className="text-[12px] uppercase tracking-[0.08em] font-semibold text-noor-black block mb-2">
-                  Size: {product.sizes[0]}
+                  Selected Size: {singleSize}
                 </span>
-                <p className="text-[13px] text-zinc-500">This item is made to {product.sizes[0].toLowerCase()} order. Contact us for sizing assistance.</p>
+                {isCustomSize && (
+                  <p className="text-[13px] text-zinc-500">This item is made to order. Contact us for sizing assistance.</p>
+                )}
               </div>
             ) : (
               <div className="border-t border-zinc-200 mt-5 pt-5">
@@ -459,6 +473,9 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     );
                   })}
                 </div>
+                <p className="mt-3 text-[12px] text-zinc-500" aria-live="polite">
+                  {selectedSize ? `Selected Size: ${selectedSize}` : 'Select a size to continue.'}
+                </p>
               </div>
             )}
 
@@ -516,6 +533,8 @@ export default function ProductPageContent({ slug: initialSlug }) {
               <WhatsAppOrderLink
                 product={product}
                 size={selectedSize}
+                requireSize={product.sizes.length > 1}
+                onMissingSize={() => addToast('Please select a size', 'warning')}
                 className="flex min-h-14 w-full items-center justify-center gap-3 bg-[#25D366] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition-colors hover:bg-[#1EBE5D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#128C7E] focus-visible:ring-offset-2"
               />
             </div>
@@ -640,7 +659,11 @@ export default function ProductPageContent({ slug: initialSlug }) {
                         </div>
                       );
                     }
-                    return product.description;
+                    return (
+                      <div className="ty-body-sm text-zinc-600 whitespace-pre-wrap">
+                        {product.description}
+                      </div>
+                    );
                   },
                 },
                 {
@@ -651,11 +674,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       try {
                         rawCare = JSON.parse(rawCare);
                       } catch {
-                        rawCare = [];
+                        rawCare = rawCare.split(/\r?\n/);
                       }
                     }
                     const careInstructions = Array.isArray(rawCare)
-                      ? rawCare.filter(Boolean)
+                      ? rawCare.filter((instruction) => typeof instruction === 'string' && instruction.trim())
+                        .map((instruction) => instruction.trim())
+                      : typeof rawCare === 'string'
+                        ? rawCare.split(/\r?\n/).map((instruction) => instruction.trim()).filter(Boolean)
                       : [];
                     const hasCare =
                       (typeof product.fabric === 'string' && product.fabric.trim()) ||

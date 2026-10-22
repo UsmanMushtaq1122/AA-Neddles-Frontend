@@ -31,7 +31,7 @@ function mapApiItem(item) {
     image: item.product?.images?.[0]?.url || item.product?.image || '',
     slug: item.product?.slug || '',
     quantity: item.quantity,
-    selectedSize: '',
+    selectedSize: item.selectedSize || '',
     selectedColor: '',
   };
 }
@@ -55,14 +55,15 @@ export function useCart() {
         .then(async (res) => {
           if (!res.success || !res.data) return;
           const apiItems = (res.data.items || []).map(mapApiItem);
-          const serverItemMap = new Map(apiItems.map((i) => [i.id, i]));
+          const getItemKey = (item) => `${item.id}:${item.selectedSize || ''}:${item.selectedColor || ''}`;
+          const serverItemMap = new Map(apiItems.map((item) => [getItemKey(item), item]));
 
           dispatch(mergeCartFromApiAction(apiItems));
 
           for (const localItem of localItems) {
-            const serverItem = serverItemMap.get(localItem.id);
+            const serverItem = serverItemMap.get(getItemKey(localItem));
             if (!serverItem) {
-              try { await cartApi.addItem(localItem.id, localItem.quantity); } catch {}
+              try { await cartApi.addItem(localItem.id, localItem.quantity, localItem.selectedSize); } catch {}
             } else if (localItem.quantity > serverItem.quantity) {
               try { await cartApi.updateItem(serverItem._cartItemId, localItem.quantity); } catch {}
             }
@@ -80,7 +81,7 @@ export function useCart() {
       dispatch(addToCartAction(product));
       if (isAuthenticated) {
         try {
-          await cartApi.addItem(product.id, product.quantity || 1);
+          await cartApi.addItem(product.id, product.quantity || 1, product.selectedSize || '');
         } catch {}
       }
     },
