@@ -1,12 +1,13 @@
 
 import { notFound } from 'next/navigation';
 import { productsApi } from '@/services/products';
+import { API_BASE_URL } from '@/services';
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   let product = null;
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/products/slug/${slug}`, { cache: 'no-store' });
+    const res = await fetch(`${API_BASE_URL}/products/slug/${slug}`, { cache: 'no-store' });
     const data = await res.json();
     product = data.data;
   } catch {}
@@ -42,7 +43,7 @@ export default async function ProductPage({ params }) {
 
   let product = null;
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/products/slug/${slug}`, { cache: 'no-store' });
+    const res = await fetch(`${API_BASE_URL}/products/slug/${slug}`, { cache: 'no-store' });
     const data = await res.json();
     product = data.data;
   } catch {}

@@ -18,6 +18,11 @@ export const metadata = {
   title: 'AA Needles — Pakistani Luxury Fashion',
   description: 'Discover premium Pakistani fashion at AA Needles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
   metadataBase: new URL('https://aaneddles.com'),
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
   alternates: {
     canonical: '/',
   },
@@ -72,4 +77,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-

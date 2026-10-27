@@ -1,4 +1,5 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+import { API_BASE_URL } from '@/services';
+
 const baseUrl = 'https://aaneddles.com';
 
 const staticRoutes = [
@@ -12,7 +13,7 @@ export default async function sitemap() {
 
   let categorySlugs = [];
   try {
-    const res = await fetch(`${API_BASE}/categories`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${API_BASE_URL}/categories`, { next: { revalidate: 3600 } });
     if (res.ok) {
       const body = await res.json();
       const cats = body.data || body.categories || body.results || (Array.isArray(body) ? body : []);
