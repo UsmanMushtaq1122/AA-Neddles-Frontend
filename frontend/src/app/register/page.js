@@ -125,16 +125,17 @@ function RegisterForm() {
   };
 
   return (
-    <div className="bg-white flex items-center justify-center px-4 py-8 sm:py-14 min-h-[calc(100vh-140px)]">
-      <div className="w-full max-w-[400px]">
+    <main className="register-page">
+      <div className="register-shell">
+        <div className="register-intro">
+          <p className="register-eyebrow">AA Needles</p>
+          <h1 className="register-title">Create account</h1>
+          <p className="register-description">
+            Join us for early access to new collections, exclusive offers, and a more personal shopping experience.
+          </p>
+        </div>
+        <div className="register-form-panel">
         <GuestGuard>
-          {/* Heading */}
-          <div className="text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-medium text-zinc-900">
-              Create account
-            </h1>
-          </div>
-
           {/* Notifications */}
           <AnimatePresence>
             {error && (
@@ -307,8 +308,9 @@ function RegisterForm() {
             />
           </div>
         </GuestGuard>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
 

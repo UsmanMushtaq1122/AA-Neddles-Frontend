@@ -6,15 +6,21 @@ import Image from 'next/image';
 import { Menu, User } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import AnnouncementBar from '@/components/AnnouncementBar';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function MobileHeader({ onMenuOpen }) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isHomepage = pathname === '/';
+  const { isAuthenticated, hydrated } = useAuth();
+  const accountHref = hydrated && isAuthenticated
+    ? '/profile'
+    : pathname && pathname !== '/login'
+      ? `/login?redirect=${encodeURIComponent(pathname)}`
+      : '/login';
 
   useEffect(() => {
     if (!isHomepage) {
-      setScrolled(true);
       return;
     }
     // Threshold: once user scrolls past the hero top area (~80px), go opaque
@@ -53,7 +59,12 @@ export default function MobileHeader({ onMenuOpen }) {
           />
         </Link>
 
-        <Link href="/login" className="mobile-header-action" aria-label="Open account">
+        <Link
+          href={accountHref}
+          className="mobile-header-action mobile-header-account"
+          aria-label={hydrated && isAuthenticated ? 'Open your profile' : 'Sign in to your account'}
+          prefetch
+        >
           <User size={24} strokeWidth={1.5} aria-hidden="true" />
         </Link>
       </header>

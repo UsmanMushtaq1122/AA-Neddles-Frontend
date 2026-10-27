@@ -8,6 +8,9 @@ export default function AnnouncementBar() {
 
   useEffect(() => {
     let cancelled = false;
+    const timeoutId = setTimeout(() => {
+      cancelled = true;
+    }, 8000);
 
     bannersApi.getAll()
       .then((res) => {
@@ -17,13 +20,16 @@ export default function AnnouncementBar() {
           .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
         setAnnouncements(activeAnnouncements);
       })
-      .catch((error) => {
-        console.error('Failed to load announcements:', error);
+      .catch(() => {
         if (!cancelled) setAnnouncements([]);
+      })
+      .finally(() => {
+        clearTimeout(timeoutId);
       });
 
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
   }, []);
 

@@ -161,11 +161,20 @@ class ApiClient {
       fetchHeaders['Authorization'] = `Bearer ${token}`;
     }
 
-    let response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method,
-      headers: fetchHeaders,
-      body: formData || (body ? JSON.stringify(body) : undefined),
-    });
+    let response;
+    try {
+      response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method,
+        headers: fetchHeaders,
+        body: formData || (body ? JSON.stringify(body) : undefined),
+      });
+    } catch (error) {
+      throw new ApiError(
+        'The API is currently unavailable. Please try again shortly.',
+        0,
+        { cause: error }
+      );
+    }
 
     if (response.status === 401 && (token || this.getRefreshToken())) {
       const refreshed = await this.refreshToken();

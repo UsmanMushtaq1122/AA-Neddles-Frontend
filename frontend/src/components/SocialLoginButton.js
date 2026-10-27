@@ -21,7 +21,7 @@ export default function SocialLoginButton({ provider, onClick, onSuccess, onErro
           size="large"
           shape="rectangular"
           text={label?.toLowerCase().includes('sign up') ? 'signup_with' : 'signin_with'}
-          width={400}
+          width="100%"
         />
       </div>
     );
