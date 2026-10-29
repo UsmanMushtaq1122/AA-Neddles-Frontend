@@ -26,7 +26,6 @@ function shuffleArray(arr) {
 export default function ProductPageContent({ slug: initialSlug }) {
   const slug = initialSlug;
   const [product, setProduct] = useState(null);
-  const [related, setRelated] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
@@ -35,7 +34,6 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const [quantity, setQuantity] = useState(1);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [galleryScrollEl, setGalleryScrollEl] = useState(null);
-  const youMayLikeRef = useRef(null);
   const recentlyViewedRef = useRef(null);
   const customersAlsoBoughtRef = useRef(null);
   const similarProductsRef = useRef(null);
@@ -94,9 +92,8 @@ export default function ProductPageContent({ slug: initialSlug }) {
           : [];
         setProduct(found ? { ...found, sizes: sizes.length > 0 ? sizes : ['One Size'] } : null);
         if (found) {
-          const relatedRes = await productsApi.getAll({ limit: 10 });
-          const allProducts = relatedRes.data?.products || [];
-          setRelated(allProducts.filter((p) => p.id !== found.id).slice(0, 10));
+          const productsRes = await productsApi.getAll({ limit: 10 });
+          const allProducts = productsRes.data?.products || [];
           setCustomersAlsoBought(allProducts.filter((p) => p.id !== found.id).slice(0, 10));
           setSimilarProducts(
             allProducts.filter(
@@ -856,41 +853,6 @@ export default function ProductPageContent({ slug: initialSlug }) {
                   <h3 className="ty-body-sm font-medium text-noor-black">{item.title}</h3>
                   <p className="ty-body-sm text-zinc-500 mt-1">{`Rs. ${(item.price ?? 0).toLocaleString()}`}</p>
                 </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {related.length > 0 && (
-          <section className="mt-10 md:mt-12 border-t border-zinc-100 pt-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="ty-h3 text-noor-black">
-                You May Also Like
-              </h2>
-              <button
-                onClick={() => {
-                  if (youMayLikeRef.current) {
-                    const itemWidth = youMayLikeRef.current.firstElementChild?.clientWidth || 300;
-                    youMayLikeRef.current.scrollBy({ left: itemWidth + 16, behavior: 'smooth' });
-                  }
-                }}
-                className="hidden md:flex items-center justify-center w-10 h-10 hover:bg-zinc-100 rounded-full transition-colors"
-                aria-label="Scroll next"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
-
-            <div
-              ref={youMayLikeRef}
-              className="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4"
-            >
-              {related.map(p => (
-                <div key={p.id} className="w-[65vw] sm:w-[calc(50%-10px)] md:w-[calc(25%-15px)] shrink-0 snap-start">
-                  <ProductCard product={p} />
-                </div>
               ))}
             </div>
           </section>
