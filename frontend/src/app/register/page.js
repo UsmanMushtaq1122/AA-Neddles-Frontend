@@ -127,13 +127,6 @@ function RegisterForm() {
   return (
     <main className="register-page">
       <div className="register-shell">
-        <div className="register-intro">
-          <p className="register-eyebrow">AA Needles</p>
-          <h1 className="register-title">Create account</h1>
-          <p className="register-description">
-            Join us for early access to new collections, exclusive offers, and a more personal shopping experience.
-          </p>
-        </div>
         <div className="register-form-panel">
         <GuestGuard>
           {/* Notifications */}

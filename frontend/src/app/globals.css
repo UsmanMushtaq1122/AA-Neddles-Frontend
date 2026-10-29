@@ -1601,9 +1601,7 @@ body {
 }
 
 .register-shell {
-  display: grid;
-  grid-template-columns: minmax(240px, 0.85fr) minmax(360px, 1fr);
-  width: min(100%, 920px);
+  width: min(100%, 520px);
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(26, 26, 26, 0.09);
@@ -1646,7 +1644,7 @@ body {
 }
 
 .register-form-panel {
-  padding: clamp(28px, 5vw, 64px);
+  padding: clamp(28px, 5vw, 56px);
 }
 
 .register-form-panel form {
@@ -1971,32 +1969,9 @@ body {
   }
 
   .register-shell {
-    display: block;
     width: min(100%, 480px);
     border: 0;
     box-shadow: 0 12px 36px rgba(52, 35, 20, 0.08);
-  }
-
-  .register-intro {
-    align-items: center;
-    padding: 28px 24px 24px;
-    text-align: center;
-  }
-
-  .register-eyebrow {
-    margin-bottom: 10px;
-    font-size: 0.62rem;
-  }
-
-  .register-title {
-    font-size: clamp(2rem, 9vw, 2.5rem);
-  }
-
-  .register-description {
-    max-width: 340px;
-    margin-top: 12px;
-    font-size: 0.8rem;
-    line-height: 1.55;
   }
 
   .register-form-panel {
