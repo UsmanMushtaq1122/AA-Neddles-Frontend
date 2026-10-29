@@ -31,7 +31,9 @@ function makeStore() {
 
 function HydrateStore({ store }) {
   useEffect(() => {
+    let mounted = true;
     const authData = loadAuth();
+    if (!mounted) return undefined;
     if (authData) {
       store.dispatch(hydrateAuthAction(authData));
     } else {
@@ -41,16 +43,19 @@ function HydrateStore({ store }) {
     store.dispatch(hydrateWishlistAction(loadWishlist()));
 
     const handleAuthExpired = () => {
-      store.dispatch(logoutAction());
+      if (mounted) store.dispatch(logoutAction());
     };
     window.addEventListener('aa-auth-expired', handleAuthExpired);
-    return () => window.removeEventListener('aa-auth-expired', handleAuthExpired);
+    return () => {
+      mounted = false;
+      window.removeEventListener('aa-auth-expired', handleAuthExpired);
+    };
   }, [store]);
   return null;
 }
 
 export default function StoreProvider({ children }) {
-  const [store] = useState(makeStore);
+  const [store] = useState(() => makeStore());
   return (
     <Provider store={store}>
       <HydrateStore store={store} />

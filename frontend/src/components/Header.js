@@ -163,8 +163,10 @@ export default function Header() {
 
   /* ── Fetch categories from API ── */
   useEffect(() => {
+    let mounted = true;
     categoriesApi.getAll()
       .then((res) => {
+        if (!mounted) return;
         const allCats = Array.isArray(res.data?.categories)
           ? res.data.categories
           : Array.isArray(res.data)
@@ -177,7 +179,12 @@ export default function Header() {
         setCategories(topLevel);
       })
       .catch(() => {})
-      .finally(() => setCategoriesLoaded(true));
+      .finally(() => {
+        if (mounted) setCategoriesLoaded(true);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   /* ── Scroll handler ── */

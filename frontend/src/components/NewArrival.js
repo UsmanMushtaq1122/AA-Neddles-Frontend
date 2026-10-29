@@ -9,27 +9,69 @@ import { ArrowRight } from 'lucide-react';
 import { useCarouselKeyboard } from '@/hooks/useCarouselKeyboard';
 import { categoriesApi } from '@/services/categories';
 import { bannersApi } from '@/services/banners';
+import { editorialApi } from '@/services/editorial';
 
 export default function NewArrival() {
   const [apiCategories, setApiCategories] = useState([]);
   const [editorialBanners, setEditorialBanners] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
+
     categoriesApi.getAll()
       .then((res) => {
+        if (!isMounted) return;
         const cats = res.data?.categories || [];
         setApiCategories(cats);
       })
       .catch(() => {});
 
-    bannersApi.getAll()
-      .then((res) => {
-        const banners = (res.data || [])
-          .filter((b) => b.type === 'editorial')
-          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-        setEditorialBanners(banners);
-      })
-      .catch(() => {});
+    Promise.allSettled([
+      editorialApi.getAll(),
+      bannersApi.getAll(),
+    ]).then(([editorialRes, bannersRes]) => {
+      if (!isMounted) return;
+
+      const rawEditorials = editorialRes.status === 'fulfilled' && Array.isArray(editorialRes.value?.data)
+        ? editorialRes.value.data
+        : [];
+      const rawBanners = bannersRes.status === 'fulfilled' && Array.isArray(bannersRes.value?.data)
+        ? bannersRes.value.data.filter((b) => b.type === 'editorial')
+        : [];
+
+      const activeEditorials = rawEditorials
+        .filter((item) => (item.active !== false && item.isActive !== false) && (item.imageUrl || item.image))
+        .map((item) => ({
+          id: item.id,
+          title: item.title,
+          subtitle: item.subtitle,
+          link: item.link,
+          image: item.imageUrl || item.image,
+          optimizedImage: item.optimizedImage || item.imageUrl || item.image,
+          sortOrder: item.order ?? item.sortOrder ?? 0,
+        }));
+
+      const activeBanners = rawBanners
+        .filter((item) => (item.active !== false && item.isActive !== false) && (item.image || item.imageUrl || item.optimizedImage))
+        .map((item) => ({
+          id: item.id,
+          title: item.title,
+          subtitle: item.subtitle,
+          link: item.link,
+          image: item.image || item.imageUrl,
+          optimizedImage: item.optimizedImage || item.image || item.imageUrl,
+          sortOrder: item.sortOrder ?? item.order ?? 0,
+        }));
+
+      // Use editorials created from the Editorial admin panel if available; fallback to editorial banners
+      const items = activeEditorials.length > 0 ? activeEditorials : activeBanners;
+      items.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+      setEditorialBanners(items);
+    }).catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const categories = apiCategories
@@ -40,19 +82,25 @@ export default function NewArrival() {
       image: cat.optimizedImage || cat.image,
     }));
 
-  const editorialCards = editorialBanners.filter((b) => b.image).slice(0, 2).map((b) => ({
-    id: b.id,
-    label: b.title || 'Shop Collection',
-    href: b.link || '/category/all',
-    image: b.optimizedImage || b.image,
-  }));
+  const editorialCards = editorialBanners
+    .filter((b) => b.image || b.optimizedImage)
+    .slice(0, 2)
+    .map((b) => ({
+      id: b.id,
+      label: b.title || 'Shop Collection',
+      href: b.link || '/category/all',
+      image: b.optimizedImage || b.image,
+    }));
 
-  const tallCards = editorialBanners.filter((b) => b.image).slice(2, 5).map((b) => ({
-    id: b.id,
-    label: b.title || 'Shop Collection',
-    href: b.link || '/category/all',
-    image: b.optimizedImage || b.image,
-  }));
+  const tallCards = editorialBanners
+    .filter((b) => b.image || b.optimizedImage)
+    .slice(2)
+    .map((b) => ({
+      id: b.id,
+      label: b.title || 'Shop Collection',
+      href: b.link || '/category/all',
+      image: b.optimizedImage || b.image,
+    }));
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
@@ -220,7 +268,7 @@ export default function NewArrival() {
         )}
 
         {tallCards.length > 0 && (
-          <div className={`mt-6 grid grid-cols-1 gap-4 md:gap-6 ${tallCards.length > 2 ? 'lg:grid-cols-3' : tallCards.length > 1 ? 'sm:grid-cols-2 lg:grid-cols-2' : ''}`}>
+          <div className={`mt-6 grid grid-cols-1 gap-4 md:gap-6 ${tallCards.length >= 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : tallCards.length === 2 ? 'sm:grid-cols-2' : ''}`}>
             {tallCards.map((card, i) => (
               <motion.div
                 key={card.id}

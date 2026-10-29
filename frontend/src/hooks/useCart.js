@@ -47,17 +47,19 @@ export function useCart() {
   const initialSyncDone = useRef(false);
 
   useEffect(() => {
+    let mounted = true;
     if (isAuthenticated && !initialSyncDone.current) {
       initialSyncDone.current = true;
-      dispatch(setSyncingAction(true));
+      if (mounted) dispatch(setSyncingAction(true));
       const localItems = [...items];
       cartApi.get()
         .then(async (res) => {
-          if (!res.success || !res.data) return;
+          if (!mounted || !res.success || !res.data) return;
           const apiItems = (res.data.items || []).map(mapApiItem);
           const getItemKey = (item) => `${item.id}:${item.selectedSize || ''}:${item.selectedColor || ''}`;
           const serverItemMap = new Map(apiItems.map((item) => [getItemKey(item), item]));
 
+          if (!mounted) return;
           dispatch(mergeCartFromApiAction(apiItems));
 
           for (const localItem of localItems) {
@@ -70,10 +72,15 @@ export function useCart() {
           }
         })
         .catch(() => {})
-        .finally(() => dispatch(setSyncingAction(false)));
+        .finally(() => {
+          if (mounted) dispatch(setSyncingAction(false));
+        });
     } else if (!isAuthenticated) {
       initialSyncDone.current = false;
     }
+    return () => {
+      mounted = false;
+    };
   }, [isAuthenticated, dispatch]);
 
   const addToCart = useCallback(
