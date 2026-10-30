@@ -150,7 +150,7 @@ class ApiClient {
   }
 
   async request(endpoint, options = {}) {
-    const { method = 'GET', body, headers = {}, formData } = options;
+    const { method = 'GET', body, headers = {}, formData, cache } = options;
     const token = this.getAccessToken();
 
     const fetchHeaders = { ...headers };
@@ -167,6 +167,7 @@ class ApiClient {
         method,
         headers: fetchHeaders,
         body: formData || (body ? JSON.stringify(body) : undefined),
+        cache,
       });
     } catch (error) {
       throw new ApiError(
@@ -186,6 +187,7 @@ class ApiClient {
             method,
             headers: fetchHeaders,
             body: formData || (body ? JSON.stringify(body) : undefined),
+            cache,
           });
         }
       }
