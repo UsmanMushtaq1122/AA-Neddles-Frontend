@@ -52,10 +52,10 @@ export default function HeroBanner() {
               body,
               cta: b.buttonText || "Shop Now",
               href: b.link || "/",
-              desktopImage: heroImageUrl(b.optimizedImage || b.image),
+              desktopImage: heroImageUrl(b.image || b.optimizedImage),
               mobileImage: heroMobileImageUrl(
-                b.mobileOptimizedImage ||
                 b.mobileImage ||
+                b.mobileOptimizedImage ||
                 b.optimizedImage ||
                 b.image
               ),
@@ -186,6 +186,7 @@ export default function HeroBanner() {
               sizes="(max-width: 768px) 1px, 100vw"
               quality={90}
               className="hero__img hero__img--desktop"
+              unoptimized
               decoding={i === 0 ? "sync" : "async"}
             />
             <Image
@@ -196,6 +197,7 @@ export default function HeroBanner() {
               sizes="(max-width: 768px) 100vw, 1px"
               quality={90}
               className="hero__img hero__img--mobile"
+              unoptimized
               decoding={i === 0 ? "sync" : "async"}
               aria-hidden="true"
             />
