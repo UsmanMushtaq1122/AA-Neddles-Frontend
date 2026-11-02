@@ -24,13 +24,10 @@ export function isCloudinaryUrl(url) {
  * inject a fresh one.  Handles both /upload/v123… and /upload/f_auto,q_auto/v123… forms.
  */
 function stripTransformations(url) {
-  // Match /upload/ followed by a comma-separated list of transformation params,
-  // then a slash, then the rest of the path.  Transformation params contain
-  // only letters, digits, underscores, hyphens, dots, and commas.
-  return url.replace(
-    /\/upload\/[a-zA-Z0-9_,.\-]+(?=\/v?\d)/,
-    '/upload'
-  );
+  // Cloudinary may return multiple transformation segments, such as
+  // /upload/f_auto,q_auto/q_auto/f_auto/v1/.... Remove them all before the
+  // version so delivery transformations are not stacked repeatedly.
+  return url.replace(/\/upload\/(?:[^/]+\/)*(?=v\d+\/)/, '/upload/');
 }
 
 /**
@@ -55,10 +52,10 @@ function withTransform(url, params) {
  * • f_auto  → WebP on modern browsers, JPEG fallback
  * • q_auto:best → maximum quality, Cloudinary picks the optimal level
  * • c_limit → scale down to fit, never crop, never upscale
- * • w_1920  → deliver at most 1920 px wide (retina = 2× CSS px / 2 = fine)
+ * • w_3840  → leave enough source detail for a 2× 1920 px Retina display
  */
 export function heroImageUrl(url) {
-  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_1920');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_3840');
 }
 
 /**
@@ -66,7 +63,7 @@ export function heroImageUrl(url) {
  * Narrower max-width keeps payload small on phones.
  */
 export function heroMobileImageUrl(url) {
-  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_900');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_1800');
 }
 
 /**
@@ -74,7 +71,7 @@ export function heroMobileImageUrl(url) {
  * 800 px is enough for a 4-up grid on a 1920 px display at 2× DPR.
  */
 export function productCardImageUrl(url) {
-  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_800');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_1200');
 }
 
 /**
@@ -82,28 +79,28 @@ export function productCardImageUrl(url) {
  * Served at up to 1200 px so they look sharp on Retina laptops.
  */
 export function productGalleryImageUrl(url) {
-  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_1200');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_2400');
 }
 
 /**
  * Product thumbnail strip (small buttons beside the gallery).
  */
 export function productThumbImageUrl(url) {
-  return withTransform(url, 'f_auto,q_auto:good,c_limit,w_200');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_320');
 }
 
 /**
  * Category / collection cards.
  */
 export function categoryImageUrl(url) {
-  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_900');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_1920');
 }
 
 /**
  * Testimonial / customer photos.
  */
 export function testimonialImageUrl(url) {
-  return withTransform(url, 'f_auto,q_auto:good,c_limit,w_600');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_1200');
 }
 
 /**
@@ -116,4 +113,3 @@ export function autoImageUrl(url) {
   if (/\/upload\/[a-zA-Z]/.test(url.replace('/upload/v', ''))) return url;
   return withTransform(url, 'f_auto,q_auto:best');
 }
-

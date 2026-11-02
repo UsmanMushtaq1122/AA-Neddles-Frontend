@@ -4,16 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { bannersApi } from "@/services/banners";
+import { heroImageUrl, heroMobileImageUrl } from "@/lib/cloudinary";
 
 const AUTOPLAY_MS = 5500;
-
-function getCloudinaryAutoUrl(url) {
-  if (!url || typeof url !== "string" || !url.includes("cloudinary.com")) return url;
-  if (url.includes("/upload/") && !url.includes("/upload/f_auto")) {
-    return url.replace("/upload/", "/upload/f_auto,q_auto,c_fill,g_auto/");
-  }
-  return url;
-}
 
 export default function HeroBanner() {
   const [slides, setSlides] = useState([]);
@@ -59,8 +52,8 @@ export default function HeroBanner() {
               body,
               cta: b.buttonText || "Shop Now",
               href: b.link || "/",
-              desktopImage: getCloudinaryAutoUrl(b.optimizedImage || b.image),
-              mobileImage: getCloudinaryAutoUrl(
+              desktopImage: heroImageUrl(b.optimizedImage || b.image),
+              mobileImage: heroMobileImageUrl(
                 b.mobileOptimizedImage ||
                 b.mobileImage ||
                 b.optimizedImage ||
@@ -191,6 +184,7 @@ export default function HeroBanner() {
               fill
               priority={i === 0}
               sizes="(max-width: 768px) 1px, 100vw"
+              quality={90}
               className="hero__img hero__img--desktop"
               decoding={i === 0 ? "sync" : "async"}
             />
@@ -200,6 +194,7 @@ export default function HeroBanner() {
               fill
               priority={i === 0}
               sizes="(max-width: 768px) 100vw, 1px"
+              quality={90}
               className="hero__img hero__img--mobile"
               decoding={i === 0 ? "sync" : "async"}
               aria-hidden="true"
@@ -266,4 +261,3 @@ export default function HeroBanner() {
     </section>
   );
 }
-

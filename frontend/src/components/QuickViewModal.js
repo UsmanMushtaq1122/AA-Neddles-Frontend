@@ -97,7 +97,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
                       alt={product.altText || product.title || 'AA Needles product'}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
-                      quality={88}
+                      quality={90}
                       className="object-cover"
                     />
                   ) : (

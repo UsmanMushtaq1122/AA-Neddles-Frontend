@@ -9,6 +9,7 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
 import QuickViewModal from '@/components/QuickViewModal';
 import WhatsAppOrderLink from '@/components/WhatsAppOrderLink';
+import { productCardImageUrl } from '@/lib/cloudinary';
 
 export default function ProductCard({ product }) {
   const [imageError, setImageError] = useState(false);
@@ -54,11 +55,12 @@ export default function ProductCard({ product }) {
         <Link href={`/product/${slug}`} className="block w-full h-full" aria-label={product.title}>
           {product.images?.[0] && !imageError ? (
             <Image
-              src={product.images[0]}
+              src={productCardImageUrl(product.images[0])}
               alt={product.title ? `${product.title} — AA Needles` : 'AA Needles product'}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover group-hover:scale-105 transition-transform duration-700"
+              quality={90}
               onError={() => setImageError(true)}
               loading="lazy"
             />

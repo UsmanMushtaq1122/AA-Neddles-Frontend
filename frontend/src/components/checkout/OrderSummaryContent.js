@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { productCardImageUrl } from '@/lib/cloudinary';
 import { motion } from 'framer-motion';
 import {
   Loader2, Tag, X, AlertCircle, Lock, Truck, Package, ChevronDown
@@ -44,7 +45,7 @@ export default function OrderSummaryContent({ items, subtotal, shippingCost, dis
           <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}`} className="flex gap-3">
             <div className="relative w-14 h-[72px] bg-zinc-100 overflow-hidden shrink-0 border border-zinc-100">
               {item.image ? (
-                <Image src={item.image} alt={item.title} width={56} height={72} className="w-full h-full object-cover" />
+                <Image src={productCardImageUrl(item.image)} alt={item.title} width={56} height={72} quality={90} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-zinc-300">
                   <Package size={24} />

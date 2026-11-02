@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { productCardImageUrl } from '@/lib/cloudinary';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
@@ -91,7 +92,7 @@ export default function CartDrawer() {
                     <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}`} className="flex gap-3 sm:gap-4">
                       <div className="w-[80px] sm:w-[100px] h-[106px] sm:h-[133px] bg-zinc-100 overflow-hidden shrink-0">
                         {item.image && (
-                          <Image src={item.image} alt={item.title || 'Product'} width={100} height={133} className="w-full h-full object-cover" loading="lazy" />
+                          <Image src={productCardImageUrl(item.image)} alt={item.title || 'Product'} width={100} height={133} quality={90} className="w-full h-full object-cover" loading="lazy" />
                         )}
                       </div>
                       <div className="flex-1 flex flex-col justify-between py-1 min-w-0">

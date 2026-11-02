@@ -280,13 +280,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     className="w-full shrink-0 snap-start aspect-[3/4] bg-zinc-50 overflow-hidden relative"
                   >
                     <Image
-                      src={img}
+                      src={productGalleryImageUrl(img)}
                       alt={`${product.title} ${idx + 1}`}
                       width={600}
                       height={800}
                       loading={idx === 0 ? 'eager' : 'lazy'}
                       sizes="(max-width: 768px) 100vw, 50vw"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
+                      quality={90}
                       onError={(e) => {
                         if (e.currentTarget.src !== PLACEHOLDER_IMAGE) e.currentTarget.src = PLACEHOLDER_IMAGE;
                       }}
@@ -347,11 +348,12 @@ export default function ProductPageContent({ slug: initialSlug }) {
                         }`}
                     >
                       <Image
-                        src={img}
+                        src={productThumbImageUrl(img)}
                         alt={`${product.title} thumbnail ${idx + 1}`}
                         width={64}
                         height={80}
                         loading="lazy"
+                        quality={90}
                         className="w-full h-full object-cover"
                       />
                     </button>
@@ -793,7 +795,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       alt={item.title}
                       fill
                       sizes="(max-width: 640px) 70vw, (max-width: 768px) 50vw, 20vw"
-                      quality={85}
+                      quality={90}
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                       onError={(e) => {
@@ -845,7 +847,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       alt={item.title}
                       fill
                       sizes="(max-width: 640px) 70vw, (max-width: 768px) 50vw, 20vw"
-                      quality={85}
+                      quality={90}
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                       onError={(e) => {

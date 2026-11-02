@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { useCarouselKeyboard } from '@/hooks/useCarouselKeyboard';
 import { categoriesApi } from '@/services/categories';
+import { categoryImageUrl } from '@/lib/cloudinary';
 
 export default function NewArrival() {
   const [apiCategories, setApiCategories] = useState([]);
@@ -130,7 +131,7 @@ export default function NewArrival() {
                       fill
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                       sizes="(max-width: 390px) 90vw, (max-width: 640px) 86vw, (max-width: 768px) 56vw, (max-width: 1024px) 42vw, (max-width: 1280px) 31vw, 26vw"
-                      quality={85}
+                      quality={90}
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
