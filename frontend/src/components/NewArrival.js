@@ -26,7 +26,7 @@ export default function NewArrival() {
     .map((cat) => ({
       label: cat.name,
       href: `/category/${cat.slug}`,
-      image: cat.optimizedImage || cat.image,
+      image: categoryImageUrl(cat.optimizedImage || cat.image),
     }));
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -129,7 +129,9 @@ export default function NewArrival() {
                       alt={category.label}
                       fill
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 86vw, (max-width: 768px) 56vw, (max-width: 1024px) 42vw, (max-width: 1280px) 31vw, 26vw"
+                      sizes="(max-width: 390px) 90vw, (max-width: 640px) 86vw, (max-width: 768px) 56vw, (max-width: 1024px) 42vw, (max-width: 1280px) 31vw, 26vw"
+                      quality={85}
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 md:p-6">

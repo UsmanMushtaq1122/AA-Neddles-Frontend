@@ -3,7 +3,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 const nextConfig = {
   images: {
-    unoptimized: true,
+    // Next.js automatic WebP conversion, responsive srcsets, and retina scaling
     remotePatterns: [
       {
         protocol: 'https',
@@ -18,6 +18,11 @@ const nextConfig = {
         hostname: '**.cloudinary.com',
       },
     ],
+    deviceSizes: [390, 430, 640, 768, 1024, 1280, 1366, 1440, 1920],
+    imageSizes: [64, 128, 256, 384, 512, 750],
+    qualities: [85],
+    formats: ['image/webp'],
+    minimumCacheTTL: 2592000,
     ...(isDev ? { maximumDiskCacheSize: 0 } : {}),
   },
 };

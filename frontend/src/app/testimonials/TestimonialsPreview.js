@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Play, Star, X } from 'lucide-react';
 import Link from 'next/link';
 import { testimonialsApi } from '@/services/testimonials';
+import { testimonialImageUrl } from '@/lib/cloudinary';
 
 function getVideoPoster(url) {
   if (!url) return '';
@@ -87,7 +88,7 @@ function PhotoCard({ testimonial, onOpen }) {
       aria-label={`View testimonial photo from ${testimonial.customerName || 'customer'}`}
     >
       <img
-        src={testimonial.image || testimonial.customerImage}
+        src={testimonialImageUrl(testimonial.image || testimonial.customerImage)}
         alt={`${testimonial.customerName || 'Customer'} testimonial`}
         loading="lazy"
         className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
@@ -154,7 +155,7 @@ function TestimonialModal({ testimonial, onClose }) {
           />
         ) : (
           <img
-            src={testimonial.image || testimonial.customerImage}
+            src={testimonialImageUrl(testimonial.image || testimonial.customerImage)}
             alt={`${testimonial.customerName || 'Customer'} testimonial`}
             className="max-h-[75vh] w-full object-contain"
           />

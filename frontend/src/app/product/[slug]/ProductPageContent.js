@@ -11,6 +11,7 @@ import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
 import WhatsAppOrderLink from '@/components/WhatsAppOrderLink';
+import { productGalleryImageUrl, productThumbImageUrl, productCardImageUrl } from '@/lib/cloudinary';
 
 const PLACEHOLDER_IMAGE = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Crect fill='%23f0f0f0' width='400' height='500'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='18' fill='%23999'%3EImage Unavailable%3C/text%3E%3C/svg%3E`;
 
@@ -786,13 +787,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
                   href={`/product/${item.slug}`}
                   className="w-[70vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer block"
                 >
-                  <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
                     <Image
-                      src={item.images?.[0] || PLACEHOLDER_IMAGE}
+                      src={productCardImageUrl(item.images?.[0] || PLACEHOLDER_IMAGE)}
                       alt={item.title}
-                      width={400}
-                      height={533}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      sizes="(max-width: 640px) 70vw, (max-width: 768px) 50vw, 20vw"
+                      quality={85}
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                       onError={(e) => {
                         if (e.currentTarget.src !== PLACEHOLDER_IMAGE) e.currentTarget.src = PLACEHOLDER_IMAGE;
@@ -837,13 +839,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
                   href={`/product/${item.slug}`}
                   className="w-[65vw] sm:w-[calc(50%-10px)] md:w-[calc(20%-16px)] shrink-0 snap-start group cursor-pointer block"
                 >
-                  <div className="aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-zinc-100 mb-3">
                     <Image
-                      src={item.images?.[0] || PLACEHOLDER_IMAGE}
+                      src={productCardImageUrl(item.images?.[0] || PLACEHOLDER_IMAGE)}
                       alt={item.title}
-                      width={400}
-                      height={533}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      sizes="(max-width: 640px) 70vw, (max-width: 768px) 50vw, 20vw"
+                      quality={85}
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                       onError={(e) => {
                         if (e.currentTarget.src !== PLACEHOLDER_IMAGE) e.currentTarget.src = PLACEHOLDER_IMAGE;

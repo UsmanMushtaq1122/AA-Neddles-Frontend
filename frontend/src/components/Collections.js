@@ -1,18 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useCollections } from '@/hooks/useCollections';
+import { categoryImageUrl } from '@/lib/cloudinary';
 
 const EASE_LUXURY = [0.25, 0.1, 0.25, 1];
 
-const collectionFallbackGradients = {
-  'summer-edit':
-    'linear-gradient(135deg, #C9A27E33 0%, #F8F5F2 30%, #E8DDD4 70%, #C9A27E22 100%)',
-  'luxury-pret':
-    'linear-gradient(135deg, #1A1A1A18 0%, #E8DDD4 40%, #C9A27E33 100%)',
-};
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=900&auto=format&fit=crop&q=80';
 
 export default function Collections() {
   const { collections, isLoading } = useCollections();
@@ -60,24 +58,17 @@ export default function Collections() {
               >
                 <Link
                   href={`/collections/${collection.slug || collection.id}`}
-                  className="group relative block aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm transition-shadow duration-300 group-hover:shadow-md"
+                  className="group relative block aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm transition-shadow duration-300 hover:shadow-md"
                 >
-                  {/* Image */}
-                  <div
-                    className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
-                    style={{
-                      ...(collection.image
-                        ? {
-                            backgroundImage: `url(${collection.image})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                          }
-                        : {
-                            background:
-                              collectionFallbackGradients[collection.slug] ||
-                              'linear-gradient(135deg, #E8DDD4 0%, #F8F5F2 100%)',
-                          }),
-                    }}
+                  {/* Image – uses next/image for proper optimization, Retina support, lazy loading */}
+                  <Image
+                    src={categoryImageUrl(collection.image) || FALLBACK_IMAGE}
+                    alt={collection.name || 'Collection'}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    quality={88}
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    loading={i < 2 ? 'eager' : 'lazy'}
                   />
 
                   {/* Top-Left Badge */}
@@ -120,4 +111,3 @@ export default function Collections() {
     </section>
   );
 }
-
