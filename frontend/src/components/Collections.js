@@ -71,13 +71,6 @@ export default function Collections() {
                     loading={i < 2 ? 'eager' : 'lazy'}
                   />
 
-                  {/* Top-Left Badge */}
-                  <div className="absolute top-3.5 left-3.5 z-10">
-                    <span className="inline-block px-3 py-1 bg-white text-[#1A1A1A] text-xs font-medium rounded-lg shadow-sm">
-                      Collection
-                    </span>
-                  </div>
-
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-all duration-500" />
 
