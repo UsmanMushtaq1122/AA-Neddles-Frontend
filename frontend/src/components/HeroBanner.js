@@ -186,7 +186,6 @@ export default function HeroBanner() {
               sizes="(max-width: 768px) 1px, 100vw"
               quality={90}
               className="hero__img hero__img--desktop"
-              unoptimized
               decoding={i === 0 ? "sync" : "async"}
             />
             <Image
@@ -197,7 +196,6 @@ export default function HeroBanner() {
               sizes="(max-width: 768px) 100vw, 1px"
               quality={90}
               className="hero__img hero__img--mobile"
-              unoptimized
               decoding={i === 0 ? "sync" : "async"}
               aria-hidden="true"
             />

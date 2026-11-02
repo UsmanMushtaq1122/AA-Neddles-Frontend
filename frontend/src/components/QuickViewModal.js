@@ -9,7 +9,7 @@ import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
 import WhatsAppOrderLink from '@/components/WhatsAppOrderLink';
-import { productCardImageUrl } from '@/lib/cloudinary';
+import { productGalleryImageUrl } from '@/lib/cloudinary';
 
 export default function QuickViewModal({ product, isOpen, onClose }) {
   const { addToCart } = useCart();
@@ -93,12 +93,12 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
                 <div className="relative aspect-[3/4] bg-noor-cream">
                   {product.images?.[0] ? (
                     <Image
-                      src={productCardImageUrl(product.images[0])}
+                      src={productGalleryImageUrl(product.images[0])}
                       alt={product.altText || product.title || 'AA Needles product'}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
                       quality={90}
-                      className="object-cover"
+                      className="object-contain"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-noor-gray">
