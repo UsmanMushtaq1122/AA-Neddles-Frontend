@@ -544,16 +544,30 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 {
                   title: 'Description',
                   render: () => {
-                    const ds = product.descriptionSections || {};
+                    let ds = product.descriptionSections || {};
+                    if (typeof ds === 'string') {
+                      try {
+                        ds = JSON.parse(ds);
+                      } catch {
+                        ds = {};
+                      }
+                    }
                     const sections = (Array.isArray(ds.sections) ? ds.sections : [])
-                      .filter((s) => s && s.title && Array.isArray(s.items) && s.items.some(Boolean));
+                      .filter((s) => s && typeof s.title === 'string' && s.title.trim() && Array.isArray(s.items) && s.items.some(Boolean));
                     const hasStructured =
+                      (typeof product.fabric === 'string' && product.fabric.trim()) ||
                       (typeof ds.color === 'string' && ds.color.trim()) ||
                       sections.length > 0 ||
                       (typeof ds.note === 'string' && ds.note.trim());
                     if (hasStructured) {
                       return (
                         <div className="space-y-4">
+                          {typeof product.fabric === 'string' && product.fabric.trim() && (
+                            <div>
+                              <h4 className="ty-body font-semibold text-noor-black">Fabric</h4>
+                              <p className="mt-2 ty-body-sm text-zinc-600">{product.fabric}</p>
+                            </div>
+                          )}
                           {typeof ds.color === 'string' && ds.color.trim() && (
                             <p className="ty-body-sm text-zinc-600">
                               <span className="font-semibold text-noor-black">Color:</span>{' '}
@@ -678,15 +692,13 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       }
                     }
                     const careInstructions = Array.isArray(rawCare)
-                      ? rawCare.filter((instruction) => typeof instruction === 'string' && instruction.trim())
-                        .map((instruction) => instruction.trim())
+                      ? rawCare
+                          .filter((instruction) => typeof instruction === 'string' && instruction.trim())
+                          .map((instruction) => instruction.trim())
                       : typeof rawCare === 'string'
                         ? rawCare.split(/\r?\n/).map((instruction) => instruction.trim()).filter(Boolean)
-                      : [];
-                    const hasCare =
-                      (typeof product.fabric === 'string' && product.fabric.trim()) ||
-                      careInstructions.length > 0;
-                    if (!hasCare) {
+                        : [];
+                    if (careInstructions.length === 0) {
                       return (
                         <p className="ty-body-sm text-zinc-500">
                           Care information not available for this product.
@@ -694,27 +706,15 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       );
                     }
                     return (
-                      <>
-                        {typeof product.fabric === 'string' && product.fabric.trim() && (
-                          <div className="mb-4">
-                            <h4 className="ty-body font-semibold text-noor-black">Fabric</h4>
-                            <p className="mt-2 ty-body-sm text-zinc-600">{product.fabric}</p>
-                          </div>
-                        )}
-
-                        {careInstructions.length > 0 && (
-                          <>
-                            <h4 className="ty-body font-semibold text-noor-black mt-2">Care</h4>
-                            <div className="mt-3 divide-y divide-zinc-200 border-t border-b border-zinc-200">
-                              {careInstructions.map((text) => (
-                                <div key={text} className="py-4">
-                                  <div className="text-[14px] md:text-[15px] font-normal text-zinc-600 tracking-wide">{text}</div>
-                                </div>
-                              ))}
+                      <div className="divide-y divide-zinc-200 border-t border-b border-zinc-200">
+                        {careInstructions.map((text) => (
+                          <div key={text} className="py-4">
+                            <div className="text-[14px] md:text-[15px] font-normal text-zinc-600 tracking-wide">
+                              {text}
                             </div>
-                          </>
-                        )}
-                      </>
+                          </div>
+                        ))}
+                      </div>
                     );
                   },
                 },
