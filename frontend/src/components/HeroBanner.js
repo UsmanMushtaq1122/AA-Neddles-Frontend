@@ -176,6 +176,16 @@ export default function HeroBanner() {
           >
             <Image
               src={s.desktopImage}
+              alt=""
+              fill
+              priority={i === 0}
+              sizes="100vw"
+              unoptimized
+              className="hero__img hero__img--backdrop"
+              aria-hidden="true"
+            />
+            <Image
+              src={s.desktopImage}
               alt={
                 s.heading
                   ? `${s.heading.replace(/\n/g, " ")}${s.eyebrow ? ` — ${s.eyebrow}` : ""}`
@@ -185,7 +195,7 @@ export default function HeroBanner() {
               priority={i === 0}
               sizes="(max-width: 768px) 1px, 100vw"
               unoptimized
-              className="hero__img hero__img--desktop"
+              className="hero__img hero__img--desktop hero__img--foreground"
               decoding={i === 0 ? "sync" : "async"}
             />
             <Image
@@ -195,7 +205,7 @@ export default function HeroBanner() {
               priority={i === 0}
               sizes="(max-width: 768px) 100vw, 1px"
               unoptimized
-              className="hero__img hero__img--mobile"
+              className="hero__img hero__img--mobile hero__img--foreground"
               decoding={i === 0 ? "sync" : "async"}
               aria-hidden="true"
             />
