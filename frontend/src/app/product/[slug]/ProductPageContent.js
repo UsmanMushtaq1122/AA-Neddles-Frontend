@@ -553,7 +553,16 @@ export default function ProductPageContent({ slug: initialSlug }) {
                       }
                     }
                     const sections = (Array.isArray(ds.sections) ? ds.sections : [])
-                      .filter((s) => s && typeof s.title === 'string' && s.title.trim() && Array.isArray(s.items) && s.items.some(Boolean));
+                      .map((section) => ({
+                        ...section,
+                        title: typeof section?.title === 'string' ? section.title.trim() : '',
+                        items: Array.isArray(section?.items)
+                          ? section.items
+                            .filter((item) => typeof item === 'string' && item.trim())
+                            .map((item) => item.trim())
+                          : [],
+                      }))
+                      .filter((section) => section.title && section.items.length > 0);
                     const hasStructured =
                       (typeof product.fabric === 'string' && product.fabric.trim()) ||
                       (typeof ds.color === 'string' && ds.color.trim()) ||
@@ -562,6 +571,9 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     if (hasStructured) {
                       return (
                         <div className="space-y-4">
+                          <h3 className="ty-body font-semibold tracking-wide text-noor-black">
+                            Detailed Description
+                          </h3>
                           {typeof product.fabric === 'string' && product.fabric.trim() && (
                             <div>
                               <h4 className="ty-body font-semibold text-noor-black">Fabric</h4>
@@ -574,14 +586,14 @@ export default function ProductPageContent({ slug: initialSlug }) {
                               {ds.color}
                             </p>
                           )}
-                          {sections.map((section, idx) => (
-                            <div key={idx}>
+                          {sections.map((section) => (
+                            <div key={section.title}>
                               <h4 className="ty-body font-semibold text-noor-black">
                                 {section.title}
                               </h4>
                               <ul className="mt-2 space-y-1.5 pl-4">
-                                {section.items.filter(Boolean).map((item, i) => (
-                                  <li key={i} className="ty-body-sm text-zinc-600 list-disc">
+                                {section.items.map((item) => (
+                                  <li key={item} className="ty-body-sm text-zinc-600 list-disc">
                                     {item}
                                   </li>
                                 ))}
