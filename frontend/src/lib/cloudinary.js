@@ -55,7 +55,7 @@ function withTransform(url, params) {
  * • w_3840  → leave enough source detail for a 2× 1920 px Retina display
  */
 export function heroImageUrl(url) {
-  return withTransform(url, 'f_auto,q_100,c_limit,w_3840');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_3840');
 }
 
 /**
@@ -63,7 +63,7 @@ export function heroImageUrl(url) {
  * Narrower max-width keeps payload small on phones.
  */
 export function heroMobileImageUrl(url) {
-  return withTransform(url, 'f_auto,q_100,c_limit,w_1800');
+  return withTransform(url, 'f_auto,q_auto:best,c_limit,w_1800');
 }
 
 /**

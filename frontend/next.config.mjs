@@ -20,7 +20,7 @@ const nextConfig = {
     ],
     deviceSizes: [320, 375, 390, 430, 640, 768, 820, 1024, 1280, 1366, 1440, 1920, 2560, 3840],
     imageSizes: [64, 128, 256, 384, 512, 750],
-    qualities: [85, 90],
+    qualities: [85, 90, 100],
     formats: ['image/webp'],
     minimumCacheTTL: 2592000,
     ...(isDev ? { maximumDiskCacheSize: 0 } : {}),
