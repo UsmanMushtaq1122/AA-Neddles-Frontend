@@ -176,16 +176,6 @@ export default function HeroBanner() {
           >
             <Image
               src={s.desktopImage}
-              alt=""
-              fill
-              priority={i === 0}
-              sizes="100vw"
-              unoptimized
-              className="hero__img hero__img--backdrop"
-              aria-hidden="true"
-            />
-            <Image
-              src={s.desktopImage}
               alt={
                 s.heading
                   ? `${s.heading.replace(/\n/g, " ")}${s.eyebrow ? ` — ${s.eyebrow}` : ""}`
