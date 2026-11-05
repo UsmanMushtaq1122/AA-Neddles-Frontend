@@ -46,6 +46,9 @@ function GoogleRedirectButton({ clientId, loginUri, state, label, onError, disab
             ux_mode: 'redirect',
             login_uri: loginUri,
             state,
+            auto_prompt: false,
+            auto_select: false,
+            context: 'signin',
             callback: (response) => {
               if (!response?.credential) onErrorRef.current?.();
             },
