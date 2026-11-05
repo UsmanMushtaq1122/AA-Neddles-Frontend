@@ -6,9 +6,10 @@ import PageLayout from '@/components/PageLayout';
 import { useAuth } from '@/hooks/useAuth';
 import { customersApi } from '@/services/customers';
 import PasswordStrength, { PasswordRequirements } from '@/components/PasswordStrength';
+import LogoutModal from '@/components/LogoutModal';
 import {
   Mail, Phone, Lock, Eye, EyeOff, Loader2, CheckCircle2,
-  ChevronDown, MapPin, Plus, Pencil, Trash2,
+  ChevronDown, MapPin, Plus, Pencil, Trash2, LogOut,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch } from 'react-redux';
@@ -16,9 +17,11 @@ import { updateUserAction } from '@/store/slices/authSlice';
 
 function ProfileContent() {
   const dispatch = useDispatch();
-  const { user, changePasswordRequest, changePassword, resetChangePassword } = useAuth();
+  const { user, changePasswordRequest, changePassword, resetChangePassword, logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   /* ── Edit profile ── */
   const [editMode, setEditMode] = useState(false);
@@ -191,6 +194,11 @@ function ProfileContent() {
   const displayEmail = profile?.email || user?.email || '—';
   const displayPhone = profile?.phone || user?.phone || '—';
 
+  const handleLogout = async () => {
+    setLogoutLoading(true);
+    await logout();
+  };
+
   const addrInputClass = 'w-full px-3 py-2.5 border border-zinc-200 text-sm text-noor-black outline-none focus:border-noor-maroon';
   const addrInputErrorClass = 'w-full px-3 py-2.5 border border-red-300 bg-red-50 text-sm text-noor-black outline-none focus:border-red-400';
 
@@ -206,12 +214,22 @@ function ProfileContent() {
           <p className="ty-body-sm text-noor-gray mt-1">Member of AA Needles</p>
         </div>
         {!editMode && (
-          <button
-            onClick={() => { setEditForm({ name: displayName, phone: displayPhone }); setEditMode(true); }}
-            className="text-sm text-noor-maroon hover:underline shrink-0"
-          >
-            Edit Profile
-          </button>
+          <div className="flex items-center gap-4 shrink-0">
+            <button
+              onClick={() => { setEditForm({ name: displayName, phone: displayPhone }); setEditMode(true); }}
+              className="text-sm text-noor-maroon hover:underline"
+            >
+              Edit Profile
+            </button>
+            <button
+              type="button"
+              onClick={() => setLogoutModalOpen(true)}
+              className="flex items-center gap-1.5 text-sm text-noor-maroon hover:underline"
+            >
+              <LogOut size={16} strokeWidth={1.5} aria-hidden="true" />
+              Sign out
+            </button>
+          </div>
         )}
       </div>
 
@@ -557,6 +575,14 @@ function ProfileContent() {
           )}
         </AnimatePresence>
       </div>
+      <LogoutModal
+        isOpen={logoutModalOpen}
+        onClose={() => {
+          if (!logoutLoading) setLogoutModalOpen(false);
+        }}
+        onConfirm={handleLogout}
+        loading={logoutLoading}
+      />
     </div>
   );
 }

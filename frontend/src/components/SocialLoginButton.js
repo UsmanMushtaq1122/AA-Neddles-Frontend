@@ -1,30 +1,92 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
 
-export default function SocialLoginButton({ provider, onClick, onSuccess, onError, loading = false, disabled = false, label }) {
+function loadGoogleScript() {
+  if (typeof window === 'undefined') return Promise.reject(new Error('Google Sign-In is browser-only.'));
+  if (window.google?.accounts?.id) return Promise.resolve(window.google);
+  if (!window.__aaGoogleScriptPromise) {
+    window.__aaGoogleScriptPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.google), { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve(window.google);
+      script.onerror = () => reject(new Error('Google Sign-In failed to load.'));
+      document.head.appendChild(script);
+    });
+  }
+  return window.__aaGoogleScriptPromise;
+}
+
+function GoogleRedirectButton({ clientId, loginUri, state, label, onError, disabled, loading }) {
+  const containerRef = useRef(null);
+  const onErrorRef = useRef(onError);
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
+
+  useEffect(() => {
+    let active = true;
+    const container = containerRef.current;
+    loadGoogleScript()
+      .then((google) => {
+        if (!active || !google?.accounts?.id || !container) return;
+        if (window.__aaGoogleInitializedClientId !== clientId) {
+          google.accounts.id.initialize({
+            client_id: clientId,
+            ux_mode: 'redirect',
+            login_uri: loginUri,
+            state,
+            callback: (response) => {
+              if (!response?.credential) onErrorRef.current?.();
+            },
+          });
+          window.__aaGoogleInitializedClientId = clientId;
+        }
+        container.replaceChildren();
+        google.accounts.id.renderButton(container, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          shape: 'rectangular',
+          text: label?.toLowerCase().includes('sign up') ? 'signup_with' : 'signin_with',
+          width: 320,
+        });
+      })
+      .catch(() => onErrorRef.current?.());
+
+    return () => {
+      active = false;
+      container?.replaceChildren();
+    };
+  }, [clientId, loginUri, state, label]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full flex justify-center"
+      style={{ pointerEvents: loading || disabled ? 'none' : 'auto', opacity: loading || disabled ? 0.6 : 1 }}
+      aria-label={label}
+    />
+  );
+}
+
+export default function SocialLoginButton({ provider, onClick, onError, loading = false, disabled = false, label, loginUri, state }) {
   const isGoogle = provider === 'google';
-  const hasGoogleClientId = !!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE';
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim();
+  const hasGoogleClientId = !!googleClientId && googleClientId !== 'YOUR_GOOGLE_CLIENT_ID_HERE';
 
   if (isGoogle && hasGoogleClientId) {
-    return (
-      <div
-        className="w-full flex justify-center"
-        style={{ pointerEvents: loading || disabled ? 'none' : 'auto', opacity: loading || disabled ? 0.6 : 1 }}
-      >
-        <GoogleLogin
-          onSuccess={onSuccess}
-          onError={onError}
-          type="standard"
-          theme="outline"
-          size="large"
-          shape="rectangular"
-          text={label?.toLowerCase().includes('sign up') ? 'signup_with' : 'signin_with'}
-          width="100%"
-        />
-      </div>
-    );
+    return <GoogleRedirectButton clientId={googleClientId} loginUri={loginUri} state={state} label={label} onError={onError} disabled={disabled} loading={loading} />;
   }
 
   const handleClick = () => {

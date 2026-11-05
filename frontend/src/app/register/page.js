@@ -15,7 +15,7 @@ function RegisterForm() {
   const rawRedirect = searchParams.get('redirect') || '/';
   const redirectUrl = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/';
 
-  const { register, loading, error, isAuthenticated, clearError, socialLogin } = useAuth();
+  const { register, loading, error, isAuthenticated, clearError, socialLogin, reportAuthError } = useAuth();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -122,14 +122,19 @@ function RegisterForm() {
 
   const handleGoogleError = () => {
     setSocialLoading(null);
+    reportAuthError('Google sign-up could not open. Allow popups for localhost:3000, then try again.');
   };
+
+  const googleLoginUri = typeof window === 'undefined'
+    ? undefined
+    : `${window.location.origin}/auth/google/callback`;
 
   return (
     <main className="register-page">
       <div className="register-shell">
         <div className="register-form-panel">
         <GuestGuard>
-          <div className="mb-6 text-center">
+          <div className="auth-page-heading mb-6 text-center">
             <h1 className="text-2xl font-medium text-zinc-900">
               Create account
             </h1>
@@ -304,6 +309,8 @@ function RegisterForm() {
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
               loading={socialLoading === 'google'}
+              loginUri={googleLoginUri}
+              state={redirectUrl}
             />
           </div>
         </GuestGuard>

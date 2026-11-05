@@ -281,7 +281,8 @@ export function useAuth() {
   const socialLogin = useCallback(
     async (provider, credential) => {
       if (provider.toLowerCase() === 'google') {
-        if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+        const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim();
+        if (!googleClientId || googleClientId === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
           dispatch(loginFailureAction('Google sign-in is not configured. Add a real NEXT_PUBLIC_GOOGLE_CLIENT_ID and restart the frontend.'));
           return false;
         }
@@ -311,6 +312,30 @@ export function useAuth() {
     },
     [dispatch]
   );
+
+  const reportAuthError = useCallback(
+    (message) => dispatch(loginFailureAction(message)),
+    [dispatch]
+  );
+
+  const restoreSession = useCallback(async () => {
+    try {
+      const response = await authApi.getMe();
+      const accessToken = api.getAccessToken();
+      const refreshToken = api.getRefreshToken();
+      if (response.success && response.data && accessToken) {
+        dispatch(loginSuccessAction({
+          user: response.data,
+          accessToken,
+          refreshToken,
+        }));
+        return true;
+      }
+    } catch {
+      api.clearAuth();
+    }
+    return false;
+  }, [dispatch]);
 
   const changePasswordRequest = useCallback(
     async (currentPassword, newPassword) => {
@@ -362,6 +387,8 @@ export function useAuth() {
     verifyEmailRequest,
     resendVerificationEmail,
     socialLogin,
+    reportAuthError,
+    restoreSession,
     changePasswordRequest,
     resetForgotPassword,
     resetResetPassword,

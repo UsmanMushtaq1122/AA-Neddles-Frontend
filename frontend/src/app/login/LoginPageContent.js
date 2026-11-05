@@ -13,7 +13,8 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const verified = searchParams.get('verified');
-  const { login, loading, error, isAuthenticated, clearError, socialLogin } = useAuth();
+  const googleResult = searchParams.get('google');
+  const { login, loading, error, isAuthenticated, clearError, socialLogin, reportAuthError, restoreSession } = useAuth();
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +29,13 @@ function LoginForm() {
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (googleResult !== 'success' || isAuthenticated) return;
+    restoreSession().then((success) => {
+      if (!success) reportAuthError('Google sign-in could not be completed. Please try again.');
+    });
+  }, [googleResult, isAuthenticated, restoreSession, reportAuthError]);
 
   useEffect(() => {
     return () => clearError();
@@ -67,6 +75,9 @@ function LoginForm() {
 
   const rawRedirect = searchParams.get('redirect') || '/';
   const redirectUrl = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/';
+  const googleLoginUri = typeof window === 'undefined'
+    ? undefined
+    : `${window.location.origin}/auth/google/callback`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,14 +115,15 @@ function LoginForm() {
 
   const handleGoogleError = () => {
     setSocialLoading(null);
+    reportAuthError('Google sign-in could not open. Allow popups for localhost:3000, then try again.');
   };
 
   return (
-    <div className="bg-white flex items-center justify-center px-4 py-8 sm:py-14 min-h-[calc(100vh-140px)]">
+    <div className="auth-login-page bg-white flex items-center justify-center px-4 py-8 sm:py-14 min-h-[calc(100vh-140px)]">
       <div className="w-full max-w-[400px]">
         <GuestGuard>
           {/* Heading */}
-          <div className="text-center mb-6">
+          <div className="auth-page-heading text-center mb-6">
             <h1 className="text-2xl sm:text-3xl font-medium text-zinc-900">
               Login
             </h1>
@@ -276,6 +288,8 @@ function LoginForm() {
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
               loading={socialLoading === 'google'}
+              loginUri={googleLoginUri}
+              state={redirectUrl}
             />
           </div>
         </GuestGuard>

@@ -1681,6 +1681,31 @@ body {
 }
 
 @media (max-width: 768px) {
+  .auth-login-page {
+    min-height: calc(100dvh - 64px);
+    align-items: flex-start;
+    padding-top: 104px;
+    padding-bottom: 40px;
+  }
+
+  .register-page {
+    min-height: calc(100dvh - 64px);
+    align-items: flex-start;
+    padding: 104px 16px 40px;
+  }
+
+  .register-shell {
+    width: min(100%, 300px);
+  }
+
+  .auth-page-heading {
+    position: relative;
+    z-index: 1;
+    display: block;
+    visibility: visible;
+    opacity: 1;
+  }
+
   .mobile-footer {
     padding: 36px 16px calc(80px + env(safe-area-inset-bottom, 0px));
     background: #FFFFFF;
