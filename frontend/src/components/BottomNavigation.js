@@ -21,7 +21,7 @@ export default function BottomNavigation() {
   const { itemCount, openCart } = useCart();
   const isVisible = useScrollDirection();
 
-  if (['/checkout', '/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/verify-otp'].some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+  if (['/checkout', '/forgot-password', '/reset-password', '/verify-email', '/verify-otp'].some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
     return null;
   }
 

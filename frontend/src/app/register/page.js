@@ -129,6 +129,12 @@ function RegisterForm() {
       <div className="register-shell">
         <div className="register-form-panel">
         <GuestGuard>
+          <div className="mb-6 text-center">
+            <h1 className="text-2xl font-medium text-zinc-900">
+              Create account
+            </h1>
+          </div>
+
           {/* Notifications */}
           <AnimatePresence>
             {error && (

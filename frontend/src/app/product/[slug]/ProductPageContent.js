@@ -571,9 +571,6 @@ export default function ProductPageContent({ slug: initialSlug }) {
                     if (hasStructured) {
                       return (
                         <div className="space-y-4">
-                          <h3 className="ty-body font-semibold tracking-wide text-noor-black">
-                            Detailed Description
-                          </h3>
                           {typeof product.fabric === 'string' && product.fabric.trim() && (
                             <div>
                               <h4 className="ty-body font-semibold text-noor-black">Fabric</h4>
