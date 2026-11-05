@@ -15,7 +15,7 @@ function RegisterForm() {
   const rawRedirect = searchParams.get('redirect') || '/';
   const redirectUrl = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/';
 
-  const { register, loading, error, isAuthenticated, clearError, socialLogin, reportAuthError } = useAuth();
+  const { register, loading, error, isAuthenticated, clearError, socialLogin } = useAuth();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -122,7 +122,6 @@ function RegisterForm() {
 
   const handleGoogleError = () => {
     setSocialLoading(null);
-    reportAuthError('Google sign-up could not open. Allow popups for localhost:3000, then try again.');
   };
 
   const googleLoginUri = typeof window === 'undefined'

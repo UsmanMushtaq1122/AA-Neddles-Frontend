@@ -67,11 +67,7 @@ function GoogleSignInButton({ clientId, label, onSuccess, onError, disabled, loa
 
   const handleClick = () => {
     if (!ready || loading || disabled) return;
-    window.google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed?.() || notification.isSkippedMoment?.()) {
-        onErrorRef.current?.();
-      }
-    });
+    window.google.accounts.id.prompt();
   };
 
   return (

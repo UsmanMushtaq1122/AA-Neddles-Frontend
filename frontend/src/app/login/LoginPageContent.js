@@ -115,7 +115,6 @@ function LoginForm() {
 
   const handleGoogleError = () => {
     setSocialLoading(null);
-    reportAuthError('Google sign-in could not open. Allow popups for localhost:3000, then try again.');
   };
 
   return (
