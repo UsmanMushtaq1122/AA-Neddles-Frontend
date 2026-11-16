@@ -6,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import { useToast } from '@/hooks/useToast';
 import { api } from '@/services/index';
 import { AA } from '@/lib/images';
+import { getMetaTrackingContext, trackContact } from '@/lib/meta-pixel';
 
 export default function ContactPageContent() {
   const { addToast } = useToast();
@@ -20,13 +21,15 @@ export default function ContactPageContent() {
     }
     setSubmitting(true);
     try {
-      await api.post('/contact', {
+      const result = await api.post('/contact', {
         name: form.name || 'Anonymous',
         email: form.email,
         phone: form.phone || '',
         subject: form.subject || 'Contact Form',
         message: form.message || '',
+        metaTracking: getMetaTrackingContext(),
       });
+      if (result?.data?.metaEventId) trackContact(result.data.metaEventId);
       addToast("Thank you! Your message has been sent. We'll get back to you soon.", 'success');
       setForm({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch {

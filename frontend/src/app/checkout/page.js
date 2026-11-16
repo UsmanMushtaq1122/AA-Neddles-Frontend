@@ -26,6 +26,13 @@ import {
   getEstimatedDelivery,
 } from '@/components/checkout/constants';
 import { settingsApi, DEFAULT_SHIPPING } from '@/services/settings';
+import {
+  getMetaTrackingContext,
+  trackAddPaymentInfo,
+  trackInitiateCheckout,
+  trackPurchase,
+  useMarketingConsent,
+} from '@/lib/meta-pixel';
 
 export default function CheckoutPage() {
   return <CheckoutContent />;
@@ -33,10 +40,13 @@ export default function CheckoutPage() {
 
 function CheckoutContent() {
   const router = useRouter();
-  const { items, subtotal, clearCart, refreshCart } = useCart();
+  const { items, subtotal, clearCart, refreshCart, syncing } = useCart();
   const { user, isAuthenticated, hydrated } = useAuth();
   const { addToast } = useToast();
   const firstNameRef = useRef(null);
+  const checkoutStarted = useRef(false);
+  const paymentInfoTracked = useRef(false);
+  const marketingConsent = useMarketingConsent();
 
   const [hydratedPage, setHydratedPage] = useState(false);
 
@@ -93,6 +103,17 @@ function CheckoutContent() {
       }));
     }
   }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (!hydratedPage || syncing || !items.length || !marketingConsent || checkoutStarted.current) return;
+    checkoutStarted.current = true;
+    trackInitiateCheckout(items);
+  }, [hydratedPage, items, marketingConsent, syncing]);
+
+  useEffect(() => {
+    if (openSection !== 'payment' || !items.length || !marketingConsent || paymentInfoTracked.current) return;
+    if (trackAddPaymentInfo(items)) paymentInfoTracked.current = true;
+  }, [items, marketingConsent, openSection]);
 
   useEffect(() => {
     if (hydratedPage && items.length === 0 && step !== 'confirmed') {
@@ -260,11 +281,14 @@ function CheckoutContent() {
         ...(couponState === 'success' && couponCode.trim() ? { couponCode: couponCode.trim() } : {}),
         ...(giftNote.trim() ? { giftNote: giftNote.trim() } : {}),
         ...(orderNotes.trim() ? { notes: orderNotes.trim(), orderNotes: orderNotes.trim() } : {}),
+        metaTracking: getMetaTrackingContext(),
       };
       const res = await ordersApi.create(orderPayload);
       if (res.success) {
+        const order = res.data?.order || res.data;
+        if (order?.metaPurchaseEventId) trackPurchase(order, order.metaPurchaseEventId);
         clearCart();
-        setConfirmedOrderNumber(res.data?.order?.orderNumber || res.data?.orderNumber || '');
+        setConfirmedOrderNumber(order?.orderNumber || '');
         setConfirmedEmailAccepted(
           res.data?.order?.emailStatus === 'accepted' || res.data?.emailStatus === 'accepted'
         );

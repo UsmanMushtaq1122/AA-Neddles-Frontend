@@ -9,6 +9,7 @@ import ClientErrorBoundary from '@/components/ClientErrorBoundary';
 import StoreProvider from '@/store/StoreProvider';
 import Analytics from '@/components/Analytics';
 import GoogleAuthProvider from '@/components/GoogleAuthProvider';
+import MarketingConsent from '@/components/MarketingConsent';
 
 const playfair = { variable: '--font-heading' };
 const inter = { variable: '--font-body' };
@@ -71,6 +72,7 @@ export default function RootLayout({ children }) {
             <BottomNavigation />
             <ToastContainer />
             <Analytics />
+            <MarketingConsent />
           </StoreProvider>
         </GoogleAuthProvider>
       </body>

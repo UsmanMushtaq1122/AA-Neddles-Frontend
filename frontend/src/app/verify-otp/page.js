@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, ArrowLeft, CheckCircle2, AlertCircle, ShieldCheck, RefreshCw, Lock, Mail } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import GuestGuard from '@/components/GuestGuard';
+import { trackCompleteRegistration } from '@/lib/meta-pixel';
 
 function OtpVerificationForm() {
   const router = useRouter();
@@ -158,6 +159,7 @@ function OtpVerificationForm() {
       setSubmitting(false);
 
       if (res.success) {
+        if (typeParam === 'register') trackCompleteRegistration();
         const rawRedirect = searchParams.get('redirect') || '/';
         const targetRedirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/';
         setSuccessMsg('Email verified successfully! Redirecting...');

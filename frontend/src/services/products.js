@@ -20,11 +20,11 @@ export const productsApi = {
   getBySlug: (slug) => api.get(`/products/slug/${slug}`),
   search: (params = {}) => {
     const query = new URLSearchParams();
-    if (params.q) query.set('q', params.q);
+    if (params.q) query.set('search', params.q);
     if (params.page) query.set('page', params.page);
     if (params.limit) query.set('limit', params.limit);
     const qs = query.toString();
-    return api.get(`/products/search${qs ? `?${qs}` : ''}`);
+    return api.get(`/products${qs ? `?${qs}` : ''}`);
   },
   getFacets: (params = {}) => {
     const query = new URLSearchParams();

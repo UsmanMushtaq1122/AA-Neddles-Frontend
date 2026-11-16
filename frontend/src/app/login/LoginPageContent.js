@@ -108,7 +108,7 @@ function LoginForm() {
     setSocialLoading('google');
     const result = await socialLogin('google', credentialResponse.credential);
     setSocialLoading(null);
-    if (result) {
+    if (result?.success) {
       router.replace(redirectUrl);
     }
   };

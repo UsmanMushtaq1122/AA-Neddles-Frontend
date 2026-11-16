@@ -12,6 +12,7 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { useToast } from '@/hooks/useToast';
 import WhatsAppOrderLink from '@/components/WhatsAppOrderLink';
 import { productGalleryImageUrl, productThumbImageUrl, productCardImageUrl } from '@/lib/cloudinary';
+import { trackViewContent, useMarketingConsent } from '@/lib/meta-pixel';
 
 const PLACEHOLDER_IMAGE = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Crect fill='%23f0f0f0' width='400' height='500'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='18' fill='%23999'%3EImage Unavailable%3C/text%3E%3C/svg%3E`;
 
@@ -36,6 +37,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [galleryScrollEl, setGalleryScrollEl] = useState(null);
   const recentlyViewedRef = useRef(null);
+  const trackedProductId = useRef(null);
   const customersAlsoBoughtRef = useRef(null);
   const similarProductsRef = useRef(null);
   const topTrendingRef = useRef(null);
@@ -61,6 +63,13 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToast } = useToast();
+  const marketingConsent = useMarketingConsent();
+
+  useEffect(() => {
+    if (!marketingConsent || !product?.id || trackedProductId.current === product.id) return;
+    trackedProductId.current = product.id;
+    trackViewContent(product);
+  }, [marketingConsent, product]);
 
   const handleScroll = (e) => {
     const el = e.currentTarget;
@@ -191,15 +200,6 @@ export default function ProductPageContent({ slug: initialSlug }) {
   const isSingleSize = ['custom', 'one size', 'free size'].includes(singleSize?.toLowerCase());
   const isCustomSize = singleSize?.toLowerCase() === 'custom';
   const MAX_QUANTITY = 10;
-  const sizeChart = [
-    { size: 'XS', bust: '32', waist: '26', hips: '36' },
-    { size: 'S', bust: '34', waist: '28', hips: '38' },
-    { size: 'M', bust: '36', waist: '30', hips: '40' },
-    { size: 'L', bust: '38', waist: '32', hips: '42' },
-    { size: 'XL', bust: '40', waist: '34', hips: '44' },
-    { size: '2XL', bust: '42', waist: '36', hips: '46' },
-  ];
-
   const handleAddToBag = () => {
     if (!selectedSize) {
       addToast('Please select a size', 'warning');
@@ -603,82 +603,6 @@ export default function ProductPageContent({ slug: initialSlug }) {
                               <p className="mt-2 ty-body-sm text-zinc-600">{ds.note}</p>
                             </div>
                           )}
-                          {sizeChartOpen && (
-                            <div
-                              className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-6"
-                              onMouseDown={(event) => {
-                                if (event.target === event.currentTarget) setSizeChartOpen(false);
-                              }}
-                            >
-                              <section
-                                role="dialog"
-                                aria-modal="true"
-                                aria-labelledby="size-chart-title"
-                                className="relative max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-8"
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() => setSizeChartOpen(false)}
-                                  className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-noor-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-noor-gold"
-                                  aria-label="Close size chart"
-                                >
-                                  <X size={20} />
-                                </button>
-
-                                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-noor-gold">
-                                  AA NEEDLES FIT GUIDE
-                                </p>
-                                <h2 id="size-chart-title" className="pr-12 text-2xl font-medium text-noor-black sm:text-3xl">
-                                  Women&apos;s Size Chart
-                                </h2>
-                                <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-500">
-                                  Use these approximate body measurements to help choose your size. Measurements are in inches.
-                                </p>
-
-                                <div className="mt-6 overflow-x-auto rounded-xl border border-zinc-200">
-                                  <table className="w-full min-w-[420px] border-collapse text-left text-sm">
-                                    <thead>
-                                      <tr className="bg-[#F7F4EF] text-[11px] uppercase tracking-wider text-zinc-600">
-                                        <th scope="col" className="px-4 py-3 font-semibold">Size</th>
-                                        <th scope="col" className="px-4 py-3 font-semibold">Bust (in)</th>
-                                        <th scope="col" className="px-4 py-3 font-semibold">Waist (in)</th>
-                                        <th scope="col" className="px-4 py-3 font-semibold">Hips (in)</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {sizeChart.map((row) => (
-                                        <tr
-                                          key={row.size}
-                                          className={`border-t border-zinc-100 ${
-                                            selectedSize?.toUpperCase() === row.size
-                                              ? 'bg-[#C9A96E]/10 font-semibold text-noor-black'
-                                              : 'text-zinc-600'
-                                          }`}
-                                        >
-                                          <th scope="row" className="px-4 py-3.5 font-medium">{row.size}</th>
-                                          <td className="px-4 py-3.5">{row.bust}</td>
-                                          <td className="px-4 py-3.5">{row.waist}</td>
-                                          <td className="px-4 py-3.5">{row.hips}</td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-
-                                <div className="mt-5 rounded-xl bg-[#F7F4EF] p-4">
-                                  <h3 className="text-sm font-semibold text-noor-black">How to measure</h3>
-                                  <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-zinc-600 sm:text-sm">
-                                    <li><strong>Bust:</strong> Measure around the fullest part of your chest.</li>
-                                    <li><strong>Waist:</strong> Measure around your natural waistline.</li>
-                                    <li><strong>Hips:</strong> Measure around the fullest part of your hips.</li>
-                                  </ul>
-                                </div>
-                                <p className="mt-4 text-xs leading-relaxed text-zinc-500">
-                                  Fit can vary by style and fabric. For sizing help, please contact our customer support before ordering.
-                                </p>
-                              </section>
-                            </div>
-                          )}
                         </div>
                       );
                     }
@@ -732,6 +656,40 @@ export default function ProductPageContent({ slug: initialSlug }) {
 
           </div>
         </div>
+
+        {sizeChartOpen && (
+          <div
+            className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-6"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setSizeChartOpen(false);
+            }}
+          >
+            <section
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="size-chart-title"
+              className="relative max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-8"
+            >
+              <button
+                type="button"
+                onClick={() => setSizeChartOpen(false)}
+                className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-zinc-600 shadow-sm transition-colors hover:bg-zinc-100 hover:text-noor-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-noor-gold"
+                aria-label="Close size chart"
+              >
+                <X size={20} />
+              </button>
+              <h2 id="size-chart-title" className="sr-only">AA Needles Women&apos;s Size Chart</h2>
+              <Image
+                src="/size-chart-aa-needles.png"
+                alt="AA Needles size chart: sizes M and L with shoulder, chest, waist, sleeve, gown, trouser, and frock flare measurements in inches, plus a measurement guide and fit notes."
+                width={768}
+                height={1024}
+                sizes="(max-width: 640px) 100vw, 672px"
+                className="h-auto w-full rounded-lg"
+              />
+            </section>
+          </div>
+        )}
 
         {customersAlsoBought.length > 0 && (
           <section className="mt-10 md:mt-12 border-t border-zinc-100 pt-8">

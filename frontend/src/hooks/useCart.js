@@ -21,6 +21,7 @@ import {
 } from '@/store/slices/cartSlice';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 import { cartApi } from '@/services/cart';
+import { trackAddToCart } from '@/lib/meta-pixel';
 
 function mapApiItem(item) {
   return {
@@ -88,8 +89,11 @@ export function useCart() {
       dispatch(addToCartAction(product));
       if (isAuthenticated) {
         try {
-          await cartApi.addItem(product.id, product.quantity || 1, product.selectedSize || '');
+          const result = await cartApi.addItem(product.id, product.quantity || 1, product.selectedSize || '');
+          if (result?.success !== false) trackAddToCart(product);
         } catch {}
+      } else {
+        trackAddToCart(product);
       }
     },
     [dispatch, isAuthenticated]

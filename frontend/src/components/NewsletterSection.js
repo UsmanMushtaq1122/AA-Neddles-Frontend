@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { api } from '@/services/index';
+import { getMetaTrackingContext, trackLead } from '@/lib/meta-pixel';
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState('');
@@ -27,7 +28,11 @@ export default function NewsletterSection() {
     }
     setSubscribing(true);
     try {
-      const res = await api.post('/newsletter', { email: email.trim() });
+      const res = await api.post('/newsletter', {
+        email: email.trim(),
+        metaTracking: getMetaTrackingContext(),
+      });
+      if (res?.data?.metaEventId) trackLead(res.data.metaEventId);
       setSubmitted(true);
       setEmail('');
       setError('');

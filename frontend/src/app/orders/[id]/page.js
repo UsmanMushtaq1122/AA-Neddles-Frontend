@@ -7,6 +7,7 @@ import Image from 'next/image';
 import AuthGuard from '@/components/AuthGuard';
 import PageLayout from '@/components/PageLayout';
 import { ordersApi } from '@/services/orders';
+import { trackPurchase, useMarketingConsent } from '@/lib/meta-pixel';
 import { Package, Truck, ChevronLeft } from 'lucide-react';
 
 const STATUS_LABELS = {
@@ -41,6 +42,7 @@ function OrderDetailsContent() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const marketingConsent = useMarketingConsent();
 
   useEffect(() => {
     if (!id) return;
@@ -53,6 +55,14 @@ function OrderDetailsContent() {
       .catch(() => setError('Failed to load order details'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!marketingConsent || !order?.metaPurchaseEventId) return;
+    if (order.status === 'CANCELLED' || order.status === 'RETURNED') return;
+    const confirmedForTracking = order.paymentMethod === 'COD'
+      || (order.paymentStatus === 'PAID' && order.paymentMethod !== 'COD');
+    if (confirmedForTracking) trackPurchase(order, order.metaPurchaseEventId);
+  }, [marketingConsent, order]);
 
   if (loading) {
     return (

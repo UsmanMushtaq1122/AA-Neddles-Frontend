@@ -301,7 +301,10 @@ export function useAuth() {
             accessToken: response.data.token,
             refreshToken: response.data.refreshToken,
           }));
-          return true;
+          return {
+            success: true,
+            isNewUser: response.data.isNewUser === true,
+          };
         }
         dispatch(loginFailureAction(`${provider} login failed.`));
         return false;

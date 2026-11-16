@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X, Loader2, AlertCircle } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import { productsApi } from '@/services/products';
+import { trackSearch } from '@/lib/meta-pixel';
 
 const DEBOUNCE_MS = 400;
 const PAGE_SIZE = 20;
@@ -28,6 +29,7 @@ export default function SearchPageContent() {
   const [error, setError] = useState(null);
   const [searched, setSearched] = useState(false);
   const inputRef = useRef(null);
+  const lastTrackedQuery = useRef('');
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
@@ -41,7 +43,12 @@ export default function SearchPageContent() {
       setTotalPages(0);
       setSearched(false);
       setError(null);
+      lastTrackedQuery.current = '';
       return;
+    }
+
+    if (pageNum === 1 && q !== lastTrackedQuery.current) {
+      if (trackSearch(q)) lastTrackedQuery.current = q;
     }
 
     setLoading(true);

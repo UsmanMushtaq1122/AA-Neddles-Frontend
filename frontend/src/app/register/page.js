@@ -8,6 +8,7 @@ import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import SocialLoginButton from '@/components/SocialLoginButton';
 import { useAuth } from '@/hooks/useAuth';
 import GuestGuard from '@/components/GuestGuard';
+import { trackCompleteRegistration } from '@/lib/meta-pixel';
 
 function RegisterForm() {
   const router = useRouter();
@@ -98,6 +99,7 @@ function RegisterForm() {
     if (result?.requiresOtp) {
       router.push(`/verify-otp?type=register&email=${encodeURIComponent(form.email)}&redirect=${encodeURIComponent(redirectUrl)}`);
     } else if (result?.success) {
+      trackCompleteRegistration();
       router.replace(redirectUrl);
     }
   };
@@ -107,6 +109,7 @@ function RegisterForm() {
     const result = await socialLogin(provider);
     setSocialLoading(null);
     if (result?.success) {
+      if (result.isNewUser) trackCompleteRegistration();
       router.replace(redirectUrl);
     }
   };
@@ -115,7 +118,8 @@ function RegisterForm() {
     setSocialLoading('google');
     const result = await socialLogin('google', credentialResponse.credential);
     setSocialLoading(null);
-    if (result) {
+    if (result?.success) {
+      if (result.isNewUser) trackCompleteRegistration();
       router.replace(redirectUrl);
     }
   };

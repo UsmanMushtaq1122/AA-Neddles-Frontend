@@ -74,7 +74,7 @@ const cookieItems = [
   {
     title: 'Marketing Cookies',
     content:
-      'Marketing cookies are used to track visitors across websites to display relevant advertisements. We use these cookies to show you products and offers that match your interests and measure the effectiveness of our marketing campaigns.',
+      'With your permission, Meta Pixel and Conversions API help us measure visits, product engagement, cart activity, leads, and completed orders from our advertising. We may share product/order event details, Meta browser identifiers (_fbp and _fbc), IP address, browser information, and hashed contact matching data (such as email, phone, and name) with Meta. We do not send passwords, OTPs, or payment card details. Use Cookie Settings in the footer to allow or reject marketing cookies, and change your choice at any time.',
   },
 ];
 
@@ -109,7 +109,7 @@ export default function PrivacyContent() {
     <PageLayout title="Privacy Policy" breadcrumbs={breadcrumbs}>
       {/* Last updated */}
       <p className="text-sm text-zinc-400 mb-10">
-        Last updated: July 2025
+        Last updated: November 2026
       </p>
 
       {/* Information We Collect */}
@@ -162,7 +162,8 @@ export default function PrivacyContent() {
         </h2>
         <p className="text-sm text-zinc-600 mb-8 max-w-3xl">
           We use cookies to enhance your browsing experience, analyze site traffic, and serve personalized
-          content. You can control cookie preferences through your browser settings.
+          content. Marketing cookies and related Meta tracking remain disabled unless you allow them in Cookie Settings.
+          You can also manage cookies through your browser settings.
         </p>
         <Accordion items={cookieItems} />
       </section>

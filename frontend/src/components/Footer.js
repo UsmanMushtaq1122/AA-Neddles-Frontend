@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import MobileFooterAccordion from '@/components/MobileFooterAccordion';
+import { openMarketingPreferences } from '@/lib/meta-pixel';
 
 const footerSections = [
   {
@@ -117,6 +118,9 @@ export default function Footer() {
               <Link href="/faqs">FAQs</Link>
               <Link href="/store-locations">Store Locator</Link>
               <Link href="/order-tracking">Track Your Order</Link>
+              <button type="button" onClick={openMarketingPreferences} className="text-left hover:text-noor-black">
+                Cookie Settings
+              </button>
             </div>
 
             <div className="desktop-footer-column">
@@ -164,10 +168,15 @@ export default function Footer() {
         <div className="mobile-footer-bottom">
           <p>&copy; {new Date().getFullYear()}, AA Needles Designs</p>
 
-          <div className="mobile-footer-socials">
+          <div className="flex items-center gap-4">
+            <button type="button" onClick={openMarketingPreferences} className="text-xs text-zinc-500 underline">
+              Cookie Settings
+            </button>
+            <div className="mobile-footer-socials">
             {socialLinks.map((social) => (
               <SocialIcon key={social.label} {...social} />
             ))}
+            </div>
           </div>
         </div>
       </div>
