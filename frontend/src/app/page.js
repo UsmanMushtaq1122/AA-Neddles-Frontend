@@ -1,20 +1,20 @@
 import HomePageContent from './HomePageContent';
 
 export const metadata = {
-  title: 'AA Needles — Pakistani Luxury Fashion',
+  title: "AA NEEDLES Official Website | Luxury Women's Clothing Pakistan",
   description:
-    'Discover premium Pakistani fashion at AA Needles. Explore luxury formals, bridal collections, pret, and unstitched fabrics crafted with exquisite detail and timeless elegance.',
+    "Shop AA NEEDLES, a Pakistani women's fashion brand offering luxury formal, festive and casual ready-to-wear dresses. Explore our latest collections with worldwide shipping.",
   openGraph: {
-    title: 'AA Needles — Pakistani Luxury Fashion',
+    title: "AA NEEDLES Official Website | Luxury Women's Clothing Pakistan",
     description:
-      'Discover premium Pakistani fashion at AA Needles. Luxury formals, bridal, pret & unstitched collections.',
+      "Shop AA NEEDLES, a Pakistani women's fashion brand offering luxury formal, festive and casual ready-to-wear dresses. Explore our latest collections with worldwide shipping.",
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AA Needles — Pakistani Luxury Fashion',
+    title: "AA NEEDLES Official Website | Luxury Women's Clothing Pakistan",
     description:
-      'Discover premium Pakistani fashion at AA Needles. Luxury formals, bridal, pret & unstitched collections.',
+      "Shop AA NEEDLES, a Pakistani women's fashion brand offering luxury formal, festive and casual ready-to-wear dresses. Explore our latest collections with worldwide shipping.",
   },
 };
 

@@ -9,6 +9,7 @@ import {
 } from '@/store/slices/wishlistSlice';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 import { wishlistApi } from '@/services/wishlist';
+import { trackAddToWishlist } from '@/lib/meta-pixel';
 
 export function useWishlist() {
   const dispatch = useDispatch();
@@ -29,15 +30,24 @@ export function useWishlist() {
   }, [isAuthenticated, dispatch]);
 
   const toggleWishlist = useCallback(
-    async (productId) => {
+    async (product) => {
+      const productId = product?.id;
+      if (!productId) {
+        console.error('Cannot toggle wishlist without a product ID');
+        return;
+      }
+      const wasWishlisted = wishlistItems.includes(productId);
       dispatch(toggleWishlistAction(productId));
       if (isAuthenticated) {
         try {
-          await wishlistApi.toggle(productId);
+          const result = await wishlistApi.toggle(productId);
+          if (result?.data?.wishlisted === true) trackAddToWishlist(product);
         } catch {}
+      } else if (!wasWishlisted) {
+        trackAddToWishlist(product);
       }
     },
-    [dispatch, isAuthenticated]
+    [dispatch, isAuthenticated, wishlistItems]
   );
 
   const isWishlisted = useCallback(

@@ -206,6 +206,19 @@ export function trackAddToCart(product) {
   });
 }
 
+export function trackAddToWishlist(product) {
+  const item = getProductFields(product);
+  if (!item.id) return null;
+  return trackMetaEvent('AddToWishlist', {
+    content_ids: [item.id],
+    content_name: item.name,
+    content_type: 'product',
+    content_category: item.category,
+    value: item.price,
+    currency: 'PKR',
+  });
+}
+
 export function trackInitiateCheckout(items) {
   trackMetaEvent('InitiateCheckout', getCartEventData(items));
 }

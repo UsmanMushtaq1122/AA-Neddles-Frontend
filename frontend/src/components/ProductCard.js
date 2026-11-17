@@ -28,7 +28,7 @@ export default function ProductCard({ product }) {
     e.preventDefault();
     e.stopPropagation();
     const wasWishlisted = isWishlisted(product.id);
-    toggleWishlist(product.id);
+    toggleWishlist(product);
     addToast(wasWishlisted ? 'Removed from wishlist' : 'Added to wishlist', 'info');
   };
 

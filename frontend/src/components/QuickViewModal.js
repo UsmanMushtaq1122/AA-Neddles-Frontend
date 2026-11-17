@@ -56,7 +56,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
 
   const handleWishlistToggle = () => {
     const wasWishlisted = isWishlisted(product.id);
-    toggleWishlist(product.id);
+    toggleWishlist(product);
     addToast(wasWishlisted ? 'Removed from wishlist' : 'Added to wishlist', 'info');
   };
 

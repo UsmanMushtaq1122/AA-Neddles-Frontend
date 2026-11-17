@@ -511,7 +511,7 @@ export default function ProductPageContent({ slug: initialSlug }) {
                 <button
                   onClick={() => {
                     const wasWishlisted = isWishlisted(product.id);
-                    toggleWishlist(product.id);
+                    toggleWishlist(product);
                     addToast(wasWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
                   }}
                   className="flex-1 py-4 border-2 border-noor-black text-noor-black text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center justify-center gap-3 hover:bg-zinc-50 transition-all"

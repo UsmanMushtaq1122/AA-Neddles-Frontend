@@ -111,11 +111,6 @@ function CheckoutContent() {
   }, [hydratedPage, items, marketingConsent, syncing]);
 
   useEffect(() => {
-    if (openSection !== 'payment' || !items.length || !marketingConsent || paymentInfoTracked.current) return;
-    if (trackAddPaymentInfo(items)) paymentInfoTracked.current = true;
-  }, [items, marketingConsent, openSection]);
-
-  useEffect(() => {
     if (hydratedPage && items.length === 0 && step !== 'confirmed') {
       const timer = setTimeout(() => setStep('empty'), 0);
       return () => clearTimeout(timer);
@@ -262,6 +257,9 @@ function CheckoutContent() {
     if (Object.keys(allErrors).length > 0) {
       scrollToError(allErrors);
       return;
+    }
+    if (!paymentInfoTracked.current && items.length && trackAddPaymentInfo(items)) {
+      paymentInfoTracked.current = true;
     }
     setPlacing(true);
     try {
