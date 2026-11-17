@@ -64,7 +64,7 @@ export default function TermsPage() {
 
         <div>
           <h3 className="text-noor-black font-semibold text-base mb-2">Marketing &amp; Communications</h3>
-          <p>AA Needles is able to share marketing offers such as newsletters and our catalogues (e.g. your email address, wish lists, your name, and your postal address). Also can create your personal account at aaneddles.com (e.g. your name, number, and email address).</p>
+          <p>AA Needles is able to share marketing offers such as newsletters and our catalogues (e.g. your email address, wish lists, your name, and your postal address). Also can create your personal account at aaneedles.com (e.g. your name, number, and email address).</p>
           <p className="mt-2">Our team can contact you in the event of any problem with the delivery of your items (e.g. telephone number, address).</p>
         </div>
 

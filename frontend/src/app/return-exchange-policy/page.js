@@ -8,7 +8,7 @@ export const metadata = {
     title: 'Return & Exchange Policy | AA Needles',
     description:
       'AA Needles hassle-free return and exchange policy. Easy returns within 14 days.',
-    url: 'https://aaneddles.com/return-exchange-policy',
+    url: 'https://aaneedles.com/return-exchange-policy',
     siteName: 'AA Needles',
     type: 'website',
   },

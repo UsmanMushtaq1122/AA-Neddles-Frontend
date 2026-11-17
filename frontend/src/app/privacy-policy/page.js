@@ -8,7 +8,7 @@ export const metadata = {
     title: 'Privacy Policy | AA Needles',
     description:
       'Learn how AA Needles collects, uses, and protects your personal information.',
-    url: 'https://aaneddles.com/privacy-policy',
+    url: 'https://aaneedles.com/privacy-policy',
     siteName: 'AA Needles',
     type: 'website',
   },

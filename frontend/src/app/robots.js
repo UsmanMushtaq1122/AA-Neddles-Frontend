@@ -7,6 +7,6 @@ export default function robots() {
         disallow: ['/api/', '/admin/'],
       },
     ],
-    sitemap: 'https://aaneddles.com/sitemap.xml',
+    sitemap: 'https://aaneedles.com/sitemap.xml',
   };
 }

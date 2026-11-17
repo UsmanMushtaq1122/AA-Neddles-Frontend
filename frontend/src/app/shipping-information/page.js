@@ -8,7 +8,7 @@ export const metadata = {
     title: 'Shipping Information | AA Needles',
     description:
       'Learn about AA Needles shipping policies, delivery methods, processing times, and tracking.',
-    url: 'https://aaneddles.com/shipping-information',
+    url: 'https://aaneedles.com/shipping-information',
     siteName: 'AA Needles',
     type: 'website',
   },

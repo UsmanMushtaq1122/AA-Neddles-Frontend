@@ -8,7 +8,7 @@ export const metadata = {
     title: 'FAQs | AA Needles',
     description:
       'Find answers to frequently asked questions about AA Needles — ordering, shipping, returns, payments, and more.',
-    url: 'https://aaneddles.com/faqs',
+    url: 'https://aaneedles.com/faqs',
     siteName: 'AA Needles',
     type: 'website',
   },

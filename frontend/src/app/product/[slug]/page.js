@@ -71,7 +71,7 @@ export default async function ProductPage({ params }) {
               brand: { '@type': 'Brand', name: 'AA Needles' },
               offers: {
                 '@type': 'Offer',
-                url: `https://aaneddles.com/product/${slug}`,
+                url: `https://aaneedles.com/product/${slug}`,
                 priceCurrency: 'PKR',
                 price: product.salePrice || product.price,
                 availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
@@ -89,9 +89,9 @@ export default async function ProductPage({ params }) {
               '@context': 'https://schema.org',
               '@type': 'BreadcrumbList',
               itemListElement: [
-                { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://aaneddles.com/' },
-                ...(product.category?.slug ? [{ '@type': 'ListItem', position: 2, name: product.category.name, item: `https://aaneddles.com/category/${product.category.slug}` }] : []),
-                { '@type': 'ListItem', position: product.category?.slug ? 3 : 2, name: product.name, item: `https://aaneddles.com/product/${slug}` },
+                { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://aaneedles.com/' },
+                ...(product.category?.slug ? [{ '@type': 'ListItem', position: 2, name: product.category.name, item: `https://aaneedles.com/category/${product.category.slug}` }] : []),
+                { '@type': 'ListItem', position: product.category?.slug ? 3 : 2, name: product.name, item: `https://aaneedles.com/product/${slug}` },
               ],
             })
           }}

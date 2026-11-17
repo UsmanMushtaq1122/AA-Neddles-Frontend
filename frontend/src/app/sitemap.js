@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '@/services';
 
-const baseUrl = 'https://aaneddles.com';
+const baseUrl = 'https://aaneedles.com';
 
 const staticRoutes = [
   '/', '/about', '/contact', '/faqs', '/terms', '/privacy-policy',

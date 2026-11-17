@@ -18,11 +18,14 @@ const cormorant = { variable: '--font-logo' };
 export const metadata = {
   title: 'AA Needles — Pakistani Luxury Fashion',
   description: 'Discover premium Pakistani fashion at AA Needles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
-  metadataBase: new URL('https://aaneddles.com'),
+  metadataBase: new URL('https://aaneedles.com'),
   icons: {
-    icon: '/icon.png',
-    shortcut: '/icon.png',
-    apple: '/icon.png',
+    icon: [
+      { url: '/favicon.ico', type: 'image/x-icon' },
+      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   alternates: {
     canonical: '/',
@@ -30,11 +33,11 @@ export const metadata = {
   openGraph: {
     title: 'AA Needles — Pakistani Luxury Fashion',
     description: 'Discover premium Pakistani fashion at AA Needles. Shop ready-to-wear, formal, and bridal collections crafted with exquisite detail.',
-    url: 'https://aaneddles.com',
+    url: 'https://aaneedles.com/',
     siteName: 'AA Needles',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/og-default.jpg', width: 1200, height: 630 }],
+    images: [{ url: '/logo.png', width: 1024, height: 1024, alt: 'AA NEEDLES official logo' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -54,9 +57,22 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'AA Needles',
-              url: 'https://aaneddles.com',
-              logo: 'https://aaneddles.com/logo.png',
+              '@id': 'https://aaneedles.com/#organization',
+              name: 'AA NEEDLES',
+              alternateName: 'AA Needles',
+              url: 'https://aaneedles.com/',
+              sameAs: [
+                'https://www.instagram.com/aaneedlesofficial/',
+                'https://facebook.com/aaneddles',
+                'https://www.tiktok.com/@aaneedlesofficial',
+              ],
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://aaneedles.com/logo.png',
+                contentUrl: 'https://aaneedles.com/logo.png',
+                width: 1024,
+                height: 1024,
+              },
               description: 'Pakistani luxury fashion brand offering ready-to-wear, formal, and bridal collections.',
               address: { '@type': 'PostalAddress', addressCountry: 'PK' },
             })

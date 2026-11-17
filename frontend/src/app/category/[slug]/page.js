@@ -66,8 +66,8 @@ export default async function CategoryPage({ params }) {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://aaneddles.com/' },
-              { '@type': 'ListItem', position: 2, name: meta?.title || slug, item: `https://aaneddles.com/category/${slug}` },
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://aaneedles.com/' },
+              { '@type': 'ListItem', position: 2, name: meta?.title || slug, item: `https://aaneedles.com/category/${slug}` },
             ],
           })
         }}
