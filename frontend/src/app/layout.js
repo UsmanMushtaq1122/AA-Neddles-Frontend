@@ -21,9 +21,8 @@ export const metadata = {
   metadataBase: new URL('https://aaneedles.com'),
   icons: {
     icon: [
-      { url: '/favicon.ico', type: 'image/x-icon' },
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48', type: 'image/x-icon' },
       { url: '/icon.png', sizes: '512x512', type: 'image/png' },
-      { url: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' },
     ],
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
